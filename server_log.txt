@@ -15478,3 +15478,2188 @@ Content-Length: 0
 ]]>
 </message>
 
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531269161"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---f7b2ff73a0bc5f62" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---f7b2ff73a0bc5f62;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 213 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531269378"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---f7b2ff73a0bc5f62" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 213 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---f7b2ff73a0bc5f62;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531269394"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---f7b2ff73a0bc5f62" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 407 Proxy Authentication required" 
+>
+<![CDATA[SIP/2.0 407 Proxy Authentication required
+CSeq: 213 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---f7b2ff73a0bc5f62;rport=32349;received=192.168.1.100
+Proxy-Authenticate: Digest realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",opaque="",stale=FALSE,algorithm=MD5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531269394"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---d7b623c70332b6ea" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---d7b623c70332b6ea;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 214 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531269414"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---d7b623c70332b6ea" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 214 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---d7b623c70332b6ea;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531269430"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---d7b623c70332b6ea" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 214 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---d7b623c70332b6ea;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531327719"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---0d1e3a3b1ff832ce" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---0d1e3a3b1ff832ce;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 215 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531327770"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---0d1e3a3b1ff832ce" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 215 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---0d1e3a3b1ff832ce;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531327787"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---0d1e3a3b1ff832ce" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 215 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---0d1e3a3b1ff832ce;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531389795"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---b99b0498f3ad2160" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b99b0498f3ad2160;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 216 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531389851"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b99b0498f3ad2160" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 216 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b99b0498f3ad2160;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531389867"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b99b0498f3ad2160" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 216 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b99b0498f3ad2160;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531449810"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---2a020f2024756d36" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---2a020f2024756d36;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 217 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531449844"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---2a020f2024756d36" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 217 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---2a020f2024756d36;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531449846"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---2a020f2024756d36" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 217 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---2a020f2024756d36;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531509774"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---b1c2e67b18e11177" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b1c2e67b18e11177;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 218 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531509833"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b1c2e67b18e11177" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 218 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b1c2e67b18e11177;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531509850"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b1c2e67b18e11177" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 218 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b1c2e67b18e11177;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501531553187"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---27d6cf25d12f8c7c" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---27d6cf25d12f8c7c;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=0b11c6bb9a6e87d5;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+CSeq: 219 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="badf43aeba6c7beac3a4a9a1d95f1036",uri="sip:192.168.1.106;transport=UDP",response="06578b64fa999afe09ffb8d551ddd880",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531553389"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---27d6cf25d12f8c7c" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 219 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---27d6cf25d12f8c7c;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501531553405"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---27d6cf25d12f8c7c" 
+callId="4ILuV7HkZTLzCoFJ9hRb-A.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 219 REGISTER
+Call-ID: 4ILuV7HkZTLzCoFJ9hRb-A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=e0575805
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---27d6cf25d12f8c7c;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533364534"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---60991eed8bf4e75d" 
+callId="8877RdQo9k7Ceoo3jrVgtw.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---60991eed8bf4e75d;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=be7207a9aa44ac76;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=613ce732
+Call-ID: 8877RdQo9k7Ceoo3jrVgtw..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533364744"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---60991eed8bf4e75d" 
+callId="8877RdQo9k7Ceoo3jrVgtw.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: 8877RdQo9k7Ceoo3jrVgtw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=613ce732
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---60991eed8bf4e75d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533364764"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---60991eed8bf4e75d" 
+callId="8877RdQo9k7Ceoo3jrVgtw.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: 8877RdQo9k7Ceoo3jrVgtw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=613ce732
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---60991eed8bf4e75d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533367533"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---8d78e26e805c761b" 
+callId="FGS4qNDTeOljTJO72q59mg.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8d78e26e805c761b;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=367f4989ae765e3d;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=46d96305
+Call-ID: FGS4qNDTeOljTJO72q59mg..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533367579"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8d78e26e805c761b" 
+callId="FGS4qNDTeOljTJO72q59mg.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: FGS4qNDTeOljTJO72q59mg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=46d96305
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8d78e26e805c761b;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533367595"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8d78e26e805c761b" 
+callId="FGS4qNDTeOljTJO72q59mg.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: FGS4qNDTeOljTJO72q59mg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=46d96305
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8d78e26e805c761b;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533367642"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---8d78e26e805c761b" 
+callId="FGS4qNDTeOljTJO72q59mg.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8d78e26e805c761b;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=367f4989ae765e3d;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=46d96305
+Call-ID: FGS4qNDTeOljTJO72q59mg..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533367671"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8d78e26e805c761b" 
+callId="FGS4qNDTeOljTJO72q59mg.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: FGS4qNDTeOljTJO72q59mg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=46d96305
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8d78e26e805c761b;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533371822"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---24b327a04be936a8" 
+callId="zSr5QYMZxZkPjXKRObtmaA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---24b327a04be936a8;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=5aa58c9af48df035;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=f099f85f
+Call-ID: zSr5QYMZxZkPjXKRObtmaA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533371876"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---24b327a04be936a8" 
+callId="zSr5QYMZxZkPjXKRObtmaA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: zSr5QYMZxZkPjXKRObtmaA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=f099f85f
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---24b327a04be936a8;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533371892"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---24b327a04be936a8" 
+callId="zSr5QYMZxZkPjXKRObtmaA.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: zSr5QYMZxZkPjXKRObtmaA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=f099f85f
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---24b327a04be936a8;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533380102"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---37cb5f89fd1689ef" 
+callId="QQDR5zGXOeLqVQIj8ChE7w.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---37cb5f89fd1689ef;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=12a00e7e5dfac9ec;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=715a5375
+Call-ID: QQDR5zGXOeLqVQIj8ChE7w..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533380147"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---37cb5f89fd1689ef" 
+callId="QQDR5zGXOeLqVQIj8ChE7w.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: QQDR5zGXOeLqVQIj8ChE7w..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=715a5375
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---37cb5f89fd1689ef;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533380163"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---37cb5f89fd1689ef" 
+callId="QQDR5zGXOeLqVQIj8ChE7w.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: QQDR5zGXOeLqVQIj8ChE7w..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=715a5375
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---37cb5f89fd1689ef;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533400059"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---75e79c2ee105ac84" 
+callId="LWN01PgUP9c_Z8RrKxvW4A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---75e79c2ee105ac84;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=7b8eec2823833850;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=874d1a28
+Call-ID: LWN01PgUP9c_Z8RrKxvW4A..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533400104"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---75e79c2ee105ac84" 
+callId="LWN01PgUP9c_Z8RrKxvW4A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: LWN01PgUP9c_Z8RrKxvW4A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=874d1a28
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---75e79c2ee105ac84;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533400123"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---75e79c2ee105ac84" 
+callId="LWN01PgUP9c_Z8RrKxvW4A.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: LWN01PgUP9c_Z8RrKxvW4A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=874d1a28
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---75e79c2ee105ac84;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533433122"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---00a25baaaac37a3f" 
+callId="nhFIQ_nNDpabHal5jNAYow.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---00a25baaaac37a3f;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=78285e2078bc49b3;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=8e50b506
+Call-ID: nhFIQ_nNDpabHal5jNAYow..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533433177"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---00a25baaaac37a3f" 
+callId="nhFIQ_nNDpabHal5jNAYow.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: nhFIQ_nNDpabHal5jNAYow..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=8e50b506
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---00a25baaaac37a3f;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533433192"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---00a25baaaac37a3f" 
+callId="nhFIQ_nNDpabHal5jNAYow.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: nhFIQ_nNDpabHal5jNAYow..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=8e50b506
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---00a25baaaac37a3f;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533470893"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---ef6b5c7a0522b817" 
+callId="ZiSfvQPqjmrCN3yn8tFYTA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ef6b5c7a0522b817;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=4cabda6f44bf7d9d;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0fcbf539
+Call-ID: ZiSfvQPqjmrCN3yn8tFYTA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533470943"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---ef6b5c7a0522b817" 
+callId="ZiSfvQPqjmrCN3yn8tFYTA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: ZiSfvQPqjmrCN3yn8tFYTA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0fcbf539
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ef6b5c7a0522b817;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533470959"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---ef6b5c7a0522b817" 
+callId="ZiSfvQPqjmrCN3yn8tFYTA.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: ZiSfvQPqjmrCN3yn8tFYTA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0fcbf539
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ef6b5c7a0522b817;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533506372"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---605ef3f350208e1a" 
+callId="pyMyQQ061z0csOCsSIzs8A.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---605ef3f350208e1a;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=dfb3537152098538;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=db1e3a2d
+Call-ID: pyMyQQ061z0csOCsSIzs8A..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533506429"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---605ef3f350208e1a" 
+callId="pyMyQQ061z0csOCsSIzs8A.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: pyMyQQ061z0csOCsSIzs8A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=db1e3a2d
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---605ef3f350208e1a;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533506446"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---605ef3f350208e1a" 
+callId="pyMyQQ061z0csOCsSIzs8A.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: pyMyQQ061z0csOCsSIzs8A..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=db1e3a2d
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---605ef3f350208e1a;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533541664"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---353d4dc5c004459d" 
+callId="C4O9Gyy8JvV9ynBUxtM6hg.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---353d4dc5c004459d;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=b8735263e713cd2e;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=6d86d81e
+Call-ID: C4O9Gyy8JvV9ynBUxtM6hg..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533541713"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---353d4dc5c004459d" 
+callId="C4O9Gyy8JvV9ynBUxtM6hg.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: C4O9Gyy8JvV9ynBUxtM6hg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=6d86d81e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---353d4dc5c004459d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533541733"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---353d4dc5c004459d" 
+callId="C4O9Gyy8JvV9ynBUxtM6hg.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: C4O9Gyy8JvV9ynBUxtM6hg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=6d86d81e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---353d4dc5c004459d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533601977"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---4bacccee9703d84d" 
+callId="6FyMW9FqZsUlsxh-7MwUrw.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---4bacccee9703d84d;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=2a5f438614fd2b1a;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=60a22c6d
+Call-ID: 6FyMW9FqZsUlsxh-7MwUrw..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533602005"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---4bacccee9703d84d" 
+callId="6FyMW9FqZsUlsxh-7MwUrw.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: 6FyMW9FqZsUlsxh-7MwUrw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=60a22c6d
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---4bacccee9703d84d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533602030"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---4bacccee9703d84d" 
+callId="6FyMW9FqZsUlsxh-7MwUrw.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: 6FyMW9FqZsUlsxh-7MwUrw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=60a22c6d
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---4bacccee9703d84d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533645499"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---c90a7cd399ba906f" 
+callId="Xqvur67yLj8XEKALMIwBUA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---c90a7cd399ba906f;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=5d9d0ed520a0ebd3;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e670a4c
+Call-ID: Xqvur67yLj8XEKALMIwBUA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533645519"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---c90a7cd399ba906f" 
+callId="Xqvur67yLj8XEKALMIwBUA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: Xqvur67yLj8XEKALMIwBUA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e670a4c
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---c90a7cd399ba906f;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533645536"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---c90a7cd399ba906f" 
+callId="Xqvur67yLj8XEKALMIwBUA.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: Xqvur67yLj8XEKALMIwBUA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e670a4c
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---c90a7cd399ba906f;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533685638"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---b3e5c4b35018c65d" 
+callId="3QfS-AgidgtnjGrilEAXyA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b3e5c4b35018c65d;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=7bd6a05d9974eacf;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=3c587e7e
+Call-ID: 3QfS-AgidgtnjGrilEAXyA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533685695"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b3e5c4b35018c65d" 
+callId="3QfS-AgidgtnjGrilEAXyA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: 3QfS-AgidgtnjGrilEAXyA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=3c587e7e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b3e5c4b35018c65d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533685710"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b3e5c4b35018c65d" 
+callId="3QfS-AgidgtnjGrilEAXyA.." 
+firstLine="SIP/2.0 403 Forbidden" 
+>
+<![CDATA[SIP/2.0 403 Forbidden
+CSeq: 1 REGISTER
+Call-ID: 3QfS-AgidgtnjGrilEAXyA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=3c587e7e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b3e5c4b35018c65d;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533717843"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---596b422454254a73" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---596b422454254a73;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=9a026e1403de3dc0;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+Call-ID: j9xno0IYP4bebeINoh36yA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533718028"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---596b422454254a73" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---596b422454254a73;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533718063"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---596b422454254a73" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 407 Proxy Authentication required" 
+>
+<![CDATA[SIP/2.0 407 Proxy Authentication required
+CSeq: 1 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---596b422454254a73;rport=32349;received=192.168.1.100
+Proxy-Authenticate: Digest realm="nist.gov",nonce="a4e668840d5cfc306dfc2330f0828ab2",opaque="",stale=FALSE,algorithm=MD5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533718165"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---9d53e907204762f6" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---9d53e907204762f6;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=9a026e1403de3dc0;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+Call-ID: j9xno0IYP4bebeINoh36yA..
+CSeq: 2 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="a4e668840d5cfc306dfc2330f0828ab2",uri="sip:192.168.1.106;transport=UDP",response="e32643e0b3498a7a64ee874c0bced327",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533718197"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---9d53e907204762f6" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 2 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---9d53e907204762f6;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533718212"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---9d53e907204762f6" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 2 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---9d53e907204762f6;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533767490"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---ba5527341aaf18c3" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ba5527341aaf18c3;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=9a026e1403de3dc0;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+Call-ID: j9xno0IYP4bebeINoh36yA..
+CSeq: 3 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="a4e668840d5cfc306dfc2330f0828ab2",uri="sip:192.168.1.106;transport=UDP",response="e32643e0b3498a7a64ee874c0bced327",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533767543"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---ba5527341aaf18c3" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 3 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ba5527341aaf18c3;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533767560"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---ba5527341aaf18c3" 
+callId="j9xno0IYP4bebeINoh36yA.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 3 REGISTER
+Call-ID: j9xno0IYP4bebeINoh36yA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=0e130206
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---ba5527341aaf18c3;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533784766"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---e59a3d11cecb4cac" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---e59a3d11cecb4cac;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=5caf3b8c182d9def;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533784820"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---e59a3d11cecb4cac" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---e59a3d11cecb4cac;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533784835"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---e59a3d11cecb4cac" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 1 REGISTER
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---e59a3d11cecb4cac;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533800581"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---51c47bd0aeeb1732" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---51c47bd0aeeb1732;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=5caf3b8c182d9def;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+CSeq: 2 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533800628"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---51c47bd0aeeb1732" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 2 REGISTER
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---51c47bd0aeeb1732;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533800635"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---51c47bd0aeeb1732" 
+callId="eMiAMrjd61M5NWUnpqsokg.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 2 REGISTER
+Call-ID: eMiAMrjd61M5NWUnpqsokg..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=73bf1a55
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---51c47bd0aeeb1732;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533812152"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---16d3e46666e23ab0" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---16d3e46666e23ab0;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=4b5178c9feadd1e9;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533812206"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---16d3e46666e23ab0" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---16d3e46666e23ab0;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533812236"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---16d3e46666e23ab0" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 1 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---16d3e46666e23ab0;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533872770"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---338dfb686811e59c" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---338dfb686811e59c;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=4b5178c9feadd1e9;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+CSeq: 2 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533872811"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---338dfb686811e59c" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 2 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---338dfb686811e59c;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533872824"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---338dfb686811e59c" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 2 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---338dfb686811e59c;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533905691"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---b4eeda4de42d57a6" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b4eeda4de42d57a6;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=4b5178c9feadd1e9;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+CSeq: 3 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533905898"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b4eeda4de42d57a6" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 3 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b4eeda4de42d57a6;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501533905929"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---8cbcb7745eb1b6d7" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8cbcb7745eb1b6d7;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=4b5178c9feadd1e9;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+CSeq: 4 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="01d52cfb71a421c9b11f5ce8fea1412a",uri="sip:192.168.1.106;transport=UDP",response="a0210b8b1ec5a29c91e0409754afebfb",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533905913"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b4eeda4de42d57a6" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 407 Proxy Authentication required" 
+>
+<![CDATA[SIP/2.0 407 Proxy Authentication required
+CSeq: 3 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b4eeda4de42d57a6;rport=32349;received=192.168.1.100
+Proxy-Authenticate: Digest realm="nist.gov",nonce="01d52cfb71a421c9b11f5ce8fea1412a",opaque="",stale=FALSE,algorithm=MD5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533905929"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8cbcb7745eb1b6d7" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 4 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8cbcb7745eb1b6d7;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501533905959"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8cbcb7745eb1b6d7" 
+callId="jhni-Q_Lt1f9JuN_BxBASA.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 4 REGISTER
+Call-ID: jhni-Q_Lt1f9JuN_BxBASA..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=58c9091e
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8cbcb7745eb1b6d7;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= server
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="server"
+ name="server"
+ auxInfo="null"/>
+ 
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501534069243"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---8701b3ab0824a956" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8701b3ab0824a956;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=49cff80757129308;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+CSeq: 1 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534069445"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8701b3ab0824a956" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 1 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8701b3ab0824a956;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534069460"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---8701b3ab0824a956" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 407 Proxy Authentication required" 
+>
+<![CDATA[SIP/2.0 407 Proxy Authentication required
+CSeq: 1 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---8701b3ab0824a956;rport=32349;received=192.168.1.100
+Proxy-Authenticate: Digest realm="nist.gov",nonce="5790a1d3e69d0683aac3c3839f16805f",opaque="",stale=FALSE,algorithm=MD5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501534069492"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---b323472e38d643b3" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b323472e38d643b3;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=49cff80757129308;transport=UDP>
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+CSeq: 2 REGISTER
+Expires: 60
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="5790a1d3e69d0683aac3c3839f16805f",uri="sip:192.168.1.106;transport=UDP",response="67b5e48f5c0e6523bf0fac0142c9ff3f",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534069512"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b323472e38d643b3" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 2 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b323472e38d643b3;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534069543"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---b323472e38d643b3" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 2 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---b323472e38d643b3;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.100:32349" 
+to="192.168.1.106:5060" 
+time="1501534087472"
+isSender="false" 
+transactionId="z9hg4bk-524287-1---708f58c44f89f6fc" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="REGISTER sip:192.168.1.106;transport=UDP SIP/2.0" 
+>
+<![CDATA[REGISTER sip:192.168.1.106;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---708f58c44f89f6fc;rport=32349;received=192.168.1.100
+Max-Forwards: 70
+Contact: <sip:1001@192.168.1.100:32349;rinstance=49cff80757129308;transport=UDP>;expires=0
+To: <sip:1001@192.168.1.106;transport=UDP>
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+CSeq: 3 REGISTER
+Allow: INVITE,ACK,CANCEL,BYE,NOTIFY,REFER,MESSAGE,OPTIONS,INFO,SUBSCRIBE
+Proxy-Authorization: Digest username="1001",realm="nist.gov",nonce="5790a1d3e69d0683aac3c3839f16805f",uri="sip:192.168.1.106;transport=UDP",response="67b5e48f5c0e6523bf0fac0142c9ff3f",algorithm=MD5
+User-Agent: Zoiper rd82a609
+Allow-Events: presence,kpml,talk
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534087531"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---708f58c44f89f6fc" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+CSeq: 3 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---708f58c44f89f6fc;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="192.168.1.106:5060" 
+to="192.168.1.100:32349" 
+time="1501534087541"
+isSender="true" 
+transactionId="z9hg4bk-524287-1---708f58c44f89f6fc" 
+callId="4zqkJtQKGq2kYoLjZARvcw.." 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+CSeq: 3 REGISTER
+Call-ID: 4zqkJtQKGq2kYoLjZARvcw..
+From: <sip:1001@192.168.1.106;transport=UDP>;tag=b5b07e12
+To: <sip:1001@192.168.1.106;transport=UDP>
+Via: SIP/2.0/UDP 192.168.1.100:32349;branch=z9hG4bK-524287-1---708f58c44f89f6fc;rport=32349;received=192.168.1.100
+Content-Length: 0
+
+]]>
+</message>
+

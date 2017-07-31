@@ -10,6 +10,7 @@ import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import sipserver.com.executer.TransactionManager;
 import sipserver.com.message.Handler;
+import sipserver.com.service.ServiceProvider;
 
 public class SipServer extends SipAdapter {
 
@@ -28,6 +29,8 @@ public class SipServer extends SipAdapter {
 	private TransactionManager transactionManager;
 
 	private Handler handler;
+	
+	private ServiceProvider serviceProvider = new ServiceProvider();
 	
 	
 
@@ -103,5 +106,13 @@ public class SipServer extends SipAdapter {
 
 	public void setProvider(SipProvider provider) {
 		this.provider = provider;
+	}
+
+	public ServiceProvider getServiceProvider() {
+		return serviceProvider;
+	}
+
+	public void setServiceProvider(ServiceProvider serviceProvider) {
+		this.serviceProvider = serviceProvider;
 	}
 }
