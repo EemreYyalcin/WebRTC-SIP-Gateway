@@ -1,7 +1,7 @@
 package sipserver.com.executer.process;
 
-import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
-import javax.sip.PeerUnavailableException;
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
@@ -11,50 +11,54 @@ import sipserver.com.domain.Extension;
 import sipserver.com.server.SipServer;
 
 public class RegisterProcess extends ProcessMessage {
+	
+	private static StackLogger logger = CommonLogger.getLogger(RegisterProcess.class);
 
-	public RegisterProcess(SipServer sipServer) throws PeerUnavailableException {
+	public RegisterProcess(SipServer sipServer) throws Exception {
 		super(sipServer);
 	}
 
 	@Override
 	public void processRequest(RequestEvent requestEvent) {
+		ServerTransaction serverTransaction = null;
+		String message = requestEvent.getRequest().toString();
 		try {
-			System.out.println("RegisterRequestProcess:\r\n" + requestEvent.getRequest().toString());
-			Response response = getMessageFactory().createResponse(Response.TRYING, requestEvent.getRequest());
-			ServerTransaction serverTransaction = getSipServer().getProvider().getNewServerTransaction(requestEvent.getRequest());
-			serverTransaction.sendResponse(response);
-			DigestServerAuthenticationHelper dsam = new DigestServerAuthenticationHelper();
+			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
+			serverTransaction = getSipServer().getProvider().getNewServerTransaction(requestEvent.getRequest());
+			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.TRYING);
 			int code = 200;
 			try {
 				ContactHeader contactHeader = (ContactHeader) requestEvent.getRequest().getHeader(ContactHeader.NAME);
 				if (contactHeader == null) {
-					// return unauthorized
+					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
+					logger.logFatalError("Contact Header is Null. Message:" + message);
 					return;
 				}
+				//TODO: must be simple
 				Extension extension = new Extension(contactHeader);
-				code = getSipServer().getServiceProvider().getResgisterService().register(extension, dsam, requestEvent.getRequest());
+				code = getSipServer().getServiceProvider().getResgisterService().register(extension, getDigestServerAuthentication(), requestEvent.getRequest());
 				if (code == Response.UNAUTHORIZED) {
 					Response challengeResponse = getMessageFactory().createResponse(Response.PROXY_AUTHENTICATION_REQUIRED, requestEvent.getRequest());
-					dsam.generateChallenge(getHeaderFactory(), challengeResponse, "nist.gov");
+					getDigestServerAuthentication().generateChallenge(getHeaderFactory(), challengeResponse, "nist.gov");
 					serverTransaction.sendResponse(challengeResponse);
 				}
 			} catch (Exception e) {
-				// return unauthorized
-				response = getMessageFactory().createResponse(Response.BAD_REQUEST, requestEvent.getRequest());
-				serverTransaction.sendResponse(response);
+				sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
+				e.printStackTrace();
+				logger.logFatalError("Message Error. Message:" + message);
 				return;
 			}
-			response = getMessageFactory().createResponse(code, requestEvent.getRequest());
-			serverTransaction.sendResponse(response);
+			sendResponseMessage(serverTransaction, requestEvent.getRequest(), code);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.logFatalError("Message Error. Message:" + message);
+			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT);
 		}
-
 	}
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent) {
-		System.out.println("RegisterResponseProcess:\r\n" + responseEvent.getResponse().toString());
+		logger.logFatalError("RegisterResponseProcess:\r\n" + responseEvent.getResponse().toString());
 	}
 
 }

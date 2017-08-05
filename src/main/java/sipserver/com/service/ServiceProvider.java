@@ -1,8 +1,9 @@
 package sipserver.com.service;
 
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import gov.nist.javax.sip.header.WWWAuthenticate;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
@@ -14,41 +15,50 @@ import sipserver.com.domain.Extension;
 
 public class ServiceProvider {
 
-	private Properties extensionList = new Properties();
+	private RegisterService resgisterService = new RegisterService(this, 10);
+	
+	private static StackLogger logger = CommonLogger.getLogger(ServiceProvider.class);
 
-	private RegisterService resgisterService = new RegisterService(this);
+	private Properties tempList = new Properties();
 
-	public int getExtension(Extension extension, DigestServerAuthenticationHelper dsam, Request request) throws Exception {
-		Extension ext = (Extension) extensionList.get((extension.getExten() + extension.getHost()).hashCode());
+	public ServiceProvider() {
+
+		tempList.setProperty("1001", "test1001");
+		tempList.setProperty("1002", "test1002");
+		tempList.setProperty("1003", "test1003");
+		tempList.setProperty("1004", "test1004");
+
+	}
+
+	public int isAuthExtension(Extension extension, DigestServerAuthenticationHelper dsam, Request request) throws Exception {
+		Extension ext = (Extension) getResgisterService().getRegisterControlTask().isRegistered(extension.getExten());
 		if (ext != null) {
 			if (ext.getHost().equals(extension.getHost())) {
+				getResgisterService().getRegisterControlTask().registerTask(extension.getExpiresTime(), extension.getExten(), extension);
 				return Response.OK;
 			}
-			extensionList.remove(extension.getExten());
+			getResgisterService().getRegisterControlTask().unRegisterTask(extension.getExten());
 			return Response.UNAUTHORIZED;
 		}
 
-		// boolean result = getAuthenticate for Database with dsam and pass
-		// if(!result){
-		// throw new Exception();
-		// }
+		// TODO: Authenticate with database
+		String pass = tempList.getProperty(extension.getExten());
+		if (pass == null) {
+			logger.logFatalError("Forbidden 1");
+			return Response.FORBIDDEN;
+		}
 
 		if (!isHaveAuthenticateHeader(request)) {
 			return Response.UNAUTHORIZED;
 		}
 
-		if (!dsam.doAuthenticatePlainTextPassword(request, "test1001")) {
+		if (!dsam.doAuthenticatePlainTextPassword(request, pass)) {
+			logger.logFatalError("Forbidden 2");
 			return Response.FORBIDDEN;
 		}
 
-		extension.setTimeStamp(System.currentTimeMillis());
-		getExtensionList().put((extension.getExten() + extension.getHost()).hashCode(), extension);
+		getResgisterService().getRegisterControlTask().registerTask(extension.getExpiresTime(), extension.getExten(), extension);
 		return Response.OK;
-	}
-
-	private int getDifferenceTime(long afterTime) {
-		long now = System.currentTimeMillis();
-		return (int) TimeUnit.MICROSECONDS.toSeconds(now - afterTime);
 	}
 
 	private boolean isHaveAuthenticateHeader(Request request) {
@@ -65,14 +75,6 @@ public class ServiceProvider {
 			return true;
 		}
 		return false;
-	}
-
-	public Properties getExtensionList() {
-		return extensionList;
-	}
-
-	public void setExtensionList(Properties extensionList) {
-		this.extensionList = extensionList;
 	}
 
 	public RegisterService getResgisterService() {

@@ -6,7 +6,6 @@ public class Extension {
 
 	private String exten;
 	private int expiresTime = 60;
-	private long timeStamp;
 	private String host;
 	private String displayName;
 
@@ -54,12 +53,6 @@ public class Extension {
 	public void setExpiresTime(int expiresTime) {
 		this.expiresTime = expiresTime;
 	}
-	public long getTimeStamp() {
-		return timeStamp;
-	}
-	public void setTimeStamp(long timeStamp) {
-		this.timeStamp = timeStamp;
-	}
 	public String getHost() {
 		return host;
 	}
@@ -77,7 +70,7 @@ public class Extension {
 
 	@Override
 	public String toString() {
-		return "Extension [exten=" + exten + ", expiresTime=" + expiresTime + ", timeStamp=" + timeStamp + ", host=" + host + ", displayName=" + displayName + "]";
+		return "Extension [exten=" + exten + ", expiresTime=" + expiresTime + ", host=" + host + ", displayName=" + displayName + "]";
 	}
 
 }

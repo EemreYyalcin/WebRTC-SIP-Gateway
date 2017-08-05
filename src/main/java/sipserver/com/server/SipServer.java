@@ -2,6 +2,8 @@ package sipserver.com.server;
 
 import java.util.Properties;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
@@ -29,10 +31,10 @@ public class SipServer extends SipAdapter {
 	private TransactionManager transactionManager;
 
 	private Handler handler;
-	
+
 	private ServiceProvider serviceProvider = new ServiceProvider();
-	
-	
+
+	private static StackLogger logger = CommonLogger.getLogger(SipServer.class);
 
 	public SipServer(String host, int port, String protocol) {
 		this.SERVER_PORT = port;
@@ -47,7 +49,7 @@ public class SipServer extends SipAdapter {
 		try {
 			final Properties defaultProperties = new Properties();
 			defaultProperties.setProperty("javax.sip.STACK_NAME", "server");
-			defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
+			defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "ERROR");
 			defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "server_debug.txt");
 			defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "server_log.txt");
 			defaultProperties.setProperty("gov.nist.javax.sip.READ_TIMEOUT", "1000");
@@ -64,6 +66,8 @@ public class SipServer extends SipAdapter {
 			getProvider().addSipListener(this);
 			setTransactionManager(new TransactionManager(this));
 			handler = new Handler(this);
+			logger.logFatalError("SipServer Get Started");
+			logger.logFatalError("IP:" + host + ",port:" + SERVER_PORT);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

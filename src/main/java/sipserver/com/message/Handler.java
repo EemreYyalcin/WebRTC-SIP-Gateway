@@ -1,5 +1,7 @@
 package sipserver.com.message;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.header.CallIdHeader;
@@ -9,6 +11,8 @@ import sipserver.com.server.SipServer;
 public class Handler {
 
 	private SipServer sipServer;
+	
+	private static StackLogger logger = CommonLogger.getLogger(Handler.class);
 
 	public Handler(SipServer sipServer) {
 		this.sipServer = sipServer;
@@ -33,7 +37,7 @@ public class Handler {
 		String callId = ((CallIdHeader) responseEvent.getResponse().getHeader("Call-ID")).getCallId();
 		Transaction transaction = getSipServer().getTransactionManager().getTransaction(callId);
 		if (transaction == null) {
-			System.out.println("Transaction Not Found");
+			logger.logFatalError("Transaction Not Found");
 			// return no transaction found
 			return;
 		}
