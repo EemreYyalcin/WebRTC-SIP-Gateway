@@ -10,6 +10,8 @@ import javax.sip.RequestEvent;
 import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
+import javax.sip.header.HeaderFactory;
+import javax.sip.message.MessageFactory;
 import sipserver.com.executer.TransactionManager;
 import sipserver.com.message.Handler;
 import sipserver.com.service.ServiceProvider;
@@ -17,23 +19,16 @@ import sipserver.com.service.ServiceProvider;
 public class SipServer extends SipAdapter {
 
 	private int SERVER_PORT = 5060;
-
 	private String protocol = "udp";
-
 	private String host = "192.168.1.106";
-
 	private SipStack sipStack;
-
 	private SipFactory sipFactory = null;
-
 	private SipProvider provider = null;
-
+	private MessageFactory messageFactory;
+	private HeaderFactory headerFactory;
 	private TransactionManager transactionManager;
-
 	private Handler handler;
-
 	private ServiceProvider serviceProvider = new ServiceProvider();
-
 	private static StackLogger logger = CommonLogger.getLogger(SipServer.class);
 
 	public SipServer(String host, int port, String protocol) {
@@ -68,6 +63,8 @@ public class SipServer extends SipAdapter {
 			handler = new Handler(this);
 			logger.logFatalError("SipServer Get Started");
 			logger.logFatalError("IP:" + host + ",port:" + SERVER_PORT);
+			setMessageFactory(getSipFactory().createMessageFactory());
+			setHeaderFactory(getSipFactory().createHeaderFactory());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,6 +90,12 @@ public class SipServer extends SipAdapter {
 
 	public static void main(String[] args) {
 		SipServer sipServer = new SipServer();
+		if (args != null && args.length > 0) {
+			sipServer.host = args[0];
+			if (args.length > 1) {
+				sipServer.SERVER_PORT = Integer.valueOf(args[1]);
+			}
+		}
 		sipServer.startListening();
 	}
 
@@ -119,4 +122,21 @@ public class SipServer extends SipAdapter {
 	public void setServiceProvider(ServiceProvider serviceProvider) {
 		this.serviceProvider = serviceProvider;
 	}
+
+	public MessageFactory getMessageFactory() {
+		return messageFactory;
+	}
+
+	public void setMessageFactory(MessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
+	}
+
+	public HeaderFactory getHeaderFactory() {
+		return headerFactory;
+	}
+
+	public void setHeaderFactory(HeaderFactory headerFactory) {
+		this.headerFactory = headerFactory;
+	}
+
 }

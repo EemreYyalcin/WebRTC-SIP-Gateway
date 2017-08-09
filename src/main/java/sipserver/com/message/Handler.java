@@ -11,7 +11,7 @@ import sipserver.com.server.SipServer;
 public class Handler {
 
 	private SipServer sipServer;
-	
+
 	private static StackLogger logger = CommonLogger.getLogger(Handler.class);
 
 	public Handler(SipServer sipServer) {
@@ -28,9 +28,7 @@ public class Handler {
 			// return no transaction found
 			return;
 		}
-		if (transaction.processRequestMessage(requestEvent)) {
-			transaction.process();
-		}
+		transaction.processMessage(requestEvent);
 	}
 
 	public void addResponseMessage(ResponseEvent responseEvent) {
@@ -38,12 +36,9 @@ public class Handler {
 		Transaction transaction = getSipServer().getTransactionManager().getTransaction(callId);
 		if (transaction == null) {
 			logger.logFatalError("Transaction Not Found");
-			// return no transaction found
 			return;
 		}
-		if (transaction.processResponseMessage(responseEvent)) {
-			transaction.process();
-		}
+		transaction.processMessage(responseEvent);
 	}
 
 	public SipServer getSipServer() {

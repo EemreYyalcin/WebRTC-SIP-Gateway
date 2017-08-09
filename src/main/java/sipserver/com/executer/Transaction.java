@@ -1,36 +1,52 @@
 package sipserver.com.executer;
 
+import java.util.EventObject;
+
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
-import sipserver.com.executer.process.ProcessMessage;
+import javax.sip.ServerTransaction;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 import sipserver.com.server.SipServer;
 
-public class Transaction {
+public abstract class Transaction {
 
 	private String callId;
 	private SipServer sipServer;
-	private ProcessMessage processMessage;
 	private RequestEvent requestEvent;
 	private ResponseEvent responseEvent;
+	private Request request;
+	private ServerTransaction serverTransaction;
+	private DigestServerAuthenticationHelper digestServerAuthentication;
 
 	public Transaction(SipServer sipServer, String callId) {
-		this.sipServer = sipServer;
-		setCallId(callId);
+		try {
+			this.setSipServer(sipServer);
+			setCallId(callId);
+			setDigestServerAuthentication(new DigestServerAuthenticationHelper());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void process() {
+	public abstract void processRequest();
+	public abstract void processResponse();
+
+	public void processMessage(EventObject event) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					if (getRequestEvent() != null) {
-						processMessage.processRequest(getRequestEvent());
-						// return response for client
+					if (event instanceof RequestEvent) {
+						requestEvent = (RequestEvent) event;
+						responseEvent = null;
+						processRequest();
 					} else {
-						processMessage.processResponse(getResponseEvent());
+						requestEvent = null;
+						responseEvent = (ResponseEvent) event;
+						processResponse();
 					}
-					setRequestEvent(null);
-					setResponseEvent(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -39,38 +55,17 @@ public class Transaction {
 		}).start();
 	}
 
-	public boolean processRequestMessage(RequestEvent requestEvent) {
+	protected void sendResponseMessage(ServerTransaction serverTransaction, Request request, int responseCode) {
 		try {
-			if (processMessage == null) {
-				processMessage = ProcessMessage.createProcess(requestEvent.getRequest(), sipServer);
+			if (serverTransaction == null || request == null) {
+				throw new Exception();
 			}
-			if (processMessage == null) {
-				return false;
+			Response response = getSipServer().getMessageFactory().createResponse(responseCode, request);
+			if (response != null) {
+				serverTransaction.sendResponse(response);
 			}
-			if (getRequestEvent() != null) {
-				return false;
-			}
-			setRequestEvent(requestEvent);
-			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
-		}
-	}
-
-	public boolean processResponseMessage(ResponseEvent responseEvent) {
-		try {
-			if (processMessage == null) {
-				return false;
-			}
-			if (getResponseEvent() != null) {
-				return false;
-			}
-			setRequestEvent(requestEvent);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
 		}
 	}
 
@@ -95,6 +90,38 @@ public class Transaction {
 
 	public void setResponseEvent(ResponseEvent responseEvent) {
 		this.responseEvent = responseEvent;
+	}
+
+	public Request getRequest() {
+		return request;
+	}
+
+	public void setRequest(Request request) {
+		this.request = request;
+	}
+
+	public SipServer getSipServer() {
+		return sipServer;
+	}
+
+	public void setSipServer(SipServer sipServer) {
+		this.sipServer = sipServer;
+	}
+
+	public ServerTransaction getServerTransaction() {
+		return serverTransaction;
+	}
+
+	public void setServerTransaction(ServerTransaction serverTransaction) {
+		this.serverTransaction = serverTransaction;
+	}
+
+	public DigestServerAuthenticationHelper getDigestServerAuthentication() {
+		return digestServerAuthentication;
+	}
+
+	public void setDigestServerAuthentication(DigestServerAuthenticationHelper digestServerAuthentication) {
+		this.digestServerAuthentication = digestServerAuthentication;
 	}
 
 }

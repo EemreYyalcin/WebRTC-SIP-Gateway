@@ -6,13 +6,14 @@ import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import javax.sip.RequestEvent;
 import javax.sip.header.CallIdHeader;
+import javax.sip.message.Request;
 import sipserver.com.server.SipServer;
 
 public class TransactionManager {
 
 	private Properties transactions = new Properties();
 	private SipServer sipServer;
-	
+
 	private static StackLogger logger = CommonLogger.getLogger(TransactionManager.class);
 
 	public TransactionManager(SipServer sipServer) {
@@ -26,14 +27,16 @@ public class TransactionManager {
 	public Transaction addTransaction(RequestEvent requestEvent) {
 		try {
 			String callId = ((CallIdHeader) requestEvent.getRequest().getHeader("Call-ID")).getCallId();
-			Transaction transaction = new Transaction(sipServer, callId);
-			transactions.put(callId, transaction);
+			if (requestEvent.getRequest().getMethod().equals(Request.REGISTER)) {
+				RegisterTransactionIn registerTransaction = new RegisterTransactionIn(sipServer, callId);
+				transactions.put(callId, registerTransaction);
+				return registerTransaction;
+			}
 			logger.logFatalError("Adding Transaction callId:" + callId);
-			return transaction;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 }
