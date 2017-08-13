@@ -4,37 +4,54 @@ import java.util.Properties;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
 import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
+import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 import sipserver.com.executer.TransactionManager;
 import sipserver.com.message.Handler;
-import sipserver.com.service.ServiceProvider;
+import sipserver.com.service.RegisterService;
+import sipserver.com.timer.SipServerTimer;
 
 public class SipServer extends SipAdapter {
 
-	private int SERVER_PORT = 5060;
+	// Connection
+	private int port = 5060;
 	private String protocol = "udp";
 	private String host = "192.168.1.106";
+
+	// SipServer
 	private SipStack sipStack;
 	private SipFactory sipFactory = null;
-	private SipProvider provider = null;
+	private SipProvider sipProvider = null;
 	private MessageFactory messageFactory;
 	private HeaderFactory headerFactory;
+	private AddressFactory addressFactory;
+	private DigestServerAuthenticationHelper digestServerAuthentication;
+
+
+	// Transaction
 	private TransactionManager transactionManager;
 	private Handler handler;
-	private ServiceProvider serviceProvider = new ServiceProvider();
+
+	// Services
+	private RegisterService registerService;
+	// Logger
 	private static StackLogger logger = CommonLogger.getLogger(SipServer.class);
 
+	// Timer
+	private SipServerTimer sipServerTimer;
+
 	public SipServer(String host, int port, String protocol) {
-		this.SERVER_PORT = port;
-		this.host = host;
-		this.protocol = protocol;
+		setPort(port);
+		setHost(host);
+		setProtocol(protocol);
 	}
 
 	public SipServer() {
@@ -54,17 +71,25 @@ public class SipServer extends SipAdapter {
 			}
 			setSipFactory(SipFactory.getInstance());
 			getSipFactory().setPathName("gov.nist");
-			sipStack = getSipFactory().createSipStack(defaultProperties);
-			sipStack.start();
-			ListeningPoint lp = sipStack.createListeningPoint(host, SERVER_PORT, protocol);
-			setProvider(sipStack.createSipProvider(lp));;
-			getProvider().addSipListener(this);
+			setSipStack(getSipFactory().createSipStack(defaultProperties));
+			getSipStack().start();
+			ListeningPoint lp = getSipStack().createListeningPoint(getHost(), getPort(), getProtocol());
+			setSipProvider(getSipStack().createSipProvider(lp));;
+			getSipProvider().addSipListener(this);
 			setTransactionManager(new TransactionManager(this));
 			handler = new Handler(this);
 			logger.logFatalError("SipServer Get Started");
-			logger.logFatalError("IP:" + host + ",port:" + SERVER_PORT);
+			logger.logFatalError("IP:" + getHost() + ",port:" + getPort());
+
 			setMessageFactory(getSipFactory().createMessageFactory());
 			setHeaderFactory(getSipFactory().createHeaderFactory());
+			setAddressFactory(getSipFactory().createAddressFactory());
+			setDigestServerAuthentication(new DigestServerAuthenticationHelper());
+
+			setRegisterService(new RegisterService(this));
+			
+			setSipServerTimer(new SipServerTimer(1));
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,7 +98,7 @@ public class SipServer extends SipAdapter {
 	}
 
 	public void stop() {
-		sipStack.stop();
+		getSipStack().stop();
 	}
 
 	public void processRequest(RequestEvent requestEvent) {
@@ -91,9 +116,9 @@ public class SipServer extends SipAdapter {
 	public static void main(String[] args) {
 		SipServer sipServer = new SipServer();
 		if (args != null && args.length > 0) {
-			sipServer.host = args[0];
+			sipServer.setHost(args[0]);
 			if (args.length > 1) {
-				sipServer.SERVER_PORT = Integer.valueOf(args[1]);
+				sipServer.setPort(Integer.valueOf(args[1]));
 			}
 		}
 		sipServer.startListening();
@@ -105,22 +130,6 @@ public class SipServer extends SipAdapter {
 
 	public void setSipFactory(SipFactory sipFactory) {
 		this.sipFactory = sipFactory;
-	}
-
-	public SipProvider getProvider() {
-		return provider;
-	}
-
-	public void setProvider(SipProvider provider) {
-		this.provider = provider;
-	}
-
-	public ServiceProvider getServiceProvider() {
-		return serviceProvider;
-	}
-
-	public void setServiceProvider(ServiceProvider serviceProvider) {
-		this.serviceProvider = serviceProvider;
 	}
 
 	public MessageFactory getMessageFactory() {
@@ -137,6 +146,78 @@ public class SipServer extends SipAdapter {
 
 	public void setHeaderFactory(HeaderFactory headerFactory) {
 		this.headerFactory = headerFactory;
+	}
+
+	public AddressFactory getAddressFactory() {
+		return addressFactory;
+	}
+
+	public void setAddressFactory(AddressFactory addressFactory) {
+		this.addressFactory = addressFactory;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public SipProvider getSipProvider() {
+		return sipProvider;
+	}
+
+	public void setSipProvider(SipProvider sipProvider) {
+		this.sipProvider = sipProvider;
+	}
+
+	public RegisterService getRegisterService() {
+		return registerService;
+	}
+
+	public void setRegisterService(RegisterService registerService) {
+		this.registerService = registerService;
+	}
+
+	public SipServerTimer getSipServerTimer() {
+		return sipServerTimer;
+	}
+
+	public void setSipServerTimer(SipServerTimer sipServerTimer) {
+		this.sipServerTimer = sipServerTimer;
+	}
+
+	public DigestServerAuthenticationHelper getDigestServerAuthentication() {
+		return digestServerAuthentication;
+	}
+
+	public void setDigestServerAuthentication(DigestServerAuthenticationHelper digestServerAuthentication) {
+		this.digestServerAuthentication = digestServerAuthentication;
+	}
+
+	public SipStack getSipStack() {
+		return sipStack;
+	}
+
+	public void setSipStack(SipStack sipStack) {
+		this.sipStack = sipStack;
 	}
 
 }

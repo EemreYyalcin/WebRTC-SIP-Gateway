@@ -8,7 +8,6 @@ import java.util.TimerTask;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
-import sipserver.com.timer.control.ControlTask;
 
 public class SipServerTimer extends Thread {
 
@@ -17,13 +16,11 @@ public class SipServerTimer extends Thread {
 	private Timer timer;
 	private Properties currentTaskList = new Properties();
 	private ArrayList<Task> addedTaskList = new ArrayList<Task>();
-	private ControlTask controlTask;
 
 	private static StackLogger logger = CommonLogger.getLogger(SipServerTimer.class);
 
-	public SipServerTimer(int interval, ControlTask controlTask) {
+	public SipServerTimer(int interval) {
 		setInterval(interval);
-		setControlTask(controlTask);
 		timer = new Timer();
 	}
 
@@ -48,7 +45,7 @@ public class SipServerTimer extends Thread {
 				Task task = (Task) currentTaskList.get(key);
 				if (System.currentTimeMillis() > task.getTime()) {
 					logger.logFatalError("UnRegister key:" + key);
-					getControlTask().endTask((String) key);
+					task.endTask();
 					currentTaskList.remove(key);
 				}
 			}
@@ -76,13 +73,4 @@ public class SipServerTimer extends Thread {
 		stopTimer = true;
 		timer.cancel();
 	}
-
-	public ControlTask getControlTask() {
-		return controlTask;
-	}
-
-	public void setControlTask(ControlTask controlTask) {
-		this.controlTask = controlTask;
-	}
-
 }

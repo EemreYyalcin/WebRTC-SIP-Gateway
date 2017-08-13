@@ -1,6 +1,6 @@
 package sipserver.com.timer;
 
-public class Task {
+public abstract class Task {
 
 	private long time;
 	private String taskId;
@@ -9,6 +9,10 @@ public class Task {
 		setTime(System.currentTimeMillis() + timeout * 1000);
 		setTaskId(taskId);
 	}
+	
+	public abstract void endTask();
+
+	public abstract boolean isRegistered();
 
 	public String getTaskId() {
 		return taskId;
@@ -26,4 +30,5 @@ public class Task {
 		this.time = time;
 	}
 
+	
 }

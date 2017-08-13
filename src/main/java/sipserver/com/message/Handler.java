@@ -20,25 +20,22 @@ public class Handler {
 
 	public void addRequestMessage(RequestEvent requestEvent) {
 		String callId = ((CallIdHeader) requestEvent.getRequest().getHeader("Call-ID")).getCallId();
-		Transaction transaction = getSipServer().getTransactionManager().getTransaction(callId);
-		if (transaction == null) {
-			transaction = getSipServer().getTransactionManager().addTransaction(requestEvent);
-		}
+		Transaction transaction = getSipServer().getTransactionManager().addTransactionIn(callId, requestEvent.getRequest().getMethod());
 		if (transaction == null) {
 			// return no transaction found
 			return;
 		}
-		transaction.processMessage(requestEvent);
+		transaction.processRequestTransaction(requestEvent);
 	}
 
 	public void addResponseMessage(ResponseEvent responseEvent) {
 		String callId = ((CallIdHeader) responseEvent.getResponse().getHeader("Call-ID")).getCallId();
-		Transaction transaction = getSipServer().getTransactionManager().getTransaction(callId);
+		Transaction transaction = getSipServer().getTransactionManager().addTransactionIn(callId, null);
 		if (transaction == null) {
 			logger.logFatalError("Transaction Not Found");
 			return;
 		}
-		transaction.processMessage(responseEvent);
+		transaction.processResponseTransaction(responseEvent);
 	}
 
 	public SipServer getSipServer() {

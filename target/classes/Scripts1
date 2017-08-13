@@ -1,0 +1,3 @@
+export TARGET=192.168.1.108
+
+scp /mnt/c/jar/sipServer.jar root@$TARGET:/root/sipserver/ ;ssh root@$TARGET killall java ; ssh root@$TARGET java -jar /root/sipserver/sipServer.jar $TARGET

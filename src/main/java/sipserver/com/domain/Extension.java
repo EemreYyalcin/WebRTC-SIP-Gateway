@@ -8,10 +8,25 @@ public class Extension {
 	private int expiresTime = 60;
 	private String host;
 	private String displayName;
-
-	public Extension(String exten, String host) {
+	private int port = 5060;
+	private String pass;
+	private boolean isOnline = true;
+	private int cseqValue = 1;
+	public Extension(String exten, String pass, String host, int port) {
 		setExten(exten);
 		setHost(host);
+		setPass(pass);
+		setPort(port);
+	}
+	public Extension(String exten, String pass, String host) {
+		setExten(exten);
+		setHost(host);
+		setPass(pass);
+	}
+	public Extension(String exten, String host, int port) {
+		setExten(exten);
+		setHost(host);
+		setPort(port);
 	}
 
 	public Extension(ContactHeader contactHeader) throws Exception {
@@ -71,6 +86,32 @@ public class Extension {
 	@Override
 	public String toString() {
 		return "Extension [exten=" + exten + ", expiresTime=" + expiresTime + ", host=" + host + ", displayName=" + displayName + "]";
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+	public String getPass() {
+		return pass;
+	}
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+	public boolean isOnline() {
+		return isOnline;
+	}
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+	public int getCseqValue() {
+		return cseqValue;
+	}
+	public void setCseqValue(int cseqValue) {
+		this.cseqValue = cseqValue;
 	}
 
 }

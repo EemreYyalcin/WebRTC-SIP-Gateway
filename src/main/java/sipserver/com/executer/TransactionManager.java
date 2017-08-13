@@ -4,9 +4,8 @@ import java.util.Properties;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
-import javax.sip.RequestEvent;
-import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
+import sipserver.com.domain.Extension;
 import sipserver.com.server.SipServer;
 
 public class TransactionManager {
@@ -20,17 +19,44 @@ public class TransactionManager {
 		this.sipServer = sipServer;
 	}
 
-	public Transaction getTransaction(String callId) {
+	private Transaction getTransaction(String callId) {
 		return (Transaction) transactions.get(callId);
 	}
 
-	public Transaction addTransaction(RequestEvent requestEvent) {
+	public Transaction addTransactionIn(String callId, String method) {
 		try {
-			String callId = ((CallIdHeader) requestEvent.getRequest().getHeader("Call-ID")).getCallId();
-			if (requestEvent.getRequest().getMethod().equals(Request.REGISTER)) {
+			Transaction transaction = getTransaction(callId);
+			if (transaction != null) {
+				return transaction;
+			}
+			if (method == null) {
+				return null;
+			}
+			if (method.equals(Request.REGISTER)) {
 				RegisterTransactionIn registerTransaction = new RegisterTransactionIn(sipServer, callId);
 				transactions.put(callId, registerTransaction);
 				return registerTransaction;
+			}
+			logger.logFatalError("Adding Transaction callId:" + callId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Transaction addTransactionOut(String callId, String method, Extension extension) {
+		try {
+			Transaction transaction = getTransaction(callId);
+			if (transaction != null) {
+				return transaction;
+			}
+			if (method == null) {
+				return null;
+			}
+			if (method.equals(Request.REGISTER)) {
+				RegisterTransactionOut registerTransactionOut = new RegisterTransactionOut(sipServer, callId, extension);
+				transactions.put(callId, registerTransactionOut);
+				return registerTransactionOut;
 			}
 			logger.logFatalError("Adding Transaction callId:" + callId);
 		} catch (Exception e) {

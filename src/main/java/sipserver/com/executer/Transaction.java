@@ -1,8 +1,7 @@
 package sipserver.com.executer;
 
-import java.util.EventObject;
-
-import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
@@ -14,46 +13,24 @@ public abstract class Transaction {
 
 	private String callId;
 	private SipServer sipServer;
-	private RequestEvent requestEvent;
-	private ResponseEvent responseEvent;
 	private Request request;
 	private ServerTransaction serverTransaction;
-	private DigestServerAuthenticationHelper digestServerAuthentication;
+	private ClientTransaction clientTransaction;
+	private Dialog sipDialog;
 
 	public Transaction(SipServer sipServer, String callId) {
 		try {
 			this.setSipServer(sipServer);
 			setCallId(callId);
-			setDigestServerAuthentication(new DigestServerAuthenticationHelper());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public abstract void processRequest();
-	public abstract void processResponse();
-
-	public void processMessage(EventObject event) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					if (event instanceof RequestEvent) {
-						requestEvent = (RequestEvent) event;
-						responseEvent = null;
-						processRequest();
-					} else {
-						requestEvent = null;
-						responseEvent = (ResponseEvent) event;
-						processResponse();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-		}).start();
-	}
+	protected abstract void processRequest(RequestEvent requestEvent);
+	protected abstract void processResponse(ResponseEvent responseEvent);
+	public abstract void processRequestTransaction(RequestEvent requestEvent);
+	public abstract void processResponseTransaction(ResponseEvent responseEvent);
 
 	protected void sendResponseMessage(ServerTransaction serverTransaction, Request request, int responseCode) {
 		try {
@@ -74,22 +51,6 @@ public abstract class Transaction {
 	}
 	public void setCallId(String callId) {
 		this.callId = callId;
-	}
-
-	public RequestEvent getRequestEvent() {
-		return requestEvent;
-	}
-
-	public void setRequestEvent(RequestEvent requestEvent) {
-		this.requestEvent = requestEvent;
-	}
-
-	public ResponseEvent getResponseEvent() {
-		return responseEvent;
-	}
-
-	public void setResponseEvent(ResponseEvent responseEvent) {
-		this.responseEvent = responseEvent;
 	}
 
 	public Request getRequest() {
@@ -114,14 +75,23 @@ public abstract class Transaction {
 
 	public void setServerTransaction(ServerTransaction serverTransaction) {
 		this.serverTransaction = serverTransaction;
+		setSipDialog(serverTransaction.getDialog());
 	}
 
-	public DigestServerAuthenticationHelper getDigestServerAuthentication() {
-		return digestServerAuthentication;
+	public ClientTransaction getClientTransaction() {
+		return clientTransaction;
 	}
 
-	public void setDigestServerAuthentication(DigestServerAuthenticationHelper digestServerAuthentication) {
-		this.digestServerAuthentication = digestServerAuthentication;
+	public void setClientTransaction(ClientTransaction clientTransaction) {
+		this.clientTransaction = clientTransaction;
+	}
+
+	public Dialog getSipDialog() {
+		return sipDialog;
+	}
+
+	public void setSipDialog(Dialog sipDialog) {
+		this.sipDialog = sipDialog;
 	}
 
 }
