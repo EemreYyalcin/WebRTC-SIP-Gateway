@@ -1,6 +1,7 @@
 package sipserver.com.domain;
 
 import javax.sip.header.ContactHeader;
+import sipserver.com.parameter.ParamConstant.TransportType;
 
 public class Extension {
 
@@ -10,8 +11,10 @@ public class Extension {
 	private String displayName;
 	private int port = 5060;
 	private String pass;
-	private boolean isOnline = true;
 	private int cseqValue = 1;
+	private boolean isRegister = false;
+	private TransportType transportType = TransportType.UDP;
+
 	public Extension(String exten, String pass, String host, int port) {
 		setExten(exten);
 		setHost(host);
@@ -101,17 +104,23 @@ public class Extension {
 	public void setPass(String pass) {
 		this.pass = pass;
 	}
-	public boolean isOnline() {
-		return isOnline;
-	}
-	public void setOnline(boolean isOnline) {
-		this.isOnline = isOnline;
-	}
 	public int getCseqValue() {
 		return cseqValue;
 	}
 	public void setCseqValue(int cseqValue) {
 		this.cseqValue = cseqValue;
+	}
+	public boolean isRegister() {
+		return isRegister;
+	}
+	public void setRegister(boolean isRegister) {
+		this.isRegister = isRegister;
+	}
+	public TransportType getTransportType() {
+		return transportType;
+	}
+	public void setTransportType(TransportType transportType) {
+		this.transportType = transportType;
 	}
 
 }

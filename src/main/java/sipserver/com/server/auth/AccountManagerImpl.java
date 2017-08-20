@@ -21,8 +21,9 @@ public class AccountManagerImpl implements AccountManager {
 		return extension;
 	}
 
-	public void setExtension(Extension extension) {
+	private void setExtension(Extension extension) {
 		this.extension = extension;
 	}
+
 
 }

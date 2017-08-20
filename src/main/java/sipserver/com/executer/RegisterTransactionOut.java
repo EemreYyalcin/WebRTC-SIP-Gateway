@@ -45,7 +45,7 @@ public class RegisterTransactionOut extends Transaction {
 	protected void processRequest(RequestEvent requestEvent) {
 		try {
 			if (getRequest() == null) {
-				setRequest(createRegisterMessage(getExtension(), getCallId()));
+				setRequest());
 			}
 			if (isAcknowledge()) {
 				return;

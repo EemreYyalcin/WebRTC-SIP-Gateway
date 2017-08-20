@@ -5,5 +5,10 @@ public class ParamConstant {
 	public enum Command {
 		REGISTER, INVITE
 	}
+	
+	public enum TransportType {
+		UDP, TCP, WS, TLS
+	}
+	
 
 }
