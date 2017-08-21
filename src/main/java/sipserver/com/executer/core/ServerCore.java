@@ -9,7 +9,8 @@ import sipserver.com.parameter.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
-import sipserver.com.service.register.RegisterService;
+import sipserver.com.service.register.RegisterServiceIn;
+import sipserver.com.service.register.RegisterServiceOut;
 import sipserver.com.service.timer.TimerService;
 
 public class ServerCore {
@@ -22,7 +23,8 @@ public class ServerCore {
 	private TCPTransport tcpTransport;
 
 	// Core Service
-	private RegisterService registerService;
+	private RegisterServiceIn registerServiceIn;
+	private RegisterServiceOut registerServiceOut;
 
 	// TimerService
 	private TimerService timerService;
@@ -105,7 +107,8 @@ public class ServerCore {
 	public static void setServerCore(ServerCore serverCore) {
 		ServerCore.serverCore = serverCore;
 		ServerCore.setCoreElement(new CoreElement());
-		ServerCore.getServerCore().setRegisterService(new RegisterService());
+		ServerCore.getServerCore().setRegisterServiceIn(new RegisterServiceIn());
+		ServerCore.getServerCore().setRegisterServiceOut(new RegisterServiceOut());
 		ServerCore.getServerCore().setTimerService(new TimerService());
 	}
 
@@ -133,20 +136,28 @@ public class ServerCore {
 		this.tcpTransport = tcpTransport;
 	}
 
-	public RegisterService getRegisterService() {
-		return registerService;
-	}
-
-	public void setRegisterService(RegisterService registerService) {
-		this.registerService = registerService;
-	}
-
 	public TimerService getTimerService() {
 		return timerService;
 	}
 
 	public void setTimerService(TimerService timerService) {
 		this.timerService = timerService;
+	}
+
+	public RegisterServiceIn getRegisterServiceIn() {
+		return registerServiceIn;
+	}
+
+	public void setRegisterServiceIn(RegisterServiceIn registerServiceIn) {
+		this.registerServiceIn = registerServiceIn;
+	}
+
+	public RegisterServiceOut getRegisterServiceOut() {
+		return registerServiceOut;
+	}
+
+	public void setRegisterServiceOut(RegisterServiceOut registerServiceOut) {
+		this.registerServiceOut = registerServiceOut;
 	}
 
 }

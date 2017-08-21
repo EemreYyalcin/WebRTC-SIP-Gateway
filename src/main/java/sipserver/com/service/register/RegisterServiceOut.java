@@ -11,7 +11,6 @@ import gov.nist.javax.sip.header.CallID;
 import javax.sip.ClientTransaction;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
-import javax.sip.ServerTransaction;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
@@ -31,72 +30,19 @@ import sipserver.com.server.auth.AccountManagerImpl;
 import sipserver.com.service.Service;
 import sipserver.com.service.util.GeneraterService;
 
-public class RegisterService extends Service {
+public class RegisterServiceOut extends Service {
 
-	private static StackLogger logger = CommonLogger.getLogger(RegisterService.class);
+	private static StackLogger logger = CommonLogger.getLogger(RegisterServiceOut.class);
 
-	public RegisterService() {
-		super(logger, "REGISTER");
-		beginTask("TRUNK", 60, null);
-		ServerCore.getServerCore().addLocalExtension(new Extension("1001", "test1001", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1002", "test1002", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005", "192.168.1.100"));
+	public RegisterServiceOut() {
+		super(logger);
+		beginTask("", 60, null);
+		ServerCore.getServerCore().addTrunkExtension(new Extension("9001", "test9001", "192.168.1.100"));
 	}
 
 	@Override
 	public void processRequest(RequestEvent requestEvent) throws Exception {
-		String message = requestEvent.getRequest().toString();
-		SipServerTransport transport = ServerCore.getTransport(requestEvent.getRequest());
-		if (transport == null) {
-			logger.logFatalError("Transport is null\r\n");
-			throw new Exception();
-		}
-
-		ServerTransaction serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
-		try {
-			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.TRYING);
-			int code = 200;
-			try {
-				ContactHeader contactHeader = (ContactHeader) requestEvent.getRequest().getHeader(ContactHeader.NAME);
-				if (contactHeader == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
-					logger.logFatalError("Contact Header is Null. Message:" + message);
-					return;
-				}
-
-				Extension extIncoming = new Extension(contactHeader);
-				if (extIncoming == null || extIncoming.getExten() == null || extIncoming.getHost() == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST);
-					return;
-				}
-
-				Extension extLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
-				if (extLocal == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.FORBIDDEN);
-					return;
-				}
-
-				code = registerExtension(extIncoming, extLocal, requestEvent);
-				if (code == Response.UNAUTHORIZED) {
-					Response challengeResponse = transport.getMessageFactory().createResponse(Response.PROXY_AUTHENTICATION_REQUIRED, requestEvent.getRequest());
-					transport.getDigestServerAuthentication().generateChallenge(transport.getHeaderFactory(), challengeResponse, "nist.gov");
-					serverTransaction.sendResponse(challengeResponse);
-				}
-			} catch (Exception e) {
-				sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
-				e.printStackTrace();
-				logger.logFatalError("Message Error. Message:" + message);
-				return;
-			}
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), code);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.logFatalError("Message Error. Message:" + message);
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT);
-		}
+		// NON
 	}
 
 	@Override
@@ -111,11 +57,10 @@ public class RegisterService extends Service {
 			if (callIdHeader == null) {
 				return;
 			}
-			String exten = getExtenFromCallIdForAcknowledge().getProperty(callIdHeader.getCallId());
+			String exten = getTransaction(callIdHeader.getCallId());
 			if (exten == null) {
 				return;
 			}
-			getExtenFromCallIdForAcknowledge().remove(exten);
 			Extension trunkExtension = ServerCore.getServerCore().getTrunkExtension(exten);
 			if (trunkExtension == null) {
 				return;
@@ -129,7 +74,7 @@ public class RegisterService extends Service {
 				AuthenticationHelper authenticationHelper = ((SipStackExt) transport.getSipStack()).getAuthenticationHelper(new AccountManagerImpl(trunkExtension), transport.getHeaderFactory());
 				ClientTransaction clientTransaction = authenticationHelper.handleChallenge(responseEvent.getResponse(), responseEvent.getClientTransaction(), transport.getSipProvider(), 5, false);
 				clientTransaction.sendRequest();
-				getExtenFromCallIdForAcknowledge().setProperty(callIdHeader.getCallId(), trunkExtension.getExten());
+				putTransaction(callIdHeader.getCallId(), trunkExtension.getExten());
 				return;
 			}
 			if (statusCode == Response.FORBIDDEN) {
@@ -147,42 +92,14 @@ public class RegisterService extends Service {
 
 	}
 
-	private int registerExtension(Extension extIncoming, Extension extLocal, RequestEvent requestEvent) throws Exception {
-		if (ServerCore.getServerCore().checkRegisterationExtension(extIncoming.getExten())) {
-			if (extLocal.getHost().equals(extIncoming.getHost())) {
-				updateRegister(extLocal);
-				return Response.OK;
-			}
-			unRegisterLocalExtension(extIncoming.getExten());
-			return Response.UNAUTHORIZED;
-		}
-		if (!isHaveAuthenticateHeader(requestEvent)) {
-			return Response.UNAUTHORIZED;
-		}
-
-		if (extLocal.getPass() == null) {
-			return Response.FORBIDDEN;
-		}
-
-		if (!ServerCore.getTransport(requestEvent.getRequest()).getDigestServerAuthentication().doAuthenticatePlainTextPassword(requestEvent.getRequest(), extLocal.getPass())) {
-			logger.logFatalError("Forbidden 2");
-			return Response.FORBIDDEN;
-		}
-		updateRegister(extLocal);
-		return Response.OK;
+	@Override
+	public void beginTask(String taskId, int timeout, String exten) {
+		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterServiceOut.class.getName(), timeout);
 	}
 
-	private void updateRegister(Extension extLocal) {
-		extLocal.setRegister(true);
-		beginTask(extLocal.getExten(), extLocal.getExpiresTime(), extLocal.getExten());
-	}
-
-	public void unRegisterLocalExtension(String exten) {
-		Extension extension = ServerCore.getServerCore().getLocalExtension(exten);
-		if (extension == null) {
-			return;
-		}
-		extension.setRegister(false);
+	@Override
+	public void endTask(String taskId) {
+		processTrunkRegister();
 	}
 
 	public void unRegisterTrunkExtension(String exten) {
@@ -193,48 +110,7 @@ public class RegisterService extends Service {
 		extension.setRegister(false);
 	}
 
-	@Override
-	public void beginTask(String taskId, int timeout, String exten) {
-		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterService.getNAME(), timeout);
-		getGeneralTransaction().setProperty(taskId, exten);
-	}
-
-	@Override
-	public void endTask(String taskId) {
-		if (taskId.contains("TRUNK")) {
-			processTrunkRegister(taskId);
-			return;
-		}
-		String exten = getGeneralTransaction().getProperty(taskId);
-		if (exten == null) {
-			return;
-		}
-		Extension extension = ServerCore.getServerCore().getLocalExtension(exten);
-		if (extension == null) {
-			return;
-		}
-		extension.setRegister(false);
-
-	}
-
-	private void processTrunkRegister(String taskId) {
-		if (taskId.contains("BGN")) {
-			String exten = getGeneralTransaction().getProperty(taskId);
-			if (exten == null) {
-				return;
-			}
-			String callId = getCallIdFromTask().getProperty(taskId);
-			if (callId == null) {
-				return;
-			}
-			// For ACKNOWLEDGE
-			if (getExtenFromCallIdForAcknowledge().getProperty(callId) == null) {
-				return;
-			}
-			sendFirstRegisterTrunk(ServerCore.getServerCore().getTrunkExtension(exten));
-			return;
-		}
-
+	private void processTrunkRegister() {
 		Set<Object> keys = ServerCore.getServerCore().getTrunkExtensionList().keySet();
 		for (Object key : keys) {
 			new Thread(new Runnable() {
@@ -256,17 +132,15 @@ public class RegisterService extends Service {
 			}
 			ClientTransaction clientTransaction = transport.getSipProvider().getNewClientTransaction(requestMessage);
 			clientTransaction.sendRequest();
-			String taskId = extension.getExten() + "TRUNKBGN";
+			String taskId = extension.getExten();
 			String callId = ((CallIdHeader) requestMessage.getHeader(CallIdHeader.NAME)).getCallId();
-			getCallIdFromTask().setProperty(taskId, callId);
-			getExtenFromCallIdForAcknowledge().setProperty(callId, extension.getExten());
+			putTransaction(callId, extension.getExten());
 			beginTask(taskId, 2, extension.getExten());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
 	public Request createRegisterMessage(Extension extension) {
 		try {
 			SipServerTransport transport = ServerCore.getTransport(extension.getTransportType());

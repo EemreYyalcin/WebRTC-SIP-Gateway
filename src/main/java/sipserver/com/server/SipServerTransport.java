@@ -7,6 +7,7 @@ import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
 import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
@@ -80,8 +81,14 @@ public abstract class SipServerTransport extends SipAdapter {
 		getSipStack().stop();
 	}
 
+	@Override
 	public void processRequest(RequestEvent requestEvent) {
-		Handler.addRequestMessage(requestEvent);
+		Handler.createRequestProcess(requestEvent);
+	}
+
+	@Override
+	public void processResponse(ResponseEvent responseEvent) {
+		Handler.createResponseProcess(responseEvent);
 	}
 
 	public int getPort() {
@@ -107,7 +114,6 @@ public abstract class SipServerTransport extends SipAdapter {
 	public void setHost(String host) {
 		this.host = host;
 	}
-
 
 	public SipStack getSipStack() {
 		return sipStack;

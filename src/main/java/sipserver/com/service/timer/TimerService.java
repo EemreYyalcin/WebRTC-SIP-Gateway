@@ -8,7 +8,8 @@ import java.util.TimerTask;
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.service.register.RegisterService;
+import sipserver.com.service.register.RegisterServiceIn;
+import sipserver.com.service.register.RegisterServiceOut;
 
 public class TimerService extends Thread {
 
@@ -48,8 +49,13 @@ public class TimerService extends Thread {
 
 	private void endTask(String key) {
 		getCurrentTaskList().remove(key);
-		if (key.indexOf(RegisterService.getNAME()) > 0) {
-			ServerCore.getServerCore().getRegisterService().endTask(key);
+		if (key.indexOf(RegisterServiceIn.class.getName()) > 0) {
+			ServerCore.getServerCore().getRegisterServiceIn().endTask(key);
+			return;
+		}
+		if (key.indexOf(RegisterServiceOut.class.getName()) > 0) {
+			ServerCore.getServerCore().getRegisterServiceOut().endTask(key);
+			return;
 		}
 	}
 
