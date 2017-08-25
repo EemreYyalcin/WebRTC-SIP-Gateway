@@ -19,11 +19,12 @@ public class RegisterServiceIn extends Service {
 
 	public RegisterServiceIn() {
 		super(logger);
-		ServerCore.getServerCore().addLocalExtension(new Extension("1001", "test1001", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1002", "test1002", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004", "192.168.1.100"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005", "192.168.1.100"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("1001", "test1001"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("1002", "test1002"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005"));
+		ServerCore.getServerCore().addLocalExtension(new Extension("9001", "test9001"));
 	}
 
 	@Override
@@ -34,7 +35,6 @@ public class RegisterServiceIn extends Service {
 			logger.logFatalError("Transport is null\r\n");
 			throw new Exception();
 		}
-
 		ServerTransaction serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
 		try {
 			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
@@ -49,6 +49,7 @@ public class RegisterServiceIn extends Service {
 				}
 
 				Extension extIncoming = new Extension(contactHeader);
+				extIncoming.setTransportType(transport);
 				if (extIncoming == null || extIncoming.getExten() == null || extIncoming.getHost() == null) {
 					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST);
 					return;
@@ -105,9 +106,9 @@ public class RegisterServiceIn extends Service {
 	}
 
 	private int registerExtension(Extension extIncoming, Extension extLocal, RequestEvent requestEvent) throws Exception {
-		if (ServerCore.getServerCore().checkRegisterationExtension(extIncoming.getExten())) {
+		if (extLocal.isRegister()) {
 			if (extLocal.getHost().equals(extIncoming.getHost())) {
-				updateRegister(extLocal);
+				updateRegister(extIncoming, extLocal);
 				return Response.OK;
 			}
 			unRegisterLocalExtension(extIncoming.getExten());
@@ -125,12 +126,13 @@ public class RegisterServiceIn extends Service {
 			logger.logFatalError("Forbidden 2");
 			return Response.FORBIDDEN;
 		}
-		updateRegister(extLocal);
+		updateRegister(extIncoming, extLocal);
 		return Response.OK;
 	}
 
-	private void updateRegister(Extension extLocal) {
+	private void updateRegister(Extension extIncoming, Extension extLocal) {
 		extLocal.setRegister(true);
+		extLocal.setHost(extIncoming.getHost());
 		beginTask(extLocal.getExten(), extLocal.getExpiresTime(), extLocal.getExten());
 	}
 
@@ -158,6 +160,7 @@ public class RegisterServiceIn extends Service {
 		if (extension == null) {
 			return;
 		}
+		logger.logFatalError("UnRegister ExtensionLocal:" + exten );
 		extension.setRegister(false);
 	}
 

@@ -34,10 +34,10 @@ public class ServerCore {
 		if (viaHeader == null) {
 			return null;
 		}
-		if (viaHeader.getProtocol().toLowerCase().equals(TransportType.UDP.toString().toLowerCase())) {
+		if (viaHeader.getTransport().toLowerCase().equals(TransportType.UDP.toString().toLowerCase())) {
 			return ServerCore.getServerCore().getUDPTransport();
 		}
-		if (viaHeader.getProtocol().toLowerCase().equals(TransportType.TCP.toString().toLowerCase())) {
+		if (viaHeader.getTransport().toLowerCase().equals(TransportType.TCP.toString().toLowerCase())) {
 			return ServerCore.getServerCore().getTCPTransport();
 		}
 		return null;
@@ -45,25 +45,14 @@ public class ServerCore {
 
 	public static SipServerTransport getTransport(TransportType transportType) {
 		if (transportType == TransportType.UDP) {
-			return ServerCore.getServerCore().udpTransport;
+			return ServerCore.getServerCore().getUDPTransport();
 		}
 		if (transportType == TransportType.TCP) {
-			return ServerCore.getServerCore().tcpTransport;
+			return ServerCore.getServerCore().getTCPTransport();
 		}
 		return null;
 	}
 
-	public boolean checkRegisterationExtension(String exten) {
-		Extension extension = (Extension) getCoreElement().getLocalExtensionList().get(exten);
-		if (extension == null) {
-			extension = (Extension) getCoreElement().getTrunkExtensionList().get(exten);
-			if (extension == null) {
-				return false;
-			}
-			return extension.isRegister();
-		}
-		return extension.isRegister();
-	}
 	// Local Extension
 	public Extension getLocalExtension(String exten) {
 		return (Extension) getCoreElement().getLocalExtensionList().get(exten);
@@ -95,21 +84,17 @@ public class ServerCore {
 				port = Integer.valueOf(args[1]);
 			}
 		}
-		ServerCore.setServerCore(new ServerCore());
-		ServerCore.getServerCore().setUDPTransport(new UDPTransport(host, port));
-		ServerCore.getServerCore().getUDPTransport().startListening();
+		ServerCore.serverCore = new ServerCore();
+		ServerCore.coreElement = new CoreElement();
+		ServerCore.serverCore.setUDPTransport(new UDPTransport(host, port));
+		ServerCore.serverCore.getUDPTransport().startListening();
+		ServerCore.serverCore.setTimerService(new TimerService());
+		ServerCore.serverCore.setRegisterServiceIn(new RegisterServiceIn());
+		ServerCore.serverCore.setRegisterServiceOut(new RegisterServiceOut());
 	}
 
 	public static ServerCore getServerCore() {
 		return serverCore;
-	}
-
-	public static void setServerCore(ServerCore serverCore) {
-		ServerCore.serverCore = serverCore;
-		ServerCore.setCoreElement(new CoreElement());
-		ServerCore.getServerCore().setRegisterServiceIn(new RegisterServiceIn());
-		ServerCore.getServerCore().setRegisterServiceOut(new RegisterServiceOut());
-		ServerCore.getServerCore().setTimerService(new TimerService());
 	}
 
 	public UDPTransport getUDPTransport() {
@@ -123,10 +108,8 @@ public class ServerCore {
 	private static CoreElement getCoreElement() {
 		return coreElement;
 	}
+	
 
-	private static void setCoreElement(CoreElement coreElement) {
-		ServerCore.coreElement = coreElement;
-	}
 
 	public TCPTransport getTCPTransport() {
 		return tcpTransport;

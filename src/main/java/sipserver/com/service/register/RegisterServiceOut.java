@@ -37,7 +37,8 @@ public class RegisterServiceOut extends Service {
 	public RegisterServiceOut() {
 		super(logger);
 		beginTask("", 60, null);
-		ServerCore.getServerCore().addTrunkExtension(new Extension("9001", "test9001", "192.168.1.100"));
+		ServerCore.getServerCore().addTrunkExtension(new Extension("9001", "test9001", "192.168.1.108"));
+		processTrunkRegister();
 	}
 
 	@Override
@@ -55,6 +56,10 @@ public class RegisterServiceOut extends Service {
 			}
 			CallIdHeader callIdHeader = (CallIdHeader) responseEvent.getResponse().getHeader(CallIdHeader.NAME);
 			if (callIdHeader == null) {
+				return;
+			}
+			if (responseEvent.getResponse().getStatusCode() == Response.TRYING) {
+				// TODO: RESEND CONTROL
 				return;
 			}
 			String exten = getTransaction(callIdHeader.getCallId());
@@ -100,6 +105,7 @@ public class RegisterServiceOut extends Service {
 	@Override
 	public void endTask(String taskId) {
 		processTrunkRegister();
+		logger.logFatalError("Process UnRegister");
 	}
 
 	public void unRegisterTrunkExtension(String exten) {

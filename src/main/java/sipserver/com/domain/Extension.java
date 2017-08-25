@@ -2,6 +2,9 @@ package sipserver.com.domain;
 
 import javax.sip.header.ContactHeader;
 import sipserver.com.parameter.ParamConstant.TransportType;
+import sipserver.com.server.SipServerTransport;
+import sipserver.com.server.transport.TCPTransport;
+import sipserver.com.server.transport.UDPTransport;
 
 public class Extension {
 
@@ -11,7 +14,6 @@ public class Extension {
 	private String displayName;
 	private int port = 5060;
 	private String pass;
-	private int cseqValue = 1;
 	private boolean isRegister = false;
 	private TransportType transportType = TransportType.UDP;
 
@@ -26,12 +28,12 @@ public class Extension {
 		setHost(host);
 		setPass(pass);
 	}
-	public Extension(String exten, String host, int port) {
-		setExten(exten);
-		setHost(host);
-		setPort(port);
-	}
 
+	public Extension(String exten, String pass) {
+		setExten(exten);
+		setPass(pass);
+	}
+	
 	public Extension(ContactHeader contactHeader) throws Exception {
 		String uri = contactHeader.getAddress().getURI().toString().trim();
 		String scheme = contactHeader.getAddress().getURI().getScheme();
@@ -59,6 +61,7 @@ public class Extension {
 		}
 	}
 
+	
 	public String getExten() {
 		return exten;
 	}
@@ -104,12 +107,6 @@ public class Extension {
 	public void setPass(String pass) {
 		this.pass = pass;
 	}
-	public int getCseqValue() {
-		return cseqValue;
-	}
-	public void setCseqValue(int cseqValue) {
-		this.cseqValue = cseqValue;
-	}
 	public boolean isRegister() {
 		return isRegister;
 	}
@@ -119,8 +116,15 @@ public class Extension {
 	public TransportType getTransportType() {
 		return transportType;
 	}
-	public void setTransportType(TransportType transportType) {
-		this.transportType = transportType;
+	public void setTransportType(SipServerTransport transport) {
+		if (transport instanceof UDPTransport) {
+			this.transportType = TransportType.UDP;
+			return;
+		}
+		if (transport instanceof TCPTransport) {
+			this.transportType = TransportType.TLS;
+			return;
+		}
 	}
 
 }
