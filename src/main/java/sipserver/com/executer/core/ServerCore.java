@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Message;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.parameter.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
@@ -12,6 +13,7 @@ import sipserver.com.server.transport.UDPTransport;
 import sipserver.com.service.register.RegisterServiceIn;
 import sipserver.com.service.register.RegisterServiceOut;
 import sipserver.com.service.timer.TimerService;
+import sipserver.com.service.transport.TransportService;
 
 public class ServerCore {
 
@@ -25,6 +27,9 @@ public class ServerCore {
 	// Core Service
 	private RegisterServiceIn registerServiceIn;
 	private RegisterServiceOut registerServiceOut;
+
+	// Managment Service
+	private TransportService transportService;
 
 	// TimerService
 	private TimerService timerService;
@@ -57,15 +62,18 @@ public class ServerCore {
 	public Extension getLocalExtension(String exten) {
 		return (Extension) getCoreElement().getLocalExtensionList().get(exten);
 	}
+
 	public void addLocalExtension(Extension extension) {
 		getCoreElement().getLocalExtensionList().put(extension.getExten(), extension);
 	}
+
 	// localExtension end
 
 	// remoteExtension
 	public Extension getTrunkExtension(String exten) {
 		return (Extension) getCoreElement().getTrunkExtensionList().get(exten);
 	}
+
 	public void addTrunkExtension(Extension extension) {
 		getCoreElement().getTrunkExtensionList().put(extension.getExten(), extension);
 	}
@@ -73,6 +81,7 @@ public class ServerCore {
 	public Properties getTrunkExtensionList() {
 		return getCoreElement().getTrunkExtensionList();
 	}
+
 	// remoteExtension end
 
 	public static void main(String[] args) {
@@ -91,6 +100,7 @@ public class ServerCore {
 		ServerCore.serverCore.setTimerService(new TimerService());
 		ServerCore.serverCore.setRegisterServiceIn(new RegisterServiceIn());
 		ServerCore.serverCore.setRegisterServiceOut(new RegisterServiceOut());
+		ServerCore.serverCore.setTransportService(new TransportService());
 	}
 
 	public static ServerCore getServerCore() {
@@ -108,8 +118,6 @@ public class ServerCore {
 	private static CoreElement getCoreElement() {
 		return coreElement;
 	}
-	
-
 
 	public TCPTransport getTCPTransport() {
 		return tcpTransport;
@@ -141,6 +149,14 @@ public class ServerCore {
 
 	public void setRegisterServiceOut(RegisterServiceOut registerServiceOut) {
 		this.registerServiceOut = registerServiceOut;
+	}
+
+	public TransportService getTransportService() {
+		return transportService;
+	}
+
+	public void setTransportService(TransportService transportService) {
+		this.transportService = transportService;
 	}
 
 }

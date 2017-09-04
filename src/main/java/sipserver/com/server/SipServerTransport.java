@@ -1,10 +1,11 @@
 package sipserver.com.server;
 
-import java.util.Properties;
-
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
+
+import java.util.Properties;
+
 import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -14,7 +15,8 @@ import javax.sip.SipStack;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
-import sipserver.com.message.Handler;
+
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.parameter.ParamConstant.TransportType;
 
 public abstract class SipServerTransport extends SipAdapter {
@@ -60,7 +62,8 @@ public abstract class SipServerTransport extends SipAdapter {
 			setSipStack(getSipFactory().createSipStack(defaultProperties));
 			getSipStack().start();
 			ListeningPoint lp = getSipStack().createListeningPoint(getHost(), getPort(), getProtocol());
-			setSipProvider(getSipStack().createSipProvider(lp));;
+			setSipProvider(getSipStack().createSipProvider(lp));
+			;
 			getSipProvider().addSipListener(this);
 			getLogger().logFatalError("SipServer Get Started");
 			getLogger().logFatalError("IP:" + getHost() + ",port:" + getPort());
@@ -83,12 +86,12 @@ public abstract class SipServerTransport extends SipAdapter {
 
 	@Override
 	public void processRequest(RequestEvent requestEvent) {
-		Handler.createRequestProcess(requestEvent);
+		ServerCore.getServerCore().getTransportService().processRequest(requestEvent, this);
 	}
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent) {
-		Handler.createResponseProcess(responseEvent);
+		ServerCore.getServerCore().getTransportService().processResponse(responseEvent, this);
 	}
 
 	public int getPort() {

@@ -2,12 +2,16 @@ package sipserver.com.service.register;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
+
+import java.util.Properties;
+
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.header.ContactHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
@@ -17,6 +21,8 @@ public class RegisterServiceIn extends Service {
 
 	private static StackLogger logger = CommonLogger.getLogger(RegisterServiceIn.class);
 
+	private Properties transaction = new Properties();
+
 	public RegisterServiceIn() {
 		super(logger);
 		ServerCore.getServerCore().addLocalExtension(new Extension("1001", "test1001"));
@@ -24,26 +30,20 @@ public class RegisterServiceIn extends Service {
 		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003"));
 		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004"));
 		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("9001", "test9001"));
 	}
 
 	@Override
-	public void processRequest(RequestEvent requestEvent) throws Exception {
+	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
 		String message = requestEvent.getRequest().toString();
-		SipServerTransport transport = ServerCore.getTransport(requestEvent.getRequest());
-		if (transport == null) {
-			logger.logFatalError("Transport is null\r\n");
-			throw new Exception();
-		}
 		ServerTransaction serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
 		try {
 			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.TRYING);
+			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.TRYING));
 			int code = 200;
 			try {
 				ContactHeader contactHeader = (ContactHeader) requestEvent.getRequest().getHeader(ContactHeader.NAME);
 				if (contactHeader == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
+					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.UNAUTHORIZED));
 					logger.logFatalError("Contact Header is Null. Message:" + message);
 					return;
 				}
@@ -51,14 +51,17 @@ public class RegisterServiceIn extends Service {
 				Extension extIncoming = new Extension(contactHeader);
 				extIncoming.setTransportType(transport);
 				if (extIncoming == null || extIncoming.getExten() == null || extIncoming.getHost() == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST);
+					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.BAD_REQUEST));
 					return;
 				}
 
 				Extension extLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
 				if (extLocal == null) {
-					sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.FORBIDDEN);
-					return;
+					extLocal = ServerCore.getServerCore().getTrunkExtension(extIncoming.getExten());
+					if (extLocal == null) {
+						ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.FORBIDDEN));
+						return;
+					}
 				}
 
 				code = registerExtension(extIncoming, extLocal, requestEvent);
@@ -68,27 +71,27 @@ public class RegisterServiceIn extends Service {
 					serverTransaction.sendResponse(challengeResponse);
 				}
 			} catch (Exception e) {
-				sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED);
-				e.printStackTrace();
+				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.UNAUTHORIZED));
 				logger.logFatalError("Message Error. Message:" + message);
+				e.printStackTrace();
 				return;
 			}
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), code);
+			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), code));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.logFatalError("Message Error. Message:" + message);
-			sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT);
+			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.BAD_EVENT));
 		}
 	}
 
 	@Override
-	public void processResponse(ResponseEvent responseEvent) {
+	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
 		// NON
 	}
 
-	protected void sendResponseMessage(ServerTransaction serverTransaction, Request request, int responseCode) {
+	protected Response createResponseMessage(Request request, int responseCode) {
 		try {
-			if (serverTransaction == null || request == null) {
+			if (request == null) {
 				throw new Exception();
 			}
 			SipServerTransport sipServerTransport = ServerCore.getTransport(request);
@@ -97,11 +100,10 @@ public class RegisterServiceIn extends Service {
 				throw new Exception();
 			}
 			Response response = sipServerTransport.getMessageFactory().createResponse(responseCode, request);
-			if (response != null) {
-				serverTransaction.sendResponse(response);
-			}
+			return response;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 	}
 
@@ -145,9 +147,9 @@ public class RegisterServiceIn extends Service {
 	}
 
 	@Override
-	public void beginTask(String taskId, int timeout, String exten) {
+	public void beginTask(String taskId, int timeout, Object exten) {
 		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterServiceIn.class.getName(), timeout);
-		putTransaction(taskId, exten);
+		putTransaction(taskId, (String) exten);
 	}
 
 	@Override
@@ -160,8 +162,18 @@ public class RegisterServiceIn extends Service {
 		if (extension == null) {
 			return;
 		}
-		logger.logFatalError("UnRegister ExtensionLocal:" + exten );
+		logger.logFatalError("UnRegister ExtensionLocal:" + exten);
 		extension.setRegister(false);
+	}
+
+	public String getTransaction(String id) {
+		String value = transaction.getProperty(id);
+		transaction.remove(id);
+		return value;
+	}
+
+	public void putTransaction(String key, String value) {
+		transaction.setProperty(key, value);
 	}
 
 }

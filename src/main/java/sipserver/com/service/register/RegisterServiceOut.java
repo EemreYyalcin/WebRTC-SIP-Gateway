@@ -1,13 +1,14 @@
 package sipserver.com.service.register;
 
-import java.util.ArrayList;
-import java.util.Set;
-
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackExt;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.header.CallID;
+
+import java.util.ArrayList;
+import java.util.Set;
+
 import javax.sip.ClientTransaction;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -23,6 +24,7 @@ import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
@@ -42,34 +44,28 @@ public class RegisterServiceOut extends Service {
 	}
 
 	@Override
-	public void processRequest(RequestEvent requestEvent) throws Exception {
+	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
 		// NON
 	}
 
 	@Override
-	public void processResponse(ResponseEvent responseEvent) {
+	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
 		try {
-			SipServerTransport transport = ServerCore.getTransport(responseEvent.getResponse());
-			if (transport == null) {
-				logger.logFatalError("Transport is null\r\n");
+			if (responseEvent.getClientTransaction() == null) {
 				throw new Exception();
 			}
-			CallIdHeader callIdHeader = (CallIdHeader) responseEvent.getResponse().getHeader(CallIdHeader.NAME);
-			if (callIdHeader == null) {
-				return;
+
+			if (responseEvent.getClientTransaction().getRequest() == null) {
+				throw new Exception();
 			}
-			if (responseEvent.getResponse().getStatusCode() == Response.TRYING) {
-				// TODO: RESEND CONTROL
-				return;
+
+			ContactHeader requContactHeader = (ContactHeader) responseEvent.getClientTransaction().getRequest().getHeader(ContactHeader.NAME);
+
+			if (requContactHeader == null) {
+				throw new Exception();
 			}
-			String exten = getTransaction(callIdHeader.getCallId());
-			if (exten == null) {
-				return;
-			}
-			Extension trunkExtension = ServerCore.getServerCore().getTrunkExtension(exten);
-			if (trunkExtension == null) {
-				return;
-			}
+
+			Extension trunkExtension = new Extension(requContactHeader);
 			int statusCode = responseEvent.getResponse().getStatusCode();
 			if (statusCode == Response.UNAUTHORIZED || statusCode == Response.PROXY_AUTHENTICATION_REQUIRED) {
 				if (!isHaveAuthenticateHeader(responseEvent)) {
@@ -78,8 +74,7 @@ public class RegisterServiceOut extends Service {
 				}
 				AuthenticationHelper authenticationHelper = ((SipStackExt) transport.getSipStack()).getAuthenticationHelper(new AccountManagerImpl(trunkExtension), transport.getHeaderFactory());
 				ClientTransaction clientTransaction = authenticationHelper.handleChallenge(responseEvent.getResponse(), responseEvent.getClientTransaction(), transport.getSipProvider(), 5, false);
-				clientTransaction.sendRequest();
-				putTransaction(callIdHeader.getCallId(), trunkExtension.getExten());
+				ServerCore.getServerCore().getTransportService().sendRequestMessage(clientTransaction);
 				return;
 			}
 			if (statusCode == Response.FORBIDDEN) {
@@ -98,7 +93,7 @@ public class RegisterServiceOut extends Service {
 	}
 
 	@Override
-	public void beginTask(String taskId, int timeout, String exten) {
+	public void beginTask(String taskId, int timeout, Object exten) {
 		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterServiceOut.class.getName(), timeout);
 	}
 
@@ -122,28 +117,23 @@ public class RegisterServiceOut extends Service {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					sendFirstRegisterTrunk(ServerCore.getServerCore().getTrunkExtension((String) key));
+					try {
+						Extension extTrunk = ServerCore.getServerCore().getTrunkExtension((String) key);
+						if (extTrunk == null) {
+							return;
+						}
+						Request requestMessage = createRegisterMessage(extTrunk);
+						SipServerTransport transport = ServerCore.getTransport(requestMessage);
+						if (transport == null) {
+							getLogger().logFatalError("Transport is null, ssasfddgs");
+							throw new Exception();
+						}
+						ServerCore.getServerCore().getTransportService().sendRequestMessage(transport.getSipProvider().getNewClientTransaction(requestMessage));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}).start();
-		}
-	}
-
-	private void sendFirstRegisterTrunk(Extension extension) {
-		try {
-			Request requestMessage = createRegisterMessage(extension);
-			SipServerTransport transport = ServerCore.getTransport(requestMessage);
-			if (transport == null) {
-				getLogger().logFatalError("Transport is null, ssasfddgs");
-				throw new Exception();
-			}
-			ClientTransaction clientTransaction = transport.getSipProvider().getNewClientTransaction(requestMessage);
-			clientTransaction.sendRequest();
-			String taskId = extension.getExten();
-			String callId = ((CallIdHeader) requestMessage.getHeader(CallIdHeader.NAME)).getCallId();
-			putTransaction(callId, extension.getExten());
-			beginTask(taskId, 2, extension.getExten());
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
