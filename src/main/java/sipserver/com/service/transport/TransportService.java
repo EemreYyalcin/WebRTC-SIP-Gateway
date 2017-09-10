@@ -2,6 +2,7 @@ package sipserver.com.service.transport;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
+import jain.protocol.ip.mgcp.JainMgcpResponseEvent;
 
 import java.util.Properties;
 
@@ -53,6 +54,10 @@ public class TransportService extends Service {
 				try {
 					if (requestEvent.getRequest().getMethod().equals(Request.REGISTER)) {
 						ServerCore.getServerCore().getRegisterServiceIn().processRequest(requestEvent, transport);
+						return;
+					}
+					if (requestEvent.getRequest().getMethod().equals(Request.INVITE)) {
+						ServerCore.getServerCore().getInviteServiceIn().processRequest(requestEvent, transport);
 						return;
 					}
 				} catch (Exception e) {
@@ -176,6 +181,12 @@ public class TransportService extends Service {
 
 	public void setTransactionTimeout(int transactionTimeout) {
 		this.transactionTimeout = transactionTimeout;
+	}
+
+	@Override
+	public void mediaServerEvents(JainMgcpResponseEvent jainmgcpresponseevent, String callID) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

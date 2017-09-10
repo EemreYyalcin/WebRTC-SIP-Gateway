@@ -10,5 +10,9 @@ public class ParamConstant {
 		UDP, TCP, WS, TLS
 	}
 	
+	public enum EndpointServiceType {
+		IVR, BRIDGE
+	}
+	
 
 }

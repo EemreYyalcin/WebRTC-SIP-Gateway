@@ -10,6 +10,8 @@ import sipserver.com.parameter.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
+import sipserver.com.service.invite.InviteServiceIn;
+import sipserver.com.service.mgcp.IvrEndpointService;
 import sipserver.com.service.register.RegisterServiceIn;
 import sipserver.com.service.register.RegisterServiceOut;
 import sipserver.com.service.timer.TimerService;
@@ -27,6 +29,9 @@ public class ServerCore {
 	// Core Service
 	private RegisterServiceIn registerServiceIn;
 	private RegisterServiceOut registerServiceOut;
+	private InviteServiceIn inviteServiceIn;
+
+	private IvrEndpointService ivrEndpointService;
 
 	// Managment Service
 	private TransportService transportService;
@@ -85,22 +90,27 @@ public class ServerCore {
 	// remoteExtension end
 
 	public static void main(String[] args) {
-		String host = "192.168.1.106";
-		int port = 5060;
+		ServerCore.serverCore = new ServerCore();
+		ServerCore.coreElement = new CoreElement();
+
+		String host = ServerCore.coreElement.getLocalServerIp();
+		int port = ServerCore.coreElement.getLocalSipPort();
 		if (args != null && args.length > 0) {
 			host = args[0];
 			if (args.length > 1) {
 				port = Integer.valueOf(args[1]);
+				ServerCore.coreElement.setLocalSipPort(port);
 			}
 		}
-		ServerCore.serverCore = new ServerCore();
-		ServerCore.coreElement = new CoreElement();
+
 		ServerCore.serverCore.setUDPTransport(new UDPTransport(host, port));
 		ServerCore.serverCore.getUDPTransport().startListening();
 		ServerCore.serverCore.setTimerService(new TimerService());
 		ServerCore.serverCore.setRegisterServiceIn(new RegisterServiceIn());
 		ServerCore.serverCore.setRegisterServiceOut(new RegisterServiceOut());
+		ServerCore.serverCore.setInviteServiceIn(new InviteServiceIn());
 		ServerCore.serverCore.setTransportService(new TransportService());
+		ServerCore.serverCore.setIvrEndpointService(new IvrEndpointService());
 	}
 
 	public static ServerCore getServerCore() {
@@ -115,7 +125,7 @@ public class ServerCore {
 		this.udpTransport = udpTransport;
 	}
 
-	private static CoreElement getCoreElement() {
+	public static CoreElement getCoreElement() {
 		return coreElement;
 	}
 
@@ -157,6 +167,22 @@ public class ServerCore {
 
 	public void setTransportService(TransportService transportService) {
 		this.transportService = transportService;
+	}
+
+	public InviteServiceIn getInviteServiceIn() {
+		return inviteServiceIn;
+	}
+
+	public void setInviteServiceIn(InviteServiceIn inviteServiceIn) {
+		this.inviteServiceIn = inviteServiceIn;
+	}
+
+	public IvrEndpointService getIvrEndpointService() {
+		return ivrEndpointService;
+	}
+
+	public void setIvrEndpointService(IvrEndpointService ivrEndpointService) {
+		this.ivrEndpointService = ivrEndpointService;
 	}
 
 }

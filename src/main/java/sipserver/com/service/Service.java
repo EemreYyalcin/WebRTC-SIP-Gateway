@@ -1,17 +1,24 @@
 package sipserver.com.service;
 
-import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.header.WWWAuthenticate;
-import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
-
 import java.util.EventObject;
 
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
+import javax.sip.address.Address;
+import javax.sip.address.SipURI;
+import javax.sip.header.ContactHeader;
 import javax.sip.header.ProxyAuthenticateHeader;
 import javax.sip.header.ProxyAuthorizationHeader;
 import javax.sip.message.Message;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
+import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.header.WWWAuthenticate;
+import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
+import jain.protocol.ip.mgcp.JainMgcpResponseEvent;
+import sipserver.com.domain.Extension;
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
 
 public abstract class Service {
@@ -29,6 +36,8 @@ public abstract class Service {
 	public abstract void beginTask(String taskId, int timeout, Object object);
 
 	public abstract void endTask(String taskId);
+
+	public abstract void mediaServerEvents(JainMgcpResponseEvent jainmgcpresponseevent, String callID);
 
 	public boolean isHaveAuthenticateHeader(EventObject event) {
 		Message message = null;
@@ -51,6 +60,78 @@ public abstract class Service {
 			return true;
 		}
 		return false;
+	}
+
+	public String getSdp(String message) {
+		if (!message.contains("v=0")) {
+			return null;
+		}
+		String[] lines = message.split("\n");
+		if (lines == null || lines.length <= 0) {
+			return null;
+		}
+
+		String sdp = "";
+		boolean sdpBegin = false;
+		for (int i = 0; i < lines.length; i++) {
+			if (lines[i].contains("v=0")) {
+				sdpBegin = true;
+			}
+			if (sdpBegin) {
+				sdp += lines[i];
+			}
+		}
+		return sdp;
+	}
+
+	public Response createResponseMessage(Request request, int responseCode, String sdpData) {
+		try {
+			if (request == null) {
+				throw new Exception();
+			}
+			SipServerTransport sipServerTransport = ServerCore.getTransport(request);
+			if (sipServerTransport == null) {
+				getLogger().logFatalError("Transport is Null");
+				throw new Exception();
+			}
+			Response response = sipServerTransport.getMessageFactory().createResponse(responseCode, request);
+			if (sdpData != null) {
+				response.setContent(sdpData.getBytes(), sipServerTransport.getHeaderFactory().createContentTypeHeader("application", "sdp"));
+			}
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	protected void addContactHeader(Message message, Extension extension) {
+		try {
+			SipServerTransport transport = ServerCore.getTransport(extension.getTransportType());
+			if (transport == null) {
+				throw new Exception();
+			}
+
+			SipURI contactUrl = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getHost());
+			contactUrl.setPort(transport.getPort());
+
+			// Create the contact name address.
+			SipURI contactURI = transport.getAddressFactory().createSipURI(extension.getExten(), transport.getHost());
+			contactURI.setPort(transport.getPort());
+
+			Address contactAddress = transport.getAddressFactory().createAddress(contactURI);
+
+			if (extension.getDisplayName() != null) {
+				// Add the contact address.
+				contactAddress.setDisplayName(extension.getDisplayName());
+			}
+
+			ContactHeader contactHeader = transport.getHeaderFactory().createContactHeader(contactAddress);
+			message.addHeader(contactHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public StackLogger getLogger() {

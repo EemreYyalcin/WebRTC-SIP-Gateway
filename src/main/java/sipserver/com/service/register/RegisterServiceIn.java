@@ -2,6 +2,7 @@ package sipserver.com.service.register;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
+import jain.protocol.ip.mgcp.JainMgcpResponseEvent;
 
 import java.util.Properties;
 
@@ -37,7 +38,7 @@ public class RegisterServiceIn extends Service {
 		String message = requestEvent.getRequest().toString();
 		ServerTransaction serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
 		try {
-			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
+//			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
 			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.TRYING));
 			int code = 200;
 			try {
@@ -54,17 +55,7 @@ public class RegisterServiceIn extends Service {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.BAD_REQUEST));
 					return;
 				}
-
-				Extension extLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
-				if (extLocal == null) {
-					extLocal = ServerCore.getServerCore().getTrunkExtension(extIncoming.getExten());
-					if (extLocal == null) {
-						ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.FORBIDDEN));
-						return;
-					}
-				}
-
-				code = registerExtension(extIncoming, extLocal, requestEvent);
+				code = registerExtension(extIncoming.getExten(), extIncoming.getHost(), requestEvent);
 				if (code == Response.UNAUTHORIZED) {
 					Response challengeResponse = transport.getMessageFactory().createResponse(Response.PROXY_AUTHENTICATION_REQUIRED, requestEvent.getRequest());
 					transport.getDigestServerAuthentication().generateChallenge(transport.getHeaderFactory(), challengeResponse, "nist.gov");
@@ -107,13 +98,22 @@ public class RegisterServiceIn extends Service {
 		}
 	}
 
-	private int registerExtension(Extension extIncoming, Extension extLocal, RequestEvent requestEvent) throws Exception {
+	public int registerExtension(String exten, String host, RequestEvent requestEvent) throws Exception {
+
+		Extension extLocal = ServerCore.getServerCore().getLocalExtension(exten);
+		if (extLocal == null) {
+			extLocal = ServerCore.getServerCore().getTrunkExtension(exten);
+			if (extLocal == null) {
+				return Response.FORBIDDEN;
+			}
+		}
+
 		if (extLocal.isRegister()) {
-			if (extLocal.getHost().equals(extIncoming.getHost())) {
-				updateRegister(extIncoming, extLocal);
+			if (extLocal.getHost().equals(host)) {
+				updateRegister(host, extLocal);
 				return Response.OK;
 			}
-			unRegisterLocalExtension(extIncoming.getExten());
+			unRegisterLocalExtension(exten);
 			return Response.UNAUTHORIZED;
 		}
 		if (!isHaveAuthenticateHeader(requestEvent)) {
@@ -128,13 +128,13 @@ public class RegisterServiceIn extends Service {
 			logger.logFatalError("Forbidden 2");
 			return Response.FORBIDDEN;
 		}
-		updateRegister(extIncoming, extLocal);
+		updateRegister(host, extLocal);
 		return Response.OK;
 	}
 
-	private void updateRegister(Extension extIncoming, Extension extLocal) {
+	private void updateRegister(String host, Extension extLocal) {
 		extLocal.setRegister(true);
-		extLocal.setHost(extIncoming.getHost());
+		extLocal.setHost(host);
 		beginTask(extLocal.getExten(), extLocal.getExpiresTime(), extLocal.getExten());
 	}
 
@@ -154,7 +154,7 @@ public class RegisterServiceIn extends Service {
 
 	@Override
 	public void endTask(String taskId) {
-		String exten = getTransaction(taskId);
+		String exten = takeTransaction(taskId);
 		if (exten == null) {
 			return;
 		}
@@ -166,7 +166,7 @@ public class RegisterServiceIn extends Service {
 		extension.setRegister(false);
 	}
 
-	public String getTransaction(String id) {
+	public String takeTransaction(String id) {
 		String value = transaction.getProperty(id);
 		transaction.remove(id);
 		return value;
@@ -174,6 +174,12 @@ public class RegisterServiceIn extends Service {
 
 	public void putTransaction(String key, String value) {
 		transaction.setProperty(key, value);
+	}
+
+	@Override
+	public void mediaServerEvents(JainMgcpResponseEvent jainmgcpresponseevent, String callID) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

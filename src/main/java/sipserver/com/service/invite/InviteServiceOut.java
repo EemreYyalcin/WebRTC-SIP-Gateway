@@ -1,4 +1,4 @@
-package sipserver.com.service.register;
+package sipserver.com.service.invite;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
@@ -33,11 +33,11 @@ import sipserver.com.server.auth.AccountManagerImpl;
 import sipserver.com.service.Service;
 import sipserver.com.service.util.GeneraterService;
 
-public class RegisterServiceOut extends Service {
+public class InviteServiceOut extends Service {
 
-	private static StackLogger logger = CommonLogger.getLogger(RegisterServiceOut.class);
+	private static StackLogger logger = CommonLogger.getLogger(InviteServiceOut.class);
 
-	public RegisterServiceOut() {
+	public InviteServiceOut() {
 		super(logger);
 		beginTask("", 60, null);
 		ServerCore.getServerCore().addTrunkExtension(new Extension("9001", "test9001", "192.168.1.108"));
@@ -95,7 +95,7 @@ public class RegisterServiceOut extends Service {
 
 	@Override
 	public void beginTask(String taskId, int timeout, Object exten) {
-		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterServiceOut.class.getName(), timeout);
+		ServerCore.getServerCore().getTimerService().registerTask(taskId + InviteServiceOut.class.getName(), timeout);
 	}
 
 	@Override
