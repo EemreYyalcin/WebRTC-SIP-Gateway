@@ -1,6 +1,7 @@
 package sipserver.com.service;
 
 import java.util.EventObject;
+import java.util.Properties;
 
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -16,14 +17,16 @@ import javax.sip.message.Response;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.WWWAuthenticate;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
-import jain.protocol.ip.mgcp.JainMgcpResponseEvent;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
+import sipserver.com.service.param.ChannelParameter;
 
 public abstract class Service {
 
 	private StackLogger logger;
+	private Properties channelList = new Properties();
+	protected Properties lockProperties = new Properties();
 
 	public Service(StackLogger logger) {
 		setLogger(logger);
@@ -32,12 +35,6 @@ public abstract class Service {
 	public abstract void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception;
 
 	public abstract void processResponse(ResponseEvent responseEvent, SipServerTransport transport);
-
-	public abstract void beginTask(String taskId, int timeout, Object object);
-
-	public abstract void endTask(String taskId);
-
-	public abstract void mediaServerEvents(JainMgcpResponseEvent jainmgcpresponseevent, String callID);
 
 	public boolean isHaveAuthenticateHeader(EventObject event) {
 		Message message = null;
@@ -140,6 +137,20 @@ public abstract class Service {
 
 	public void setLogger(StackLogger logger) {
 		this.logger = logger;
+	}
+
+	public ChannelParameter getChannel(String id) {
+		return (ChannelParameter) channelList.get(id);
+	}
+
+	public ChannelParameter takeChannel(String id) {
+		ChannelParameter channelParameter = (ChannelParameter) channelList.get(id);
+		channelList.remove(id);
+		return channelParameter;
+	}
+
+	public void putChannel(String key, ChannelParameter channelParameter) {
+		channelList.put(key, channelParameter);
 	}
 
 }

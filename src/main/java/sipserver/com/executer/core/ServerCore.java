@@ -1,6 +1,8 @@
 package sipserver.com.executer.core;
 
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Message;
@@ -10,11 +12,11 @@ import sipserver.com.parameter.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
+import sipserver.com.service.control.ExtensionControlService;
 import sipserver.com.service.invite.InviteServiceIn;
-import sipserver.com.service.mgcp.IvrEndpointService;
+import sipserver.com.service.invite.InviteServiceOut;
 import sipserver.com.service.register.RegisterServiceIn;
 import sipserver.com.service.register.RegisterServiceOut;
-import sipserver.com.service.timer.TimerService;
 import sipserver.com.service.transport.TransportService;
 
 public class ServerCore {
@@ -22,6 +24,7 @@ public class ServerCore {
 	// Core Element
 	private static CoreElement coreElement;
 	private static ServerCore serverCore;
+
 	// Core Transport
 	private UDPTransport udpTransport;
 	private TCPTransport tcpTransport;
@@ -30,14 +33,14 @@ public class ServerCore {
 	private RegisterServiceIn registerServiceIn;
 	private RegisterServiceOut registerServiceOut;
 	private InviteServiceIn inviteServiceIn;
-
-	private IvrEndpointService ivrEndpointService;
+	private InviteServiceOut inviteServiceOut;
+	
+	//ControlService
+	private ExtensionControlService extensionControlService;
+	
 
 	// Managment Service
 	private TransportService transportService;
-
-	// TimerService
-	private TimerService timerService;
 
 	public static SipServerTransport getTransport(Message message) {
 		ViaHeader viaHeader = (ViaHeader) message.getHeader(ViaHeader.NAME);
@@ -61,6 +64,31 @@ public class ServerCore {
 			return ServerCore.getServerCore().getTCPTransport();
 		}
 		return null;
+	}
+
+	public static ArrayList<String> getExtenList(Properties properties) {
+		try {
+			if (properties == null) {
+				return null;
+			}
+			ArrayList<String> extenList = null;
+			synchronized (properties) {
+				Set<Object> keys = properties.keySet();
+				if (keys == null || keys.size() == 0) {
+					return null;
+				}
+				for (Object key : keys) {
+					if (extenList == null) {
+						extenList = new ArrayList<String>();
+					}
+					extenList.add(new String((String) key));
+				}
+			}
+			return extenList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	// Local Extension
@@ -105,12 +133,18 @@ public class ServerCore {
 
 		ServerCore.serverCore.setUDPTransport(new UDPTransport(host, port));
 		ServerCore.serverCore.getUDPTransport().startListening();
-		ServerCore.serverCore.setTimerService(new TimerService());
 		ServerCore.serverCore.setRegisterServiceIn(new RegisterServiceIn());
 		ServerCore.serverCore.setRegisterServiceOut(new RegisterServiceOut());
 		ServerCore.serverCore.setInviteServiceIn(new InviteServiceIn());
 		ServerCore.serverCore.setTransportService(new TransportService());
-		ServerCore.serverCore.setIvrEndpointService(new IvrEndpointService());
+		ServerCore.serverCore.setInviteServiceOut(new InviteServiceOut());
+		ServerCore.serverCore.setExtensionControlService(new ExtensionControlService());
+		
+		
+		
+		ServerCore.serverCore.getExtensionControlService().start();
+		
+		
 	}
 
 	public static ServerCore getServerCore() {
@@ -135,14 +169,6 @@ public class ServerCore {
 
 	public void setTCPTransport(TCPTransport tcpTransport) {
 		this.tcpTransport = tcpTransport;
-	}
-
-	public TimerService getTimerService() {
-		return timerService;
-	}
-
-	public void setTimerService(TimerService timerService) {
-		this.timerService = timerService;
 	}
 
 	public RegisterServiceIn getRegisterServiceIn() {
@@ -177,12 +203,20 @@ public class ServerCore {
 		this.inviteServiceIn = inviteServiceIn;
 	}
 
-	public IvrEndpointService getIvrEndpointService() {
-		return ivrEndpointService;
+	public InviteServiceOut getInviteServiceOut() {
+		return inviteServiceOut;
 	}
 
-	public void setIvrEndpointService(IvrEndpointService ivrEndpointService) {
-		this.ivrEndpointService = ivrEndpointService;
+	public void setInviteServiceOut(InviteServiceOut inviteServiceOut) {
+		this.inviteServiceOut = inviteServiceOut;
+	}
+
+	public ExtensionControlService getExtensionControlService() {
+		return extensionControlService;
+	}
+
+	public void setExtensionControlService(ExtensionControlService extensionControlService) {
+		this.extensionControlService = extensionControlService;
 	}
 
 }

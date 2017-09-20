@@ -2,13 +2,11 @@ package sipserver.com.service.register;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
-import jain.protocol.ip.mgcp.JainMgcpResponseEvent;
-
-import java.util.Properties;
 
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.TransactionAlreadyExistsException;
 import javax.sip.header.ContactHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
@@ -17,12 +15,11 @@ import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.Service;
+import sipserver.com.util.log.LogTest;
 
 public class RegisterServiceIn extends Service {
 
 	private static StackLogger logger = CommonLogger.getLogger(RegisterServiceIn.class);
-
-	private Properties transaction = new Properties();
 
 	public RegisterServiceIn() {
 		super(logger);
@@ -31,14 +28,25 @@ public class RegisterServiceIn extends Service {
 		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003"));
 		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004"));
 		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005"));
+
+//		ServerCore.getServerCore().addLocalExtension(new Extension("9001", "test9001"));
+//		ServerCore.getServerCore().addLocalExtension(new Extension("9002", "test9002"));
+
 	}
 
 	@Override
 	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
 		String message = requestEvent.getRequest().toString();
-		ServerTransaction serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
+		LogTest.log("XXDEBUG 0 " + requestEvent.getRequest().getRequestURI());
+		ServerTransaction serverTransaction = null;
 		try {
-//			logger.logFatalError("RegisterRequestProcess:\r\n" + message);
+			serverTransaction = transport.getSipProvider().getNewServerTransaction(requestEvent.getRequest());
+		} catch (TransactionAlreadyExistsException exception) {
+			LogTest.log("Transaction Already Exist " + requestEvent.getRequest().getRequestURI());
+		}
+
+		try {
+			// logger.logFatalError("RegisterRequestProcess:\r\n" + message);
 			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, createResponseMessage(requestEvent.getRequest(), Response.TRYING));
 			int code = 200;
 			try {
@@ -133,9 +141,8 @@ public class RegisterServiceIn extends Service {
 	}
 
 	private void updateRegister(String host, Extension extLocal) {
-		extLocal.setRegister(true);
 		extLocal.setHost(host);
-		beginTask(extLocal.getExten(), extLocal.getExpiresTime(), extLocal.getExten());
+		extLocal.keepRegistered();
 	}
 
 	public void unRegisterLocalExtension(String exten) {
@@ -144,42 +151,6 @@ public class RegisterServiceIn extends Service {
 			return;
 		}
 		extension.setRegister(false);
-	}
-
-	@Override
-	public void beginTask(String taskId, int timeout, Object exten) {
-		ServerCore.getServerCore().getTimerService().registerTask(taskId + RegisterServiceIn.class.getName(), timeout);
-		putTransaction(taskId, (String) exten);
-	}
-
-	@Override
-	public void endTask(String taskId) {
-		String exten = takeTransaction(taskId);
-		if (exten == null) {
-			return;
-		}
-		Extension extension = ServerCore.getServerCore().getLocalExtension(exten);
-		if (extension == null) {
-			return;
-		}
-		logger.logFatalError("UnRegister ExtensionLocal:" + exten);
-		extension.setRegister(false);
-	}
-
-	public String takeTransaction(String id) {
-		String value = transaction.getProperty(id);
-		transaction.remove(id);
-		return value;
-	}
-
-	public void putTransaction(String key, String value) {
-		transaction.setProperty(key, value);
-	}
-
-	@Override
-	public void mediaServerEvents(JainMgcpResponseEvent jainmgcpresponseevent, String callID) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

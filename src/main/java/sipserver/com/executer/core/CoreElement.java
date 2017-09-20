@@ -9,9 +9,11 @@ public class CoreElement {
 
 	private String localServerIp = "192.168.1.106";
 	private int localSipPort = 5060;
-	private String mediaServerIp = "192.168.1.102";
+	private String mediaServerIp = "192.168.1.105";
 	private int mediaServerPort = 2427;
 	private int mediaClientPort = 2727;
+	
+	
 
 	public Properties getLocalExtensionList() {
 		return localExtensionList;
