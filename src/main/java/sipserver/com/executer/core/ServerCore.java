@@ -8,15 +8,22 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.Message;
 
 import sipserver.com.domain.Extension;
-import sipserver.com.parameter.ParamConstant.TransportType;
+import sipserver.com.parameter.constant.ParamConstant.TransportType;
+import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
+import sipserver.com.service.bridge.CallService;
+import sipserver.com.service.bridge.StatusService;
 import sipserver.com.service.control.ExtensionControlService;
+import sipserver.com.service.invite.InviteServiceEnd;
 import sipserver.com.service.invite.InviteServiceIn;
 import sipserver.com.service.invite.InviteServiceOut;
+import sipserver.com.service.options.OptionsServiceIn;
+import sipserver.com.service.options.OptionsServiceOut;
 import sipserver.com.service.register.RegisterServiceIn;
 import sipserver.com.service.register.RegisterServiceOut;
+import sipserver.com.service.route.RouteService;
 import sipserver.com.service.transport.TransportService;
 
 public class ServerCore {
@@ -34,10 +41,15 @@ public class ServerCore {
 	private RegisterServiceOut registerServiceOut;
 	private InviteServiceIn inviteServiceIn;
 	private InviteServiceOut inviteServiceOut;
-	
-	//ControlService
+	private InviteServiceEnd inviteServiceEnd;
+	private OptionsServiceIn optionsServiceIn;
+	private OptionsServiceOut optionsServiceOut;
+
+	private RouteService routeService;
+	private StatusService statusService;
+	private CallService callService;
+	// ControlService
 	private ExtensionControlService extensionControlService;
-	
 
 	// Managment Service
 	private TransportService transportService;
@@ -100,6 +112,9 @@ public class ServerCore {
 		getCoreElement().getLocalExtensionList().put(extension.getExten(), extension);
 	}
 
+	public Properties getLocalExtensionList() {
+		return getCoreElement().getLocalExtensionList();
+	}
 	// localExtension end
 
 	// remoteExtension
@@ -138,13 +153,17 @@ public class ServerCore {
 		ServerCore.serverCore.setInviteServiceIn(new InviteServiceIn());
 		ServerCore.serverCore.setTransportService(new TransportService());
 		ServerCore.serverCore.setInviteServiceOut(new InviteServiceOut());
+		ServerCore.serverCore.setInviteServiceEnd(new InviteServiceEnd());
 		ServerCore.serverCore.setExtensionControlService(new ExtensionControlService());
-		
-		
-		
+		ServerCore.serverCore.setOptionsServiceIn(new OptionsServiceIn());
+		ServerCore.serverCore.setOptionsServiceOut(new OptionsServiceOut());
+
+		ServerCore.serverCore.setRouteService(new RouteService());
+		ServerCore.serverCore.setStatusService(new StatusService());
+		ServerCore.serverCore.setCallService(new CallService());
+
 		ServerCore.serverCore.getExtensionControlService().start();
-		
-		
+
 	}
 
 	public static ServerCore getServerCore() {
@@ -217,6 +236,68 @@ public class ServerCore {
 
 	public void setExtensionControlService(ExtensionControlService extensionControlService) {
 		this.extensionControlService = extensionControlService;
+	}
+
+	public OptionsServiceIn getOptionsServiceIn() {
+		return optionsServiceIn;
+	}
+
+	public void setOptionsServiceIn(OptionsServiceIn optionsServiceIn) {
+		this.optionsServiceIn = optionsServiceIn;
+	}
+
+	public OptionsServiceOut getOptionsServiceOut() {
+		return optionsServiceOut;
+	}
+
+	public void setOptionsServiceOut(OptionsServiceOut optionsServiceOut) {
+		this.optionsServiceOut = optionsServiceOut;
+	}
+
+	public RouteService getRouteService() {
+		return routeService;
+	}
+
+	public void setRouteService(RouteService routeService) {
+		this.routeService = routeService;
+	}
+
+	public StatusService getStatusService() {
+		return statusService;
+	}
+
+	public void setStatusService(StatusService statusService) {
+		this.statusService = statusService;
+	}
+
+	public CallService getCallService() {
+		return callService;
+	}
+
+	public void setCallService(CallService callService) {
+		this.callService = callService;
+	}
+
+	public InviteServiceEnd getInviteServiceEnd() {
+		return inviteServiceEnd;
+	}
+
+	public void setInviteServiceEnd(InviteServiceEnd inviteServiceEnd) {
+		this.inviteServiceEnd = inviteServiceEnd;
+	}
+
+	public CallParam getChannel(String id) {
+		return (CallParam) getCoreElement().getChannelList().get(id);
+	}
+
+	public CallParam takeChannel(String id) {
+		CallParam callParam = (CallParam) getCoreElement().getChannelList().get(id);
+		getCoreElement().getChannelList().remove(id);
+		return callParam;
+	}
+
+	public void putChannel(String key, CallParam callParam) {
+		getCoreElement().getChannelList().put(key, callParam);
 	}
 
 }

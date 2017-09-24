@@ -1,9 +1,8 @@
-package sipserver.com.service.register;
+package sipserver.com.service.options;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import javax.sip.ClientTransaction;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.address.Address;
@@ -17,30 +16,24 @@ import javax.sip.header.RouteHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
-import javax.sip.message.Response;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.SipStackExt;
-import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.header.CallID;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.server.auth.AccountManagerImpl;
 import sipserver.com.service.Service;
 import sipserver.com.service.util.CreateService;
 import sipserver.com.service.util.GeneraterService;
 
-public class RegisterServiceOut extends Service {
+public class OptionsServiceOut extends Service {
 
-	private static StackLogger logger = CommonLogger.getLogger(RegisterServiceOut.class);
+	private static StackLogger logger = CommonLogger.getLogger(OptionsServiceOut.class);
 
-	public RegisterServiceOut() {
+	public OptionsServiceOut() {
 		super(logger);
-		ServerCore.getServerCore().addTrunkExtension(new Extension("9001", "test9001", "192.168.1.105"));
-		ServerCore.getServerCore().addTrunkExtension(new Extension("9002", "test9002", "192.168.1.105"));
 	}
 
 	@Override
@@ -59,24 +52,20 @@ public class RegisterServiceOut extends Service {
 				throw new Exception();
 			}
 
-			ContactHeader requContactHeader = (ContactHeader) responseEvent.getClientTransaction().getRequest().getHeader(ContactHeader.NAME);
+			ToHeader toHeader = (ToHeader) responseEvent.getResponse().getHeader(ToHeader.NAME);
 
-			if (requContactHeader == null) {
+			if (toHeader == null) {
 				throw new Exception();
 			}
 
-			Extension trunkExtension = CreateService.createExtension(requContactHeader);
+			Extension trunkExtension = CreateService.createExtension(toHeader);
 			if (trunkExtension == null) {
 				throw new Exception();
 			}
 			int statusCode = responseEvent.getResponse().getStatusCode();
 
-			if (ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()) == null) {
-				return;
-			}
-
 			ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setRegisterResponseRecieved(true);
-			ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setRegisterResponseCode(statusCode);
+			ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setOptionsResponseCode(statusCode);
 
 			if (lockProperties.get(trunkExtension.getExten()) != null) {
 				synchronized (lockProperties.get(trunkExtension.getExten())) {
@@ -85,77 +74,37 @@ public class RegisterServiceOut extends Service {
 				lockProperties.remove(trunkExtension.getExten());
 			}
 
-			if (statusCode == Response.UNAUTHORIZED || statusCode == Response.PROXY_AUTHENTICATION_REQUIRED) {
-				if (!isHaveAuthenticateHeader(responseEvent)) {
-					logger.logFatalError("Transaction is dead ");
-					throw new Exception();
-				}
-				AuthenticationHelper authenticationHelper = ((SipStackExt) transport.getSipStack()).getAuthenticationHelper(new AccountManagerImpl(ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten())), transport.getHeaderFactory());
-				ClientTransaction clientTransaction = authenticationHelper.handleChallenge(responseEvent.getResponse(), responseEvent.getClientTransaction(), transport.getSipProvider(), 5, false);
-				ServerCore.getServerCore().getTransportService().sendRequestMessage(clientTransaction);
-				return;
-			}
-			if (statusCode == Response.FORBIDDEN) {
-				logger.logFatalError("Forbidden " + trunkExtension.getExten());
-				logger.logFatalError("Transaction is dead " + trunkExtension.getExten());
-				return;
-			}
-			if (statusCode == Response.OK) {
-				logger.logFatalError("Registered Trunk " + trunkExtension.getExten());
-			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public void unRegisterTrunkExtension(String exten) {
-		Extension extension = ServerCore.getServerCore().getTrunkExtension(exten);
-		if (extension == null) {
-			return;
-		}
-		extension.setRegister(false);
-	}
-
-	public void register(Extension extTrunk) {
+	public void ping(Extension extTrunk) {
 		try {
 			Request requestMessage = createRegisterMessage(extTrunk);
 			SipServerTransport transport = ServerCore.getTransport(requestMessage);
 			if (transport == null) {
-				getLogger().logFatalError("Transport is null, ssasfddgs");
+				getLogger().logFatalError("Transport is null, asfas");
 				throw new Exception();
 			}
-			extTrunk.getExtensionParameter().setRegisterResponseRecieved(false);
+			extTrunk.getExtensionParameter().setOptionsResponseRecieved(false);
 			ServerCore.getServerCore().getTransportService().sendRequestMessage(transport.getSipProvider().getNewClientTransaction(requestMessage));
 			String lockValue = UUID.randomUUID().toString();
 			lockProperties.put(extTrunk.getExten(), lockValue);
 			synchronized (lockValue) {
 				lockValue.wait(SipServerSharedProperties.messageTimeout);
 			}
-			if (!extTrunk.getExtensionParameter().isRegisterResponseRecieved()) {
+			if (!extTrunk.getExtensionParameter().isOptionsResponseRecieved()) {
+				extTrunk.setAlive(false);
 				return;
 			}
 
-			if (extTrunk.getExtensionParameter().getRegisterResponseCode() == 911) {
+			if (extTrunk.getExtensionParameter().getOptionsResponseCode() == 911) {
 				return;
 			}
-			if (extTrunk.getExtensionParameter().getRegisterResponseCode() != SipServerSharedProperties.errorResponseCode && (extTrunk.getExtensionParameter().getRegisterResponseCode() == Response.UNAUTHORIZED || extTrunk.getExtensionParameter().getRegisterResponseCode() == Response.PROXY_AUTHENTICATION_REQUIRED)) {
-				extTrunk.getExtensionParameter().setRegisterResponseRecieved(false);
-				lockValue = UUID.randomUUID().toString();
-				lockProperties.put(extTrunk.getExten(), lockValue);
-				synchronized (lockValue) {
-					lockValue.wait(SipServerSharedProperties.messageTimeout);
-				}
-				if (!extTrunk.getExtensionParameter().isRegisterResponseRecieved()) {
-					return;
-				}
 
-			}
-			if (extTrunk.getExtensionParameter().getRegisterResponseCode() != 200) {
-				return;
-			}
-			extTrunk.setRegister(true);
+			extTrunk.setAlive(true);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -169,13 +118,9 @@ public class RegisterServiceOut extends Service {
 				throw new Exception();
 			}
 
-			SipURI fromAddress = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getHost());
+			SipURI fromAddress = transport.getAddressFactory().createSipURI("", transport.getHost());
 
 			Address fromNameAddress = transport.getAddressFactory().createAddress(fromAddress);
-			if (extension.getDisplayName() != null) {
-				fromNameAddress.setDisplayName(extension.getDisplayName());
-			}
-
 			FromHeader fromHeader = transport.getHeaderFactory().createFromHeader(fromNameAddress, GeneraterService.getUUidForTag());
 			// create To Header
 			SipURI toAddress = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getHost());
@@ -202,23 +147,16 @@ public class RegisterServiceOut extends Service {
 
 			RouteHeader routeHeader = transport.getHeaderFactory().createRouteHeader(transport.getAddressFactory().createAddress(sipuri));
 
-			// Create ContentTypeHeader
-			// ContentTypeHeader contentTypeHeader =
-			// ProtocolObjects.headerFactory.createContentTypeHeader("application",
-			// "sdp");
-
-			// Create a new CallId header
-			// CallIdHeader callIdHeader = sipProvider.getNewCallId();
 			CallIdHeader callIdHeader = new CallID(GeneraterService.getUUid(10));
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(1L, Request.REGISTER);
+			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(1L, Request.OPTIONS);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = transport.getHeaderFactory().createMaxForwardsHeader(70);
 
 			// Create the request.
-			Request request = transport.getMessageFactory().createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Request request = transport.getMessageFactory().createRequest(requestURI, Request.OPTIONS, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			// Create contact headers
 
 			SipURI contactUrl = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getHost());

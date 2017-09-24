@@ -7,7 +7,6 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
-import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import gov.nist.core.CommonLogger;
@@ -20,28 +19,22 @@ import sipserver.com.service.Service;
 import sipserver.com.service.util.CreateService;
 import sipserver.com.service.util.ExceptionService;
 
-public class InviteServiceIn extends Service {
+public class InviteServiceEnd extends Service {
 
-	private static StackLogger logger = CommonLogger.getLogger(InviteServiceIn.class);
+	private static StackLogger logger = CommonLogger.getLogger(InviteServiceEnd.class);
 
-	public InviteServiceIn() {
+	public InviteServiceEnd() {
 		super(logger);
 	}
 
 	@Override
 	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
-		ServerTransaction serverTransaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
-		if (serverTransaction == null) {
-			return;
-		}
 		try {
-			if (requestEvent.getRequest().getMethod().equals(Request.CANCEL)) {
-				processCancelMessage(requestEvent, transport);
-				return;
+			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
+			if (serverTransaction == null) {
+				serverTransaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
+				ExceptionService.checkNullObject(serverTransaction);
 			}
-
-			// logger.logFatalError("RegisterRequestProcess:\r\n" + message);
-			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.TRYING, null);
 
 			CallIdHeader callIDHeader = (CallIdHeader) requestEvent.getRequest().getHeader(CallIdHeader.NAME);
 			if (callIDHeader == null) {
@@ -75,60 +68,29 @@ public class InviteServiceIn extends Service {
 				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT, null);
 				return;
 			}
+
 			Extension extension = CreateService.createExtension(fromHeader);
 			if (extension == null) {
 				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.FORBIDDEN, null);
 				return;
 			}
 
-			CallParam callParam = new CallParam();
-			callParam.setExtension(extension).setTransaction(serverTransaction).setRequest(requestEvent.getRequest());
-
-			if (requestEvent.getRequest().getRawContent() != null) {
-				callParam.setSdpRemoteContent(new String(requestEvent.getRequest().getRawContent()));
+			CallParam callParam = ServerCore.getServerCore().takeChannel(callIDHeader.getCallId());
+			if (callParam == null) {
+				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST, null);
+				return;
 			}
-
-			putChannel(viaHeader.getBranch(), callParam);
-			System.out.println("Incoming callId: " + callIDHeader.getCallId());
-
-			ServerCore.getServerCore().getRouteService().route(callParam, toHeader);
-
+			ServerCore.getServerCore().getStatusService().bye(callParam);
+			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.OK, null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.logFatalError("Message Error. Message:" + requestEvent.getRequest().toString());
-			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT, null);
 		}
 	}
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
-		// NON
-	}
+		// TODO Auto-generated method stub
 
-	private void processCancelMessage(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
-		try {
-			ServerTransaction serverTransaction = requestEvent.getServerTransaction();
-			if (serverTransaction == null) {
-				serverTransaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
-				ExceptionService.checkNullObject(serverTransaction);
-			}
-			ViaHeader viaHeader = (ViaHeader) requestEvent.getRequest().getHeader(ViaHeader.NAME);
-			if (viaHeader == null || viaHeader.getBranch() == null) {
-				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST, null);
-				return;
-			}
-
-			CallParam callParam = takeChannel(viaHeader.getBranch());
-			if (callParam == null) {
-				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST, null);
-				return;
-			}
-			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.OK, null);
-			ServerCore.getServerCore().getStatusService().cancel(callParam);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 }

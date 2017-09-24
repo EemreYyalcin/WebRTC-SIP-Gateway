@@ -2,12 +2,8 @@ package sipserver.com.domain;
 
 import java.util.UUID;
 
-import javax.sip.header.ContactHeader;
-import javax.sip.header.FromHeader;
-import javax.sip.header.ToHeader;
-
-import sipserver.com.executer.core.SipServerSharedProperties;
-import sipserver.com.parameter.ParamConstant.TransportType;
+import sipserver.com.parameter.constant.ParamConstant.TransportType;
+import sipserver.com.parameter.param.ExtensionParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
@@ -21,17 +17,11 @@ public class Extension {
 	private int port = 5060;
 	private String pass;
 	private boolean isRegister = false;
+	private boolean isAlive = false;
 	private TransportType transportType = TransportType.UDP;
 
-	// For Details
-	private boolean isDeletedExtension = false;
-	private boolean isCheckRegister = false;
-	private boolean keepRegisteredFlag = false;
+	private ExtensionParam extensionParameter = new ExtensionParam();
 
-	//For RegisterServiceOut
-	public boolean isRegisterResponseRecieved = false;
-	public int registerResponseCode = SipServerSharedProperties.errorResponseCode;
-	
 	private String lock = UUID.randomUUID().toString();
 
 	public Extension(String exten, String pass, String host, int port) {
@@ -52,96 +42,24 @@ public class Extension {
 		setPass(pass);
 	}
 
-	public Extension(ContactHeader contactHeader) throws Exception {
-		String uri = contactHeader.getAddress().getURI().toString().trim();
-		String scheme = contactHeader.getAddress().getURI().getScheme();
-		String[] parts = uri.split(";");
-		if (parts.length <= 0) {
-			throw new Exception();
-		}
-		uri = parts[0].substring(scheme.length() + 1);
-		if (uri.indexOf(":") > 0) {
-			uri = uri.split(":")[0];
-		}
-
-		if (uri.indexOf("@") < 0) {
-			throw new Exception();
-		}
-		String[] userAndHost = uri.split("@");
-		if (userAndHost.length < 2) {
-			throw new Exception();
-		}
-		setExten(userAndHost[0]);
-		setHost(userAndHost[1]);
-		setDisplayName(contactHeader.getAddress().getDisplayName());
-		if (contactHeader.getExpires() != -1) {
-			setExpiresTime(contactHeader.getExpires());
-		}
-	}
-
-	public Extension(FromHeader fromHeader) throws Exception {
-		String uri = fromHeader.getAddress().getURI().toString().trim();
-		String scheme = fromHeader.getAddress().getURI().getScheme();
-		String[] parts = uri.split(";");
-		if (parts.length <= 0) {
-			throw new Exception();
-		}
-		uri = parts[0].substring(scheme.length() + 1);
-		if (uri.indexOf(":") > 0) {
-			uri = uri.split(":")[0];
-		}
-
-		if (uri.indexOf("@") < 0) {
-			throw new Exception();
-		}
-		String[] userAndHost = uri.split("@");
-		if (userAndHost.length < 2) {
-			throw new Exception();
-		}
-		setExten(userAndHost[0]);
-		setHost(userAndHost[1]);
-		setDisplayName(fromHeader.getAddress().getDisplayName());
-	}
-
-	public Extension(ToHeader toHeader) throws Exception {
-		String uri = toHeader.getAddress().getURI().toString().trim();
-		String scheme = toHeader.getAddress().getURI().getScheme();
-		String[] parts = uri.split(";");
-		if (parts.length <= 0) {
-			throw new Exception();
-		}
-		uri = parts[0].substring(scheme.length() + 1);
-		if (uri.indexOf(":") > 0) {
-			uri = uri.split(":")[0];
-		}
-
-		if (uri.indexOf("@") < 0) {
-			throw new Exception();
-		}
-		String[] userAndHost = uri.split("@");
-		if (userAndHost.length < 2) {
-			throw new Exception();
-		}
-		setExten(userAndHost[0]);
-		setHost(userAndHost[1]);
-		setDisplayName(toHeader.getAddress().getDisplayName());
+	public Extension() {
 	}
 
 	public void keepRegistered() {
-		keepRegisteredFlag = true;
+		getExtensionParameter().setKeepRegisteredFlag(true);
 		synchronized (lock) {
 			lock.notifyAll();
 		}
-		if (isCheckRegister) {
+		if (getExtensionParameter().isCheckRegister()) {
 			return;
 		}
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (keepRegisteredFlag) {
+				while (getExtensionParameter().isKeepRegisteredFlag()) {
 					try {
 						setRegister(true);
-						keepRegisteredFlag = false;
+						getExtensionParameter().setKeepRegisteredFlag(false);
 						synchronized (lock) {
 							lock.wait(expiresTime * 1000);
 						}
@@ -150,11 +68,10 @@ public class Extension {
 					}
 				}
 				setRegister(false);
-				isCheckRegister = false;
-
+				getExtensionParameter().setCheckRegister(false);
 			}
 		}).start();
-		isCheckRegister = true;
+		getExtensionParameter().setCheckRegister(true);
 	}
 
 	public String getExten() {
@@ -216,6 +133,7 @@ public class Extension {
 
 	public void setRegister(boolean isRegister) {
 		this.isRegister = isRegister;
+		this.isAlive = isRegister;
 	}
 
 	public TransportType getTransportType() {
@@ -233,12 +151,16 @@ public class Extension {
 		}
 	}
 
-	public boolean isDeletedExtension() {
-		return isDeletedExtension;
+	public boolean isAlive() {
+		return isAlive;
 	}
 
-	public void setDeletedExtension(boolean isDeletedExtension) {
-		this.isDeletedExtension = isDeletedExtension;
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	public ExtensionParam getExtensionParameter() {
+		return extensionParameter;
 	}
 
 }

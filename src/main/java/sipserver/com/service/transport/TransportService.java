@@ -1,9 +1,5 @@
 package sipserver.com.service.transport;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.StackLogger;
-
-
 import javax.sip.ClientTransaction;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -13,7 +9,10 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import sipserver.com.executer.core.ServerCore;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.Service;
 
@@ -51,6 +50,10 @@ public class TransportService extends Service {
 					}
 					if (requestEvent.getRequest().getMethod().equals(Request.INVITE)) {
 						ServerCore.getServerCore().getInviteServiceIn().processRequest(requestEvent, transport);
+						return;
+					}
+					if (requestEvent.getRequest().getMethod().equals(Request.OPTIONS)) {
+						ServerCore.getServerCore().getOptionsServiceIn().processRequest(requestEvent, transport);
 						return;
 					}
 				} catch (Exception e) {
@@ -101,8 +104,21 @@ public class TransportService extends Service {
 		}).start();
 	}
 
-	public void sendResponseMessage(ServerTransaction serverTransaction, Response response) {
+	public void sendResponseMessage(ServerTransaction serverTransaction, Request request, int responseCode, String sdpContent) {
 		try {
+			if (request == null) {
+				throw new Exception();
+			}
+			SipServerTransport sipServerTransport = ServerCore.getTransport(request);
+			if (sipServerTransport == null) {
+				throw new Exception();
+			}
+			Response response = sipServerTransport.getMessageFactory().createResponse(responseCode, request);
+			if (sdpContent != null) {
+				response.setContent(sdpContent.getBytes(), sipServerTransport.getHeaderFactory().createContentTypeHeader("application", "sdp"));
+			}
+			response.addHeader(sipServerTransport.getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
+
 			if (serverTransaction == null) {
 				logger.logFatalError("ServerTransaction Null");
 				return;

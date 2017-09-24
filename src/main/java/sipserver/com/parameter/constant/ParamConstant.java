@@ -1,4 +1,4 @@
-package sipserver.com.parameter;
+package sipserver.com.parameter.constant;
 
 public class ParamConstant {
 

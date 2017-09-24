@@ -5,6 +5,8 @@ import java.util.Properties;
 
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipProvider;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
@@ -19,8 +21,10 @@ import gov.nist.javax.sip.header.WWWAuthenticate;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
+import sipserver.com.executer.core.SipServerSharedProperties;
+import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.service.param.ChannelParameter;
+import sipserver.com.util.log.LogTest;
 
 public abstract class Service {
 
@@ -35,6 +39,15 @@ public abstract class Service {
 	public abstract void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception;
 
 	public abstract void processResponse(ResponseEvent responseEvent, SipServerTransport transport);
+	
+	public ServerTransaction getServerTransaction(SipProvider sipProvider, Request request) {
+		try {
+			return sipProvider.getNewServerTransaction(request);
+		} catch (Exception exception) {
+			LogTest.log("Transaction Already Exist " + request.getRequestURI());
+			return null;
+		}
+	}
 
 	public boolean isHaveAuthenticateHeader(EventObject event) {
 		Message message = null;
@@ -81,20 +94,20 @@ public abstract class Service {
 		return sdp;
 	}
 
-	public Response createResponseMessage(Request request, int responseCode, String sdpData) {
+	public static Response createResponseMessage(Request request, int responseCode, String sdpData) {
 		try {
 			if (request == null) {
 				throw new Exception();
 			}
 			SipServerTransport sipServerTransport = ServerCore.getTransport(request);
 			if (sipServerTransport == null) {
-				getLogger().logFatalError("Transport is Null");
 				throw new Exception();
 			}
 			Response response = sipServerTransport.getMessageFactory().createResponse(responseCode, request);
 			if (sdpData != null) {
 				response.setContent(sdpData.getBytes(), sipServerTransport.getHeaderFactory().createContentTypeHeader("application", "sdp"));
 			}
+			response.addHeader(sipServerTransport.getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
 			return response;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -139,18 +152,18 @@ public abstract class Service {
 		this.logger = logger;
 	}
 
-	public ChannelParameter getChannel(String id) {
-		return (ChannelParameter) channelList.get(id);
+	public CallParam getChannel(String id) {
+		return (CallParam) channelList.get(id);
 	}
 
-	public ChannelParameter takeChannel(String id) {
-		ChannelParameter channelParameter = (ChannelParameter) channelList.get(id);
+	public CallParam takeChannel(String id) {
+		CallParam callParam = (CallParam) channelList.get(id);
 		channelList.remove(id);
-		return channelParameter;
+		return callParam;
 	}
 
-	public void putChannel(String key, ChannelParameter channelParameter) {
-		channelList.put(key, channelParameter);
+	public void putChannel(String key, CallParam callParam) {
+		channelList.put(key, callParam);
 	}
 
 }

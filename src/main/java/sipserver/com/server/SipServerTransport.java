@@ -17,7 +17,7 @@ import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.parameter.ParamConstant.TransportType;
+import sipserver.com.parameter.constant.ParamConstant.TransportType;
 
 public abstract class SipServerTransport extends SipAdapter {
 

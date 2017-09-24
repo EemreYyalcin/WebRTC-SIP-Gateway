@@ -2,7 +2,7 @@ package sipserver.com.server.transport;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
-import sipserver.com.parameter.ParamConstant.TransportType;
+import sipserver.com.parameter.constant.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
 
 public class TCPTransport extends SipServerTransport {
