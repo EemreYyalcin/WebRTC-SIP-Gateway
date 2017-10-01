@@ -1,11 +1,18 @@
 package sipserver.com.service.transport;
 
 import javax.sip.ClientTransaction;
+import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.TimeoutEvent;
+import javax.sip.Transaction;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -15,6 +22,7 @@ import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.Service;
+import sipserver.com.service.util.ExceptionService;
 
 public class TransportService extends Service {
 
@@ -26,7 +34,7 @@ public class TransportService extends Service {
 	}
 
 	@Override
-	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) {
+	public void processRequest(RequestEvent requestEvent, SipServerTransport transport, ServerTransaction serverTransaction) {
 		if (requestEvent == null) {
 			return;
 		}
@@ -39,28 +47,40 @@ public class TransportService extends Service {
 			return;
 		}
 		// String callId = callIdHeader.getCallId();
-
+		new Exception().printStackTrace();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					if (requestEvent.getRequest().getMethod().equals(Request.REGISTER)) {
-						ServerCore.getServerCore().getRegisterServiceIn().processRequest(requestEvent, transport);
+					ServerTransaction transaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
+					ExceptionService.checkNullObject(transaction);
+					Service service = getInService(requestEvent.getRequest().getMethod());
+					if (service == null) {
 						return;
 					}
-					if (requestEvent.getRequest().getMethod().equals(Request.INVITE)) {
-						ServerCore.getServerCore().getInviteServiceIn().processRequest(requestEvent, transport);
-						return;
-					}
-					if (requestEvent.getRequest().getMethod().equals(Request.OPTIONS)) {
-						ServerCore.getServerCore().getOptionsServiceIn().processRequest(requestEvent, transport);
-						return;
-					}
+					service.processRequest(requestEvent, transport, transaction);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
+
 		}).start();
+	}
+
+	private Service getInService(String method) {
+		if (method.equals(Request.REGISTER)) {
+			return ServerCore.getServerCore().getRegisterServiceIn();
+		}
+		if (method.equals(Request.INVITE) || method.equals(Request.CANCEL)) {
+			return ServerCore.getServerCore().getInviteServiceIn();
+		}
+		if (method.equals(Request.OPTIONS)) {
+			return ServerCore.getServerCore().getOptionsServiceIn();
+		}
+		if (method.equals(Request.BYE)) {
+			return ServerCore.getServerCore().getInviteServiceEnd();
+		}
+		return null;
 	}
 
 	@Override
@@ -119,6 +139,16 @@ public class TransportService extends Service {
 			}
 			response.addHeader(sipServerTransport.getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
 
+			SipURI contactUrl = sipServerTransport.getAddressFactory().createSipURI("Anonymous", sipServerTransport.getHost());
+			contactUrl.setPort(sipServerTransport.getPort());
+
+			// Create the contact name address.
+			SipURI contactURI = sipServerTransport.getAddressFactory().createSipURI("Anonymous1", sipServerTransport.getHost());
+			contactURI.setPort(sipServerTransport.getPort());
+
+			ContactHeader contactHeader = sipServerTransport.getHeaderFactory().createContactHeader(sipServerTransport.getAddressFactory().createAddress(contactURI));
+			response.addHeader(contactHeader);
+
 			if (serverTransaction == null) {
 				logger.logFatalError("ServerTransaction Null");
 				return;
@@ -141,17 +171,50 @@ public class TransportService extends Service {
 
 	public void sendRequestMessage(ClientTransaction clientTransaction) {
 		try {
-			if (clientTransaction == null) {
-				logger.logFatalError("ServerTransaction Null");
-				return;
-			}
-			if (clientTransaction.getRequest() == null) {
-				logger.logFatalError("Request Null");
-				return;
-			}
-
+			ExceptionService.checkNullObject(clientTransaction);
+			ExceptionService.checkNullObject(clientTransaction.getRequest());
 			clientTransaction.sendRequest();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public void processDialogTerminated(DialogTerminatedEvent event) {
+		// TODO: Set Dialog Terminated
+	}
+
+	@Override
+	public void processTimeout(TimeoutEvent timeoutEvent) {
+		try {
+			Transaction transaction;
+			if (timeoutEvent.isServerTransaction()) {
+				transaction = timeoutEvent.getServerTransaction();
+				Service service = getInService(transaction.getRequest().getMethod());
+				ExceptionService.checkNullObject(service);
+				service.processTimeout(timeoutEvent);
+			} else {
+				transaction = timeoutEvent.getClientTransaction();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
+		try {
+			Transaction transaction;
+			if (terminatedEvent.isServerTransaction()) {
+				transaction = terminatedEvent.getServerTransaction();
+				Service service = getInService(transaction.getRequest().getMethod());
+				ExceptionService.checkNullObject(service);
+			} else {
+				transaction = terminatedEvent.getClientTransaction();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

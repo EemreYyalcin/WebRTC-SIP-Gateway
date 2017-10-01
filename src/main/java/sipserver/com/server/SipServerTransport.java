@@ -1,23 +1,27 @@
 package sipserver.com.server;
 
-import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
-import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
-
 import java.util.Properties;
 
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
 import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
+import javax.sip.TimeoutEvent;
+import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 
+import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.parameter.constant.ParamConstant.TransportType;
+import sipserver.com.util.log.LogTest;
 
 public abstract class SipServerTransport extends SipAdapter {
 
@@ -63,7 +67,6 @@ public abstract class SipServerTransport extends SipAdapter {
 			getSipStack().start();
 			ListeningPoint lp = getSipStack().createListeningPoint(getHost(), getPort(), getProtocol());
 			setSipProvider(getSipStack().createSipProvider(lp));
-			;
 			getSipProvider().addSipListener(this);
 			getLogger().logFatalError("SipServer Get Started");
 			getLogger().logFatalError("IP:" + getHost() + ",port:" + getPort());
@@ -72,7 +75,6 @@ public abstract class SipServerTransport extends SipAdapter {
 			setHeaderFactory(getSipFactory().createHeaderFactory());
 			setAddressFactory(getSipFactory().createAddressFactory());
 			setDigestServerAuthentication(new DigestServerAuthenticationHelper());
-
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,12 +88,34 @@ public abstract class SipServerTransport extends SipAdapter {
 
 	@Override
 	public void processRequest(RequestEvent requestEvent) {
-		ServerCore.getServerCore().getTransportService().processRequest(requestEvent, this);
+		ServerCore.getServerCore().getTransportService().processRequest(requestEvent, this, null);
 	}
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent) {
 		ServerCore.getServerCore().getTransportService().processResponse(responseEvent, this);
+	}
+
+	@Override
+	public void processDialogTerminated(DialogTerminatedEvent event) {
+//		LogTest.log(this, "Process Dialog Determined " + event.getDialog().getCallId());
+		ServerCore.getServerCore().getTransportService().processDialogTerminated(event);;
+		
+	}
+
+	@Override
+	public void processTimeout(TimeoutEvent timeoutEvent) {
+		ServerCore.getServerCore().getTransportService().processTimeout(timeoutEvent);
+	}
+
+	@Override
+	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
+		ServerCore.getServerCore().getTransportService().processTransactionTerminated(terminatedEvent);
+	}
+
+	@Override
+	public void processIOException(IOExceptionEvent ioExceptionEvent) {
+		LogTest.log(this, "IOExceptionEvent " + ioExceptionEvent.getHost());
 	}
 
 	public int getPort() {

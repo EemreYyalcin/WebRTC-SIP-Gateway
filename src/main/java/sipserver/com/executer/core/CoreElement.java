@@ -6,8 +6,7 @@ public class CoreElement {
 
 	private Properties localExtensionList = new Properties();
 	private Properties trunkExtensionList = new Properties();
-	private Properties channelList = new Properties();
-	
+
 	
 	private String localServerIp = "192.168.1.106";
 	private int localSipPort = 5060;
@@ -71,14 +70,6 @@ public class CoreElement {
 
 	public void setMediaClientPort(int mediaClientPort) {
 		this.mediaClientPort = mediaClientPort;
-	}
-
-	public Properties getChannelList() {
-		return channelList;
-	}
-
-	public void setChannelList(Properties channelList) {
-		this.channelList = channelList;
 	}
 
 }

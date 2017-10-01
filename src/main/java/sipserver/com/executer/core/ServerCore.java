@@ -9,12 +9,12 @@ import javax.sip.message.Message;
 
 import sipserver.com.domain.Extension;
 import sipserver.com.parameter.constant.ParamConstant.TransportType;
-import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
 import sipserver.com.server.transport.UDPTransport;
+import sipserver.com.service.bridge.BridgeService;
 import sipserver.com.service.bridge.CallService;
-import sipserver.com.service.bridge.StatusService;
+import sipserver.com.service.control.ChannelControlService;
 import sipserver.com.service.control.ExtensionControlService;
 import sipserver.com.service.invite.InviteServiceEnd;
 import sipserver.com.service.invite.InviteServiceIn;
@@ -44,9 +44,12 @@ public class ServerCore {
 	private InviteServiceEnd inviteServiceEnd;
 	private OptionsServiceIn optionsServiceIn;
 	private OptionsServiceOut optionsServiceOut;
+	
+	//ControlService
+	private ChannelControlService channelControlService;
 
 	private RouteService routeService;
-	private StatusService statusService;
+	private BridgeService bridgeService;
 	private CallService callService;
 	// ControlService
 	private ExtensionControlService extensionControlService;
@@ -159,8 +162,11 @@ public class ServerCore {
 		ServerCore.serverCore.setOptionsServiceOut(new OptionsServiceOut());
 
 		ServerCore.serverCore.setRouteService(new RouteService());
-		ServerCore.serverCore.setStatusService(new StatusService());
+		ServerCore.serverCore.setBridgeService(new BridgeService());
 		ServerCore.serverCore.setCallService(new CallService());
+		
+		ServerCore.serverCore.setChannelControlService(new ChannelControlService());
+		
 
 		ServerCore.serverCore.getExtensionControlService().start();
 
@@ -262,14 +268,6 @@ public class ServerCore {
 		this.routeService = routeService;
 	}
 
-	public StatusService getStatusService() {
-		return statusService;
-	}
-
-	public void setStatusService(StatusService statusService) {
-		this.statusService = statusService;
-	}
-
 	public CallService getCallService() {
 		return callService;
 	}
@@ -286,18 +284,22 @@ public class ServerCore {
 		this.inviteServiceEnd = inviteServiceEnd;
 	}
 
-	public CallParam getChannel(String id) {
-		return (CallParam) getCoreElement().getChannelList().get(id);
+
+
+	public BridgeService getBridgeService() {
+		return bridgeService;
 	}
 
-	public CallParam takeChannel(String id) {
-		CallParam callParam = (CallParam) getCoreElement().getChannelList().get(id);
-		getCoreElement().getChannelList().remove(id);
-		return callParam;
+	public void setBridgeService(BridgeService bridgeService) {
+		this.bridgeService = bridgeService;
 	}
 
-	public void putChannel(String key, CallParam callParam) {
-		getCoreElement().getChannelList().put(key, callParam);
+	public ChannelControlService getChannelControlService() {
+		return channelControlService;
+	}
+
+	public void setChannelControlService(ChannelControlService channelControlService) {
+		this.channelControlService = channelControlService;
 	}
 
 }

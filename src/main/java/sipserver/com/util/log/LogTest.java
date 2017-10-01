@@ -13,6 +13,10 @@ public class LogTest {
 		System.out.println(" - " + message);
 	}
 
+	public static void log(Object object, String message) {
+		System.out.println(object.getClass().getName() + "----" + message);
+	}
+
 	public static void log(CallParam callParam, String message) {
 		String fromExten = "";
 		String toExten = "";

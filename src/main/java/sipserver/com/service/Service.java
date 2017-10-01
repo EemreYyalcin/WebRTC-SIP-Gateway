@@ -3,10 +3,13 @@ package sipserver.com.service;
 import java.util.EventObject;
 import java.util.Properties;
 
+import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.SipProvider;
+import javax.sip.TimeoutEvent;
+import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
@@ -22,24 +25,28 @@ import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
-import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.util.log.LogTest;
 
 public abstract class Service {
 
 	private StackLogger logger;
-	private Properties channelList = new Properties();
 	protected Properties lockProperties = new Properties();
 
 	public Service(StackLogger logger) {
 		setLogger(logger);
 	}
 
-	public abstract void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception;
+	public abstract void processRequest(RequestEvent requestEvent, SipServerTransport transport, ServerTransaction serverTransaction) throws Exception;
 
 	public abstract void processResponse(ResponseEvent responseEvent, SipServerTransport transport);
-	
+
+	public abstract void processDialogTerminated(DialogTerminatedEvent event);
+
+	public abstract void processTimeout(TimeoutEvent timeoutEvent);
+
+	public abstract void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent);
+
 	public ServerTransaction getServerTransaction(SipProvider sipProvider, Request request) {
 		try {
 			return sipProvider.getNewServerTransaction(request);
@@ -152,18 +159,33 @@ public abstract class Service {
 		this.logger = logger;
 	}
 
-	public CallParam getChannel(String id) {
-		return (CallParam) channelList.get(id);
-	}
+	// protected void waitResponse(CallParam callParam) {
+	// try {
+	// String branch = AliasService.getBranch(callParam.getRequest());
+	// ExceptionService.checkNullObject(branch);
+	// callParam.setRecievedResponse(false);
+	// String lockValue = UUID.randomUUID().toString();
+	// lockProperties.put(branch, lockValue);
+	// synchronized (lockValue) {
+	// lockValue.wait(SipServerSharedProperties.messageTimeout);
+	// }
+	// if (!callParam.isRecievedResponse()) {
+	// ServerCore.getServerCore().getStatusService().busy(callParam);
+	// lockProperties.remove(branch);
+	// return;
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
-	public CallParam takeChannel(String id) {
-		CallParam callParam = (CallParam) channelList.get(id);
-		channelList.remove(id);
-		return callParam;
-	}
-
-	public void putChannel(String key, CallParam callParam) {
-		channelList.put(key, callParam);
-	}
+	// protected void notifyWait(String branch) {
+	// if (lockProperties.get(branch) != null) {
+	// synchronized (lockProperties.get(branch)) {
+	// lockProperties.get(branch).notify();
+	// }
+	// lockProperties.remove(branch);
+	// }
+	// }
 
 }

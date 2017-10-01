@@ -4,21 +4,18 @@ import javax.sip.Transaction;
 import javax.sip.message.Request;
 
 import sipserver.com.domain.Extension;
-import sipserver.com.executer.core.SipServerSharedProperties;
 
 public class CallParam {
 
 	private Request request;
+	private Request secondrequest;
 	private Transaction transaction;
 	private Extension extension;
-	private int responseCode = SipServerSharedProperties.errorResponseCode;
-	private boolean isRecievedResponse = false;
 	private String sdpLocalContent;
 	private String sdpRemoteContent;
-	
+
 	private CallParam bridgeCallParam;
-	
-	
+
 	public Request getRequest() {
 		return request;
 	}
@@ -46,24 +43,6 @@ public class CallParam {
 		return this;
 	}
 
-	public int getResponseCode() {
-		return responseCode;
-	}
-
-	public CallParam setResponseCode(int responseCode) {
-		this.responseCode = responseCode;
-		return this;
-	}
-
-	public boolean isRecievedResponse() {
-		return isRecievedResponse;
-	}
-
-	public CallParam setRecievedResponse(boolean isRecievedResponse) {
-		this.isRecievedResponse = isRecievedResponse;
-		return this;
-	}
-
 	public String getSdpLocalContent() {
 		return sdpLocalContent;
 	}
@@ -86,6 +65,14 @@ public class CallParam {
 
 	public void setBridgeCallParam(CallParam bridgeCallParam) {
 		this.bridgeCallParam = bridgeCallParam;
+	}
+
+	public Request getSecondrequest() {
+		return secondrequest;
+	}
+
+	public void setSecondrequest(Request secondrequest) {
+		this.secondrequest = secondrequest;
 	}
 
 }

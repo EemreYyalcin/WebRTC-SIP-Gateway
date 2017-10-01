@@ -1,8 +1,11 @@
 package sipserver.com.service.options;
 
+import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.TimeoutEvent;
+import javax.sip.TransactionTerminatedEvent;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
 import javax.sip.message.Response;
@@ -13,8 +16,8 @@ import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.Service;
-import sipserver.com.service.util.CreateService;
-import sipserver.com.util.log.LogTest;
+import sipserver.com.service.util.ExceptionService;
+import sipserver.com.service.util.message.CreateMessageService;
 
 public class OptionsServiceIn extends Service {
 
@@ -25,12 +28,7 @@ public class OptionsServiceIn extends Service {
 	}
 
 	@Override
-	public void processRequest(RequestEvent requestEvent, SipServerTransport transport) throws Exception {
-		LogTest.log("Options 0 " + requestEvent.getRequest().getRequestURI());
-		ServerTransaction serverTransaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
-		if (serverTransaction == null) {
-			return;
-		}
+	public void processRequest(RequestEvent requestEvent, SipServerTransport transport, ServerTransaction serverTransaction) throws Exception {
 		try {
 			CallIdHeader callIDHeader = (CallIdHeader) requestEvent.getRequest().getHeader(CallIdHeader.NAME);
 			if (callIDHeader == null) {
@@ -39,44 +37,48 @@ public class OptionsServiceIn extends Service {
 			}
 
 			ContactHeader contactHeader = (ContactHeader) requestEvent.getRequest().getHeader(ContactHeader.NAME);
-			if (contactHeader == null) {
-				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.NOT_FOUND, null);
-				logger.logFatalError("Contact Header is Null. Message");
-				return;
-			}
+			ExceptionService.checkNullObject(contactHeader);
 
-			Extension extIncoming = CreateService.createExtension(contactHeader);
-			if (extIncoming == null) {
-				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.NOT_FOUND, null);
-				logger.logFatalError("Contact Header is Null. Message");
-				return;
-			}
+			Extension extIncoming = CreateMessageService.createExtension(contactHeader);
+			ExceptionService.checkNullObject(extIncoming);
 			extIncoming.setTransportType(transport);
-			if (extIncoming == null || extIncoming.getExten() == null || extIncoming.getHost() == null) {
-				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.NOT_FOUND, null);
-				return;
-			}
+			ExceptionService.checkNullObject(extIncoming.getExten());
+			ExceptionService.checkNullObject(extIncoming.getHost());
 
 			Extension extensionLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
 			if (extensionLocal == null) {
 				extensionLocal = ServerCore.getServerCore().getTrunkExtension(extIncoming.getExten());
-				if (extensionLocal == null) {
-					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.NOT_FOUND, null);
-					return;
-				}
+				ExceptionService.checkNullObject(extensionLocal);
 			}
 			extensionLocal.setAlive(true);
 			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.OK, null);
 		} catch (Exception e) {
-			e.printStackTrace();
+			ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.NOT_FOUND, null);
 		}
 
 	}
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
-		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void processDialogTerminated(DialogTerminatedEvent event) {
+		// LogTest.log(this, "Options Diolog Terminated " +
+		// event.getDialog().getCallId());
 
 	}
 
+	@Override
+	public void processTimeout(TimeoutEvent timeoutEvent) {
+		// LogTest.log(this, "Options Process Timeout " +
+		// timeoutEvent.getServerTransaction().getRequest());
+	}
+
+	@Override
+	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
+		// LogTest.log(this, "Options Transaction Terminated " +
+		// terminatedEvent.getServerTransaction().getRequest());
+
+	}
 }
