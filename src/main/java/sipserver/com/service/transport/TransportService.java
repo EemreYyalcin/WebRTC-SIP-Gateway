@@ -1,5 +1,8 @@
 package sipserver.com.service.transport;
 
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
 import javax.sip.ClientTransaction;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
@@ -12,7 +15,6 @@ import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
-import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -35,19 +37,18 @@ public class TransportService extends Service {
 
 	@Override
 	public void processRequest(RequestEvent requestEvent, SipServerTransport transport, ServerTransaction serverTransaction) {
-		if (requestEvent == null) {
+		if (Objects.isNull(requestEvent)) {
 			return;
 		}
-		if (requestEvent.getRequest() == null) {
+		if (Objects.isNull(requestEvent.getRequest())) {
 			return;
 		}
 
 		CallIdHeader callIdHeader = (CallIdHeader) requestEvent.getRequest().getHeader(CallIdHeader.NAME);
-		if (callIdHeader == null) {
+		if (Objects.isNull(callIdHeader)) {
 			return;
 		}
 		// String callId = callIdHeader.getCallId();
-		new Exception().printStackTrace();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -55,7 +56,7 @@ public class TransportService extends Service {
 					ServerTransaction transaction = getServerTransaction(transport.getSipProvider(), requestEvent.getRequest());
 					ExceptionService.checkNullObject(transaction);
 					Service service = getInService(requestEvent.getRequest().getMethod());
-					if (service == null) {
+					if (Objects.isNull(service)) {
 						return;
 					}
 					service.processRequest(requestEvent, transport, transaction);
@@ -85,15 +86,15 @@ public class TransportService extends Service {
 
 	@Override
 	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
-		if (responseEvent == null) {
+		if (Objects.isNull(responseEvent)) {
 			return;
 		}
-		if (responseEvent.getResponse() == null) {
+		if (Objects.isNull(responseEvent.getResponse())) {
 			return;
 		}
 
 		CallIdHeader callIdHeader = (CallIdHeader) responseEvent.getResponse().getHeader(CallIdHeader.NAME);
-		if (callIdHeader == null) {
+		if (Objects.isNull(callIdHeader)) {
 			return;
 		}
 
@@ -101,40 +102,33 @@ public class TransportService extends Service {
 			return;
 		}
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
-					if (cseqHeader == null) {
-						return;
-					}
-					if (cseqHeader.getMethod().equals(Request.REGISTER)) {
-						ServerCore.getServerCore().getRegisterServiceOut().processResponse(responseEvent, transport);
-						return;
-					}
-					if (cseqHeader.getMethod().equals(Request.INVITE)) {
-						ServerCore.getServerCore().getInviteServiceOut().processResponse(responseEvent, transport);
-						return;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		CompletableFuture.runAsync(() -> {
+			try {
+				CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
+				if (Objects.isNull(cseqHeader)) {
+					return;
 				}
+				if (cseqHeader.getMethod().equals(Request.REGISTER)) {
+					ServerCore.getServerCore().getRegisterServiceOut().processResponse(responseEvent, transport);
+					return;
+				}
+				if (cseqHeader.getMethod().equals(Request.INVITE)) {
+					ServerCore.getServerCore().getInviteServiceOut().processResponse(responseEvent, transport);
+					return;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}).start();
+		});
 	}
 
 	public void sendResponseMessage(ServerTransaction serverTransaction, Request request, int responseCode, String sdpContent) {
 		try {
-			if (request == null) {
-				throw new Exception();
-			}
+			Objects.requireNonNull(request);
 			SipServerTransport sipServerTransport = ServerCore.getTransport(request);
-			if (sipServerTransport == null) {
-				throw new Exception();
-			}
+			Objects.requireNonNull(sipServerTransport);
 			Response response = sipServerTransport.getMessageFactory().createResponse(responseCode, request);
-			if (sdpContent != null) {
+			if (Objects.nonNull(sdpContent)) {
 				response.setContent(sdpContent.getBytes(), sipServerTransport.getHeaderFactory().createContentTypeHeader("application", "sdp"));
 			}
 			response.addHeader(sipServerTransport.getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
@@ -149,17 +143,17 @@ public class TransportService extends Service {
 			ContactHeader contactHeader = sipServerTransport.getHeaderFactory().createContactHeader(sipServerTransport.getAddressFactory().createAddress(contactURI));
 			response.addHeader(contactHeader);
 
-			if (serverTransaction == null) {
+			if (Objects.isNull(serverTransaction)) {
 				logger.logFatalError("ServerTransaction Null");
 				return;
 			}
-			if (serverTransaction.getRequest() == null) {
+			if (Objects.isNull(serverTransaction.getRequest())) {
 				logger.logFatalError("Request Null");
 				return;
 			}
 
 			CallIdHeader callIdHeader = (CallIdHeader) response.getHeader(CallIdHeader.NAME);
-			if (callIdHeader == null) {
+			if (Objects.isNull(callIdHeader)) {
 				logger.logFatalError("CallId Null");
 				return;
 			}

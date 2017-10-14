@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Message;
 
-import sipserver.com.domain.Extension;
 import sipserver.com.parameter.constant.ParamConstant.TransportType;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.TCPTransport;
@@ -44,8 +43,8 @@ public class ServerCore {
 	private InviteServiceEnd inviteServiceEnd;
 	private OptionsServiceIn optionsServiceIn;
 	private OptionsServiceOut optionsServiceOut;
-	
-	//ControlService
+
+	// ControlService
 	private ChannelControlService channelControlService;
 
 	private RouteService routeService;
@@ -106,35 +105,6 @@ public class ServerCore {
 		}
 	}
 
-	// Local Extension
-	public Extension getLocalExtension(String exten) {
-		return (Extension) getCoreElement().getLocalExtensionList().get(exten);
-	}
-
-	public void addLocalExtension(Extension extension) {
-		getCoreElement().getLocalExtensionList().put(extension.getExten(), extension);
-	}
-
-	public Properties getLocalExtensionList() {
-		return getCoreElement().getLocalExtensionList();
-	}
-	// localExtension end
-
-	// remoteExtension
-	public Extension getTrunkExtension(String exten) {
-		return (Extension) getCoreElement().getTrunkExtensionList().get(exten);
-	}
-
-	public void addTrunkExtension(Extension extension) {
-		getCoreElement().getTrunkExtensionList().put(extension.getExten(), extension);
-	}
-
-	public Properties getTrunkExtensionList() {
-		return getCoreElement().getTrunkExtensionList();
-	}
-
-	// remoteExtension end
-
 	public static void main(String[] args) {
 		ServerCore.serverCore = new ServerCore();
 		ServerCore.coreElement = new CoreElement();
@@ -164,9 +134,8 @@ public class ServerCore {
 		ServerCore.serverCore.setRouteService(new RouteService());
 		ServerCore.serverCore.setBridgeService(new BridgeService());
 		ServerCore.serverCore.setCallService(new CallService());
-		
+
 		ServerCore.serverCore.setChannelControlService(new ChannelControlService());
-		
 
 		ServerCore.serverCore.getExtensionControlService().start();
 
@@ -283,8 +252,6 @@ public class ServerCore {
 	public void setInviteServiceEnd(InviteServiceEnd inviteServiceEnd) {
 		this.inviteServiceEnd = inviteServiceEnd;
 	}
-
-
 
 	public BridgeService getBridgeService() {
 		return bridgeService;

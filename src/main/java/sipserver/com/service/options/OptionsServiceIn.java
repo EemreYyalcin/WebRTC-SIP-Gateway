@@ -1,5 +1,7 @@
 package sipserver.com.service.options;
 
+import java.util.Objects;
+
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -31,7 +33,7 @@ public class OptionsServiceIn extends Service {
 	public void processRequest(RequestEvent requestEvent, SipServerTransport transport, ServerTransaction serverTransaction) throws Exception {
 		try {
 			CallIdHeader callIDHeader = (CallIdHeader) requestEvent.getRequest().getHeader(CallIdHeader.NAME);
-			if (callIDHeader == null) {
+			if (Objects.isNull(callIDHeader)) {
 				ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_EVENT, null);
 				return;
 			}
@@ -45,9 +47,9 @@ public class OptionsServiceIn extends Service {
 			ExceptionService.checkNullObject(extIncoming.getExten());
 			ExceptionService.checkNullObject(extIncoming.getHost());
 
-			Extension extensionLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
-			if (extensionLocal == null) {
-				extensionLocal = ServerCore.getServerCore().getTrunkExtension(extIncoming.getExten());
+			Extension extensionLocal = ServerCore.getCoreElement().getLocalExtension(extIncoming.getExten());
+			if (Objects.isNull(extensionLocal)) {
+				extensionLocal = ServerCore.getCoreElement().getTrunkExtension(extIncoming.getExten());
 				ExceptionService.checkNullObject(extensionLocal);
 			}
 			extensionLocal.setAlive(true);

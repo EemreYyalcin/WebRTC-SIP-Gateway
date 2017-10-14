@@ -1,6 +1,7 @@
 package sipserver.com.service.control;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.sip.Transaction;
@@ -12,7 +13,7 @@ public class ChannelControlService {
 	private Properties channelList = new Properties();
 
 	public CallParam getChannel(String exten, Transaction transaction) {
-		if (channelList.get(exten) == null) {
+		if (Objects.isNull(channelList.get(exten))) {
 			return null;
 		}
 		if (!(channelList.get(exten) instanceof ArrayList<?>)) {
@@ -28,7 +29,7 @@ public class ChannelControlService {
 	}
 
 	public CallParam takeChannel(String exten, Transaction transaction) {
-		if (channelList.get(exten) == null) {
+		if (Objects.isNull(channelList.get(exten))) {
 			return null;
 		}
 		if (!(channelList.get(exten) instanceof ArrayList<?>)) {
@@ -44,7 +45,7 @@ public class ChannelControlService {
 	}
 
 	public void putChannel(String exten, CallParam callParam) {
-		if (channelList.get(exten) == null) {
+		if (Objects.isNull(channelList.get(exten))) {
 			channelList.put(exten, callParam);
 			return;
 		}

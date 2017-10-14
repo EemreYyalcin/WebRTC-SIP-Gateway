@@ -1,5 +1,6 @@
 package sipserver.com.service.options;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.sip.DialogTerminatedEvent;
@@ -37,17 +38,15 @@ public class OptionsServiceOut extends Service {
 	@Override
 	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
 		try {
-			if (responseEvent.getClientTransaction() == null) {
-				throw new Exception();
-			}
+			Objects.requireNonNull(responseEvent.getClientTransaction());
 
 			ToHeader toHeader = (ToHeader) responseEvent.getResponse().getHeader(ToHeader.NAME);
 			ExceptionService.checkNullObject(toHeader);
 			Extension trunkExtension = CreateMessageService.createExtension(toHeader);
 			ExceptionService.checkNullObject(trunkExtension);
 			int statusCode = responseEvent.getResponse().getStatusCode();
-			ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setRegisterResponseRecieved(true);
-			ServerCore.getServerCore().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setOptionsResponseCode(statusCode);
+			ServerCore.getCoreElement().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setRegisterResponseRecieved(true);
+			ServerCore.getCoreElement().getTrunkExtension(trunkExtension.getExten()).getExtensionParameter().setOptionsResponseCode(statusCode);
 
 			if (lockProperties.get(trunkExtension.getExten()) != null) {
 				synchronized (lockProperties.get(trunkExtension.getExten())) {
@@ -92,19 +91,19 @@ public class OptionsServiceOut extends Service {
 	@Override
 	public void processDialogTerminated(DialogTerminatedEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void processTimeout(TimeoutEvent timeoutEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

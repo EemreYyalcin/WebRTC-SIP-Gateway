@@ -1,5 +1,7 @@
 package sipserver.com.service.route;
 
+import java.util.Objects;
+
 import javax.sip.header.ToHeader;
 
 import sipserver.com.domain.Extension;
@@ -12,20 +14,17 @@ public class RouteService {
 
 	public void route(CallParam fromCallParam, ToHeader toHeader) {
 		try {
-			if (fromCallParam.getTransaction() == null) {
-				System.out.println("ChannelParameter Error Transaction Error!");
-				throw new Exception();
-			}
+			Objects.requireNonNull(fromCallParam.getTransaction());
 
 			// TODO: Routing Service
 			Extension toExtenFromHeader = CreateMessageService.createExtension(toHeader);
-			if (toExtenFromHeader == null) {
+			if (Objects.isNull(toExtenFromHeader)) {
 				ServerCore.getServerCore().getBridgeService().noRoute(fromCallParam);
 				LogTest.log(fromCallParam, "Not Route 1");
 				return;
 			}
-			Extension localExtension = ServerCore.getServerCore().getLocalExtension(toExtenFromHeader.getExten());
-			if (localExtension == null) {
+			Extension localExtension = ServerCore.getCoreElement().getLocalExtension(toExtenFromHeader.getExten());
+			if (Objects.isNull(localExtension)) {
 				ServerCore.getServerCore().getBridgeService().noRoute(fromCallParam);
 				LogTest.log(fromCallParam, "Not Route 2");
 				return;

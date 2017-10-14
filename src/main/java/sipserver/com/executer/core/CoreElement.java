@@ -2,34 +2,25 @@ package sipserver.com.executer.core;
 
 import java.util.Properties;
 
+import sipserver.com.domain.Extension;
+
 public class CoreElement {
 
 	private Properties localExtensionList = new Properties();
 	private Properties trunkExtensionList = new Properties();
 
-	
 	private String localServerIp = "192.168.1.106";
 	private int localSipPort = 5060;
 	private String mediaServerIp = "192.168.1.105";
 	private int mediaServerPort = 2427;
 	private int mediaClientPort = 2727;
-	
-	
 
 	public Properties getLocalExtensionList() {
 		return localExtensionList;
 	}
 
-	public void setLocalExtensionList(Properties localExtensionList) {
-		this.localExtensionList = localExtensionList;
-	}
-
 	public Properties getTrunkExtensionList() {
 		return trunkExtensionList;
-	}
-
-	public void setTrunkExtensionList(Properties trunkExtensionList) {
-		this.trunkExtensionList = trunkExtensionList;
 	}
 
 	public String getLocalServerIp() {
@@ -70,6 +61,22 @@ public class CoreElement {
 
 	public void setMediaClientPort(int mediaClientPort) {
 		this.mediaClientPort = mediaClientPort;
+	}
+
+	public Extension getLocalExtension(String exten) {
+		return (Extension) getLocalExtensionList().get(exten);
+	}
+
+	public void addLocalExtension(Extension extension) {
+		getLocalExtensionList().put(extension.getExten(), extension);
+	}
+
+	public Extension getTrunkExtension(String exten) {
+		return (Extension) getTrunkExtensionList().get(exten);
+	}
+
+	public void addTrunkExtension(Extension extension) {
+		getTrunkExtensionList().put(extension.getExten(), extension);
 	}
 
 }

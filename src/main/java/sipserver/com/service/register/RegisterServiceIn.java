@@ -1,5 +1,7 @@
 package sipserver.com.service.register;
 
+import java.util.Objects;
+
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
@@ -27,15 +29,15 @@ public class RegisterServiceIn extends Service {
 
 	public RegisterServiceIn() {
 		super(logger);
-		ServerCore.getServerCore().addLocalExtension(new Extension("1001", "test1001"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1002", "test1002"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1003", "test1003"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1004", "test1004"));
-		ServerCore.getServerCore().addLocalExtension(new Extension("1005", "test1005"));
+		ServerCore.getCoreElement().addLocalExtension(new Extension("1001", "test1001"));
+		ServerCore.getCoreElement().addLocalExtension(new Extension("1002", "test1002"));
+		ServerCore.getCoreElement().addLocalExtension(new Extension("1003", "test1003"));
+		ServerCore.getCoreElement().addLocalExtension(new Extension("1004", "test1004"));
+		ServerCore.getCoreElement().addLocalExtension(new Extension("1005", "test1005"));
 
-		// ServerCore.getServerCore().addLocalExtension(new Extension("9001",
+		// ServerCore.getCoreElement().addLocalExtension(new Extension("9001",
 		// "test9001"));
-		// ServerCore.getServerCore().addLocalExtension(new Extension("9002",
+		// ServerCore.getCoreElement().addLocalExtension(new Extension("9002",
 		// "test9002"));
 
 	}
@@ -49,34 +51,34 @@ public class RegisterServiceIn extends Service {
 				ExceptionService.checkNullObject(callIDHeader);
 
 				ContactHeader contactHeader = (ContactHeader) requestEvent.getRequest().getHeader(ContactHeader.NAME);
-				if (contactHeader == null) {
+				if (Objects.isNull(contactHeader)) {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.UNAUTHORIZED, null);
 					logger.logFatalError("Contact Header is Null. Message:");
 					return;
 				}
 
 				Extension extIncoming = CreateMessageService.createExtension(contactHeader);
-				if (extIncoming == null) {
+				if (Objects.isNull(extIncoming)) {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST, null);
 					return;
 				}
 				extIncoming.setTransportType(transport);
-				if (extIncoming == null || extIncoming.getExten() == null || extIncoming.getHost() == null) {
+				if (Objects.isNull(extIncoming.getExten()) || Objects.isNull(extIncoming.getHost())) {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST, null);
 					return;
 				}
 
-				Extension extLocal = ServerCore.getServerCore().getLocalExtension(extIncoming.getExten());
-				if (extLocal == null) {
-					extLocal = ServerCore.getServerCore().getTrunkExtension(extIncoming.getExten());
-					if (extLocal == null) {
+				Extension extLocal = ServerCore.getCoreElement().getLocalExtension(extIncoming.getExten());
+				if (Objects.isNull(extLocal)) {
+					extLocal = ServerCore.getCoreElement().getTrunkExtension(extIncoming.getExten());
+					if (Objects.isNull(extLocal)) {
 						ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.FORBIDDEN, null);
 						return;
 					}
 				}
 
 				ViaHeader viaHeader = (ViaHeader) requestEvent.getRequest().getHeader(ViaHeader.NAME);
-				if (viaHeader == null) {
+				if (Objects.isNull(viaHeader)) {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.BAD_REQUEST, null);
 					return;
 				}
@@ -96,15 +98,13 @@ public class RegisterServiceIn extends Service {
 					Response challengeResponse = transport.getMessageFactory().createResponse(Response.PROXY_AUTHENTICATION_REQUIRED, requestEvent.getRequest());
 					transport.getDigestServerAuthentication().generateChallenge(transport.getHeaderFactory(), challengeResponse, "nist.gov");
 					ProxyAuthenticateHeader proxyAuthenticateHeader = (ProxyAuthenticateHeader) challengeResponse.getHeader(ProxyAuthenticateHeader.NAME);
-					if (proxyAuthenticateHeader == null) {
-						throw new Exception();
-					}
+					Objects.requireNonNull(proxyAuthenticateHeader);
 					proxyAuthenticateHeader.setParameter("username", extIncoming.getExten());
 					serverTransaction.sendResponse(challengeResponse);
 					return;
 				}
 
-				if (extLocal.getPass() == null) {
+				if (Objects.isNull(extLocal.getPass())) {
 					ServerCore.getServerCore().getTransportService().sendResponseMessage(serverTransaction, requestEvent.getRequest(), Response.FORBIDDEN, null);
 					return;
 				}

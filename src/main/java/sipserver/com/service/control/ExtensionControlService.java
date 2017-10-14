@@ -1,6 +1,7 @@
 package sipserver.com.service.control;
 
 import java.util.ArrayList;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
@@ -61,15 +62,14 @@ public class ExtensionControlService extends Thread {
 
 	}
 
-
 	private void processRegisterExtension(boolean isRegister) {
 		try {
-			ArrayList<String> trunkExtenList = ServerCore.getExtenList(ServerCore.getServerCore().getTrunkExtensionList());
+			ArrayList<String> trunkExtenList = ServerCore.getExtenList(ServerCore.getCoreElement().getTrunkExtensionList());
 			if (trunkExtenList == null) {
 				return;
 			}
 			for (int i = 0; i < trunkExtenList.size(); i++) {
-				Extension trunkExtension = ServerCore.getServerCore().getTrunkExtension(trunkExtenList.get(i));
+				Extension trunkExtension = ServerCore.getCoreElement().getTrunkExtension(trunkExtenList.get(i));
 				if (trunkExtension == null || trunkExtension.isRegister() != isRegister) {
 					continue;
 				}
@@ -83,12 +83,12 @@ public class ExtensionControlService extends Thread {
 
 	private void processOptionsExtension() {
 		try {
-			ArrayList<String> localExtenList = ServerCore.getExtenList(ServerCore.getServerCore().getLocalExtensionList());
+			ArrayList<String> localExtenList = ServerCore.getExtenList(ServerCore.getCoreElement().getLocalExtensionList());
 			if (localExtenList == null) {
 				return;
 			}
 			for (int i = 0; i < localExtenList.size(); i++) {
-				Extension localExtension = ServerCore.getServerCore().getLocalExtension(localExtenList.get(i));
+				Extension localExtension = ServerCore.getCoreElement().getLocalExtension(localExtenList.get(i));
 				if (localExtension == null || !localExtension.isRegister()) {
 					continue;
 				}
@@ -107,14 +107,14 @@ public class ExtensionControlService extends Thread {
 			}
 		}).start();
 	}
-	
+
 	private void pingService(Extension extension) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				ServerCore.getServerCore().getOptionsServiceOut().ping(extension);
 			}
-		}).start();		
+		}).start();
 	}
 
 	private void updateCurrentInterval() {

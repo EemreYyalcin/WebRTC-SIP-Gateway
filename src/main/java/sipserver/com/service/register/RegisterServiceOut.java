@@ -1,5 +1,7 @@
 package sipserver.com.service.register;
 
+import java.util.Objects;
+
 import javax.sip.ClientTransaction;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.RequestEvent;
@@ -30,10 +32,10 @@ public class RegisterServiceOut extends Service {
 
 	public RegisterServiceOut() {
 		super(logger);
-		// ServerCore.getServerCore().addTrunkExtension(new Extension("9001",
+		// ServerCore.getCoreElement().addTrunkExtension(new Extension("9001",
 		// "test9001", "192.168.1.105"));
-//		 ServerCore.getServerCore().addTrunkExtension(new Extension("9002",
-//		 "test9002", "192.168.1.105"));
+		// ServerCore.getCoreElement().addTrunkExtension(new Extension("9002",
+		// "test9002", "192.168.1.105"));
 	}
 
 	@Override
@@ -44,20 +46,15 @@ public class RegisterServiceOut extends Service {
 	@Override
 	public void processResponse(ResponseEvent responseEvent, SipServerTransport transport) {
 		try {
-			if (responseEvent.getClientTransaction() == null) {
-				throw new Exception();
-			}
-
-			if (responseEvent.getClientTransaction().getRequest() == null) {
-				throw new Exception();
-			}
+			Objects.requireNonNull(responseEvent.getClientTransaction());
+			Objects.requireNonNull(responseEvent.getClientTransaction().getRequest());
 
 			ContactHeader contactHeader = (ContactHeader) responseEvent.getClientTransaction().getRequest().getHeader(ContactHeader.NAME);
 			ExceptionService.checkNullObject(contactHeader);
 			Extension trunkExtensionIncoming = CreateMessageService.createExtension(contactHeader);
 			ExceptionService.checkNullObject(trunkExtensionIncoming);
 			int statusCode = responseEvent.getResponse().getStatusCode();
-			Extension trunkExtensionLocal = ServerCore.getServerCore().getTrunkExtension(trunkExtensionIncoming.getExten());
+			Extension trunkExtensionLocal = ServerCore.getCoreElement().getTrunkExtension(trunkExtensionIncoming.getExten());
 			ExceptionService.checkNullObject(trunkExtensionLocal);
 
 			trunkExtensionLocal.getExtensionParameter().setRegisterResponseRecieved(true);
@@ -71,7 +68,7 @@ public class RegisterServiceOut extends Service {
 					logger.logFatalError("Transaction is dead ");
 					throw new Exception();
 				}
-				AuthenticationHelper authenticationHelper = ((SipStackExt) transport.getSipStack()).getAuthenticationHelper(new AccountManagerImpl(ServerCore.getServerCore().getTrunkExtension(trunkExtensionLocal.getExten())), transport.getHeaderFactory());
+				AuthenticationHelper authenticationHelper = ((SipStackExt) transport.getSipStack()).getAuthenticationHelper(new AccountManagerImpl(ServerCore.getCoreElement().getTrunkExtension(trunkExtensionLocal.getExten())), transport.getHeaderFactory());
 				ClientTransaction clientTransaction = authenticationHelper.handleChallenge(responseEvent.getResponse(), responseEvent.getClientTransaction(), transport.getSipProvider(), 5, false);
 				ServerCore.getServerCore().getTransportService().sendRequestMessage(clientTransaction);
 				return;
@@ -96,10 +93,7 @@ public class RegisterServiceOut extends Service {
 		try {
 			Request requestMessage = CreateMessageService.createRegisterMessage(extTrunk);
 			SipServerTransport transport = ServerCore.getTransport(requestMessage);
-			if (transport == null) {
-				getLogger().logFatalError("Transport is null, ssasfddgs");
-				throw new Exception();
-			}
+			Objects.requireNonNull(transport);
 			ServerCore.getServerCore().getTransportService().sendRequestMessage(transport.getSipProvider().getNewClientTransaction(requestMessage));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -109,19 +103,19 @@ public class RegisterServiceOut extends Service {
 	@Override
 	public void processDialogTerminated(DialogTerminatedEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void processTimeout(TimeoutEvent timeoutEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
