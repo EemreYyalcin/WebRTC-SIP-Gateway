@@ -1,40 +1,37 @@
 package sipserver.com.domain;
 
-import java.util.UUID;
+import java.net.InetAddress;
+import java.util.Objects;
 
-import sipserver.com.parameter.constant.ParamConstant.TransportType;
-import sipserver.com.parameter.param.ExtensionParam;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.HeaderAddress;
+
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.server.transport.TCPTransport;
-import sipserver.com.server.transport.UDPTransport;
 
 public class Extension {
 
 	private String exten;
 	private int expiresTime = 3600;
-	private String host;
+	private InetAddress address;
 	private String displayName;
 	private int port = 5060;
 	private String pass;
-	private boolean isRegister = false;
 	private boolean isAlive = false;
-	private TransportType transportType = TransportType.UDP;
+	private SipServerTransport transport;
+	private Long registerTime;
 
-	private ExtensionParam extensionParameter = new ExtensionParam();
-
-	private String lock = UUID.randomUUID().toString();
-
-	public Extension(String exten, String pass, String host, int port) {
+	public Extension(String exten, String pass, InetAddress address, int port) {
 		setExten(exten);
-		setHost(host);
 		setPass(pass);
 		setPort(port);
+		setAddress(address);
 	}
 
-	public Extension(String exten, String pass, String host) {
+	public Extension(String exten, String pass, InetAddress address) {
 		setExten(exten);
-		setHost(host);
 		setPass(pass);
+		setAddress(address);
 	}
 
 	public Extension(String exten, String pass) {
@@ -43,35 +40,6 @@ public class Extension {
 	}
 
 	public Extension() {
-	}
-
-	public void keepRegistered() {
-		getExtensionParameter().setKeepRegisteredFlag(true);
-		synchronized (lock) {
-			lock.notifyAll();
-		}
-		if (getExtensionParameter().isCheckRegister()) {
-			return;
-		}
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (getExtensionParameter().isKeepRegisteredFlag()) {
-					try {
-						setRegister(true);
-						getExtensionParameter().setKeepRegisteredFlag(false);
-						synchronized (lock) {
-							lock.wait(expiresTime * 1000);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				setRegister(false);
-				getExtensionParameter().setCheckRegister(false);
-			}
-		}).start();
-		getExtensionParameter().setCheckRegister(true);
 	}
 
 	public String getExten() {
@@ -90,25 +58,12 @@ public class Extension {
 		this.expiresTime = expiresTime;
 	}
 
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-	}
-
-	@Override
-	public String toString() {
-		return "Extension [exten=" + exten + ", expiresTime=" + expiresTime + ", host=" + host + ", displayName=" + displayName + "]";
 	}
 
 	public int getPort() {
@@ -127,30 +82,6 @@ public class Extension {
 		this.pass = pass;
 	}
 
-	public boolean isRegister() {
-		return isRegister;
-	}
-
-	public void setRegister(boolean isRegister) {
-		this.isRegister = isRegister;
-		this.isAlive = isRegister;
-	}
-
-	public TransportType getTransportType() {
-		return transportType;
-	}
-
-	public void setTransportType(SipServerTransport transport) {
-		if (transport instanceof UDPTransport) {
-			this.transportType = TransportType.UDP;
-			return;
-		}
-		if (transport instanceof TCPTransport) {
-			this.transportType = TransportType.TLS;
-			return;
-		}
-	}
-
 	public boolean isAlive() {
 		return isAlive;
 	}
@@ -159,8 +90,83 @@ public class Extension {
 		this.isAlive = isAlive;
 	}
 
-	public ExtensionParam getExtensionParameter() {
-		return extensionParameter;
+	public SipServerTransport getTransport() {
+		return transport;
+	}
+
+	public void setTransport(SipServerTransport transport) {
+		this.transport = transport;
+	}
+
+	public boolean isRegister() {
+		if (Objects.isNull(registerTime)) {
+			return false;
+		}
+		if (registerTime + expiresTime * 1000 > System.currentTimeMillis()) {
+			return true;
+		}
+		return false;
+	}
+
+	public static Extension getExtension(HeaderAddress headerAddress) {
+		try {
+			String uri = headerAddress.getAddress().getURI().toString().trim();
+			String scheme = headerAddress.getAddress().getURI().getScheme();
+			String[] parts = uri.split(";");
+			if (parts.length <= 0) {
+				throw new Exception();
+			}
+			uri = parts[0].substring(scheme.length() + 1);
+			if (uri.indexOf(":") > 0) {
+				uri = uri.split(":")[0];
+			}
+
+			if (uri.indexOf("@") < 0) {
+				throw new Exception();
+			}
+			String[] userAndHost = uri.split("@");
+			if (userAndHost.length < 2) {
+				throw new Exception();
+			}
+
+			Extension extLocalOrTrunk = ServerCore.getCoreElement().getLocalExtension(userAndHost[0]);
+			if (Objects.isNull(extLocalOrTrunk)) {
+				extLocalOrTrunk = ServerCore.getCoreElement().getTrunkExtension(userAndHost[0]);
+			}
+			if (Objects.isNull(extLocalOrTrunk)) {
+				return null;
+			}
+
+			extLocalOrTrunk.setAddress(InetAddress.getByName(userAndHost[1]));
+			extLocalOrTrunk.setDisplayName(headerAddress.getAddress().getDisplayName());
+			if (headerAddress instanceof ContactHeader) {
+				int expiresTime = ((ContactHeader) headerAddress).getExpires();
+				if (expiresTime != -1) {
+					extLocalOrTrunk.setExpiresTime(expiresTime);
+				}
+
+			}
+			return extLocalOrTrunk;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public InetAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	public void keepRegistered() {
+		registerTime = System.currentTimeMillis();
+	}
+
+	public void unregister() {
+		registerTime = null;
 	}
 
 }

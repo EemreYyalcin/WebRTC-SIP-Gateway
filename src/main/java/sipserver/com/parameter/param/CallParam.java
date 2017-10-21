@@ -1,9 +1,9 @@
 package sipserver.com.parameter.param;
 
-import javax.sip.Transaction;
 import javax.sip.message.Request;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.executer.sip.transaction.Transaction;
 
 public class CallParam {
 

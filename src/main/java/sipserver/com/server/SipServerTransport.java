@@ -1,153 +1,45 @@
 package sipserver.com.server;
 
-import java.util.Properties;
+import java.net.InetAddress;
 
-import javax.sip.DialogTerminatedEvent;
-import javax.sip.IOExceptionEvent;
-import javax.sip.ListeningPoint;
-import javax.sip.RequestEvent;
-import javax.sip.ResponseEvent;
 import javax.sip.SipFactory;
-import javax.sip.SipProvider;
-import javax.sip.SipStack;
-import javax.sip.TimeoutEvent;
-import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 
-import gov.nist.core.StackLogger;
+import com.noyan.network.socket.ServerSocketAdapter;
+
 import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
-import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
-import sipserver.com.executer.core.ServerCore;
-import sipserver.com.parameter.constant.ParamConstant.TransportType;
-import sipserver.com.util.log.LogTest;
 
-public abstract class SipServerTransport extends SipAdapter {
-
-	// Connection
-	private int port = 5060;
-	private String protocol = "udp";
-	private String host = "192.168.1.106";
+public abstract class SipServerTransport extends Thread implements ServerSocketAdapter {
 
 	// SipServer
-	private SipStack sipStack;
 	private SipFactory sipFactory = null;
-	private SipProvider sipProvider = null;
 	private MessageFactory messageFactory;
 	private HeaderFactory headerFactory;
 	private AddressFactory addressFactory;
 	private DigestServerAuthenticationHelper digestServerAuthentication;
 
-	// Logger
-	private StackLogger logger;
+	protected abstract void listen();
 
-	public SipServerTransport(String host, int port, TransportType transportType, StackLogger logger) {
-		setHost(host);
-		setPort(port);
-		setProtocol(transportType.toString().toLowerCase());
-		setLogger(logger);
+	public abstract void sendData(String data, InetAddress toAddress, int port);
+
+	@Override
+	public void run() {
+		listen();
 	}
 
-	public boolean startListening() {
+	public void startListening() {
 		try {
-			final Properties defaultProperties = new Properties();
-			defaultProperties.setProperty("javax.sip.STACK_NAME", "server");
-			defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "ERROR");
-			defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "server_debug.txt");
-			defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "server_log.txt");
-			defaultProperties.setProperty("gov.nist.javax.sip.READ_TIMEOUT", "1000");
-			defaultProperties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "false");
-			if (System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
-				defaultProperties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
-			}
 			setSipFactory(SipFactory.getInstance());
 			getSipFactory().setPathName("gov.nist");
-			setSipStack(getSipFactory().createSipStack(defaultProperties));
-			getSipStack().start();
-			ListeningPoint lp = getSipStack().createListeningPoint(getHost(), getPort(), getProtocol());
-			setSipProvider(getSipStack().createSipProvider(lp));
-			getSipProvider().addSipListener(this);
-			getLogger().logFatalError("SipServer Get Started");
-			getLogger().logFatalError("IP:" + getHost() + ",port:" + getPort());
-
 			setMessageFactory(getSipFactory().createMessageFactory());
 			setHeaderFactory(getSipFactory().createHeaderFactory());
 			setAddressFactory(getSipFactory().createAddressFactory());
 			setDigestServerAuthentication(new DigestServerAuthenticationHelper());
-			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
 		}
-	}
-
-	public void stop() {
-		getSipStack().stop();
-	}
-
-	@Override
-	public void processRequest(RequestEvent requestEvent) {
-		ServerCore.getServerCore().getTransportService().processRequest(requestEvent, this, null);
-	}
-
-	@Override
-	public void processResponse(ResponseEvent responseEvent) {
-		ServerCore.getServerCore().getTransportService().processResponse(responseEvent, this);
-	}
-
-	@Override
-	public void processDialogTerminated(DialogTerminatedEvent event) {
-//		LogTest.log(this, "Process Dialog Determined " + event.getDialog().getCallId());
-		ServerCore.getServerCore().getTransportService().processDialogTerminated(event);;
-		
-	}
-
-	@Override
-	public void processTimeout(TimeoutEvent timeoutEvent) {
-		ServerCore.getServerCore().getTransportService().processTimeout(timeoutEvent);
-	}
-
-	@Override
-	public void processTransactionTerminated(TransactionTerminatedEvent terminatedEvent) {
-		ServerCore.getServerCore().getTransportService().processTransactionTerminated(terminatedEvent);
-	}
-
-	@Override
-	public void processIOException(IOExceptionEvent ioExceptionEvent) {
-		LogTest.log(this, "IOExceptionEvent " + ioExceptionEvent.getHost());
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public SipStack getSipStack() {
-		return sipStack;
-	}
-
-	public void setSipStack(SipStack sipStack) {
-		this.sipStack = sipStack;
 	}
 
 	public SipFactory getSipFactory() {
@@ -156,14 +48,6 @@ public abstract class SipServerTransport extends SipAdapter {
 
 	public void setSipFactory(SipFactory sipFactory) {
 		this.sipFactory = sipFactory;
-	}
-
-	public SipProvider getSipProvider() {
-		return sipProvider;
-	}
-
-	public void setSipProvider(SipProvider sipProvider) {
-		this.sipProvider = sipProvider;
 	}
 
 	public MessageFactory getMessageFactory() {
@@ -196,14 +80,6 @@ public abstract class SipServerTransport extends SipAdapter {
 
 	public void setDigestServerAuthentication(DigestServerAuthenticationHelper digestServerAuthentication) {
 		this.digestServerAuthentication = digestServerAuthentication;
-	}
-
-	public StackLogger getLogger() {
-		return logger;
-	}
-
-	public void setLogger(StackLogger logger) {
-		this.logger = logger;
 	}
 
 }

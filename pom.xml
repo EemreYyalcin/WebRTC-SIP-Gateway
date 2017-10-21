@@ -54,6 +54,12 @@
 			<version>6.0.23</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.noyan</groupId>
+			<artifactId>utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 
 
 	</dependencies>
