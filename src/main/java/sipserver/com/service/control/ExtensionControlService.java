@@ -10,6 +10,7 @@ import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.task.Task;
 import sipserver.com.service.operational.OptionsService;
 import sipserver.com.service.operational.RegisterService;
+import sipserver.com.service.util.converter.Converter;
 
 public class ExtensionControlService {
 
@@ -49,7 +50,7 @@ public class ExtensionControlService {
 
 	private static void processRegisterExtension(boolean isRegister) {
 		try {
-			ArrayList<String> trunkExtenList = ServerCore.getExtenList(ServerCore.getCoreElement().getTrunkExtensionList());
+			ArrayList<String> trunkExtenList = Converter.getKeyList(ServerCore.getCoreElement().getTrunkExtensionList());
 			if (Objects.isNull(trunkExtenList)) {
 				return;
 			}
@@ -68,13 +69,13 @@ public class ExtensionControlService {
 
 	private static void processOptionsExtension() {
 		try {
-			ArrayList<String> localExtenList = ServerCore.getExtenList(ServerCore.getCoreElement().getLocalExtensionList());
-			if (localExtenList == null) {
+			ArrayList<String> localExtenList = Converter.getKeyList(ServerCore.getCoreElement().getLocalExtensionList());
+			if (Objects.isNull(localExtenList)) {
 				return;
 			}
 			for (int i = 0; i < localExtenList.size(); i++) {
 				Extension localExtension = ServerCore.getCoreElement().getLocalExtension(localExtenList.get(i));
-				if (localExtension == null || !localExtension.isRegister()) {
+				if (Objects.isNull(localExtension) || !localExtension.isRegister()) {
 					continue;
 				}
 				OptionsService.pingExtension(localExtension);

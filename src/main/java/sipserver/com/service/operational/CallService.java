@@ -2,20 +2,23 @@ package sipserver.com.service.operational;
 
 import javax.sip.message.Request;
 
+import org.apache.log4j.Logger;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.service.control.ChannelControlService;
-import sipserver.com.util.log.LogTest;
 
 public class CallService {
+
+	private static Logger logger = Logger.getLogger(CallService.class);
 
 	public static void beginCall(CallParam fromCallParam, Extension toExten) {
 		try {
 			if (!toExten.isRegister()) {
 				BridgeService.noRoute(fromCallParam);
-				LogTest.log(fromCallParam, "Not Route 3");
+				logger.debug("Not Route 3");
 				return;
 			}
 

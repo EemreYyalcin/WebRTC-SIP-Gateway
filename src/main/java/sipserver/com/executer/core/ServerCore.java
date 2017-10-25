@@ -2,9 +2,11 @@ package sipserver.com.executer.core;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Set;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import com.noyan.util.log.Log;
 
 import sipserver.com.domain.Extension;
 import sipserver.com.server.transport.UDPTransport;
@@ -19,40 +21,10 @@ public class ServerCore {
 	// Core Transport
 	private UDPTransport udpTransport;
 
-	// Core Service
-
-	// ControlService
-	private ExtensionControlService extensionControlService;
-
-	// Managment Service
-
-	public static ArrayList<String> getExtenList(Properties properties) {
-		try {
-			if (properties == null) {
-				return null;
-			}
-			ArrayList<String> extenList = null;
-			synchronized (properties) {
-				Set<Object> keys = properties.keySet();
-				if (keys == null || keys.size() == 0) {
-					return null;
-				}
-				for (Object key : keys) {
-					if (extenList == null) {
-						extenList = new ArrayList<String>();
-					}
-					extenList.add(new String((String) key));
-				}
-			}
-			return extenList;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public static void main(String[] args) throws UnknownHostException {
 
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		Logger.getRootLogger().addAppender(Log.createConsoleAppender(null));
 		ServerCore.serverCore = new ServerCore();
 		ServerCore.coreElement = new CoreElement();
 		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.107"));
@@ -66,9 +38,7 @@ public class ServerCore {
 		}
 
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
-		ServerCore.serverCore.getUDPTransport().startListening();
-		ServerCore.serverCore.setExtensionControlService(new ExtensionControlService());
-
+		ServerCore.serverCore.getUDPTransport().start();
 		ServerCore.getCoreElement().addLocalExtension(new Extension("1001", "test1001"));
 		ServerCore.getCoreElement().addLocalExtension(new Extension("1002", "test1002"));
 		ServerCore.getCoreElement().addLocalExtension(new Extension("1003", "test1003"));
@@ -77,6 +47,7 @@ public class ServerCore {
 
 		ExtensionControlService.beginControl();
 
+		Logger.getLogger(ServerCore.class).info("Server Core Started");
 	}
 
 	public static ServerCore getServerCore() {
@@ -93,13 +64,5 @@ public class ServerCore {
 
 	public static CoreElement getCoreElement() {
 		return coreElement;
-	}
-
-	public ExtensionControlService getExtensionControlService() {
-		return extensionControlService;
-	}
-
-	public void setExtensionControlService(ExtensionControlService extensionControlService) {
-		this.extensionControlService = extensionControlService;
 	}
 }
