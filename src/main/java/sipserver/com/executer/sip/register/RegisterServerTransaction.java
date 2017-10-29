@@ -1,24 +1,19 @@
 package sipserver.com.executer.sip.register;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ProxyAuthenticateHeader;
 import javax.sip.header.ViaHeader;
-import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.domain.ExtensionBuilder;
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
-import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.util.AliasService;
 
 public class RegisterServerTransaction extends ServerTransaction {
-
-	public RegisterServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport) {
-		super(request, address, port, transport);
-	}
 
 	@Override
 	public void processRequest() {
@@ -26,21 +21,24 @@ public class RegisterServerTransaction extends ServerTransaction {
 			try {
 				sendResponseMessage(Response.TRYING);
 				ContactHeader contactHeader = (ContactHeader) getRequest().getHeader(ContactHeader.NAME);
+
 				if (Objects.isNull(contactHeader)) {
 					sendResponseMessage(Response.UNAUTHORIZED);
 					debug("UNAUTHORIZED Message Contact Header is undefined ");
 					debug("address:" + getAddress() + "Register Undefined");
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
-
-				Extension extIncoming = Extension.getExtension(contactHeader);
+				Extension extIncoming = ExtensionBuilder.getExtension(contactHeader, (ViaHeader) getRequest().getHeader(ViaHeader.NAME));
 				if (Objects.isNull(extIncoming)) {
 					sendResponseMessage(Response.BAD_REQUEST);
 					info("Peer is not Defined to Server");
 					debug("address:" + getAddress() + "Register Peer Undefined");
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 				extIncoming.setTransport(getTransport());
+				setExtension(extIncoming);
 
 				ViaHeader viaHeader = (ViaHeader) getRequest().getHeader(ViaHeader.NAME);
 				if (Objects.isNull(viaHeader)) {
@@ -50,6 +48,7 @@ public class RegisterServerTransaction extends ServerTransaction {
 						error("Via Header Error Message is \n" + getRequest().toString());
 					}
 					debug("address:" + getAddress() + "Register Peer Undefined");
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 
@@ -58,11 +57,13 @@ public class RegisterServerTransaction extends ServerTransaction {
 						extIncoming.unregister();
 						warn("UNAUTHORIZED Message Address not Match Unregister Peer Exten:" + extIncoming.getExten());
 						sendResponseMessage(Response.UNAUTHORIZED);
+						ServerCore.getCoreElement().removeTransaction(getCallId());
 						return;
 					}
 					extIncoming.keepRegistered();
 					info("Exten:" + extIncoming.getExten() + " Keep Register.");
 					sendResponseMessage(Response.OK);
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 				if (!AliasService.isHaveAuthenticateHeader(getRequest())) {
@@ -72,18 +73,21 @@ public class RegisterServerTransaction extends ServerTransaction {
 					Objects.requireNonNull(proxyAuthenticateHeader);
 					proxyAuthenticateHeader.setParameter("username", extIncoming.getExten());
 					sendResponseMessage(challengeResponse);
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 
 				if (Objects.isNull(extIncoming.getPass())) {
 					sendResponseMessage(Response.FORBIDDEN);
 					info("Forbidden Peer Password has not setted Exten:" + extIncoming.getExten());
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 
 				if (!extIncoming.getTransport().getDigestServerAuthentication().doAuthenticatePlainTextPassword(getRequest(), extIncoming.getPass())) {
 					sendResponseMessage(Response.FORBIDDEN);
 					info("Forbidden Peer Wrong Password Exten:" + extIncoming.getExten());
+					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
 				extIncoming.keepRegistered();
@@ -93,12 +97,13 @@ public class RegisterServerTransaction extends ServerTransaction {
 			} catch (Exception e) {
 				sendResponseMessage(Response.UNAUTHORIZED);
 				e.printStackTrace();
+				ServerCore.getCoreElement().removeTransaction(getCallId());
 				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			sendResponseMessage(Response.BAD_EVENT);
+			ServerCore.getCoreElement().removeTransaction(getCallId());
 		}
 	}
-
 }

@@ -1,14 +1,13 @@
 package sipserver.com.executer.sip.invite;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
-import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
@@ -18,10 +17,6 @@ import sipserver.com.service.util.AliasService;
 
 public class InviteClientTransaction extends ClientTransaction {
 
-	public InviteClientTransaction(Request request, InetAddress address, int port, SipServerTransport transport) {
-		super(request, address, port, transport);
-	}
-
 	@Override
 	public void processResponse(Response response) {
 		CallParam toCallParam = null;
@@ -29,7 +24,7 @@ public class InviteClientTransaction extends ClientTransaction {
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			Objects.requireNonNull(toHeader);
 
-			Extension toExtension = Extension.getExtension(toHeader);
+			Extension toExtension = ExtensionBuilder.getExtension(toHeader);
 			if (Objects.isNull(toExtension)) {
 				info("To Extension Not Found toHeader:" + toHeader.toString());
 				return;
@@ -93,7 +88,8 @@ public class InviteClientTransaction extends ClientTransaction {
 
 			if (statusCode == Response.OK) {
 				info("Call Started Exten:" + toExtension.getExten());
-				BridgeService.ok(toCallParam);
+				setResponse(response);
+				BridgeService.ok(toCallParam, response);
 				return;
 			}
 

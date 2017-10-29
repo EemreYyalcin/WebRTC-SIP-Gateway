@@ -12,9 +12,10 @@ public class OptionsService {
 
 	public static void pingExtension(Extension extTrunk) {
 		try {
-			Request requestMessage = ClientTransaction.createRequestMessage(Request.OPTIONS, extTrunk);
 			Objects.requireNonNull(extTrunk.getTransport());
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk.getAddress(), extTrunk.getPort(), extTrunk.getTransport());
+			Request requestMessage = ClientTransaction.createRequestMessage(Request.OPTIONS, extTrunk);
+			Objects.requireNonNull(requestMessage);
+			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk);
 			Objects.requireNonNull(clientTransaction);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,26 +1,21 @@
 package sipserver.com.executer.sip.invite;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.ContactHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
-import javax.sip.message.Request;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.parameter.param.CallParam;
-import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.control.ChannelControlService;
 import sipserver.com.service.operational.RouteService;
 
 public class InviteServerTransaction extends ServerTransaction {
-
-	public InviteServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport) {
-		super(request, address, port, transport);
-	}
 
 	@Override
 	public void processRequest() {
@@ -42,13 +37,13 @@ public class InviteServerTransaction extends ServerTransaction {
 			ToHeader toHeader = (ToHeader) getRequest().getHeader(ToHeader.NAME);
 			Objects.requireNonNull(toHeader);
 
-			Extension fromExtension = Extension.getExtension(fromHeader);
+			Extension fromExtension = ExtensionBuilder.getExtension(fromHeader, (ViaHeader) getRequest().getHeader(ViaHeader.NAME));
 			if (Objects.isNull(fromExtension)) {
 				sendResponseMessage(Response.FORBIDDEN);
 				info("Undefined Peer " + fromHeader.toString());
 				return;
 			}
-
+			setExtension(fromExtension);
 			CallParam fromCallParam = new CallParam();
 			fromCallParam.setExtension(fromExtension).setTransaction(this).setRequest(getRequest());
 
@@ -65,5 +60,4 @@ public class InviteServerTransaction extends ServerTransaction {
 			error("Invite Server Transaction Message Error! " + e.getMessage());
 		}
 	}
-
 }

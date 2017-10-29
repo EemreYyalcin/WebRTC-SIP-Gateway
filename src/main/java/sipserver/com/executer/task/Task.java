@@ -6,22 +6,16 @@ import java.util.function.Consumer;
 public class Task extends Thread {
 
 	private int intervalSeconds = 10;
-	private boolean running = false;
+	private boolean running = true;
 	private Consumer<String> operation;
 	private String taskName;
-
-	public Task(int intervalSeconds, Consumer<String> operation, String taskName) {
-		setOperation(operation);
-		setInterval(intervalSeconds);
-		setTaskName(taskName);
-	}
 
 	@Override
 	public void run() {
 		try {
 			while (running) {
 				CompletableFuture.runAsync(() -> {
-					operation.accept("");
+					operation.accept(taskName);
 				});
 				Thread.sleep(intervalSeconds);
 			}

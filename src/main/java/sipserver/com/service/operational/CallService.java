@@ -1,5 +1,7 @@
 package sipserver.com.service.operational;
 
+import java.util.Objects;
+
 import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
@@ -16,17 +18,6 @@ public class CallService {
 
 	public static void beginCall(CallParam fromCallParam, Extension toExten) {
 		try {
-			if (!toExten.isRegister()) {
-				BridgeService.noRoute(fromCallParam);
-				logger.debug("Not Route 3");
-				return;
-			}
-
-			// if (!toExten.isAlive()) {
-			// ServerCore.getServerCore().getStatusService().noRoute(fromCallParam);
-			// LogTest.log(fromCallParam, "Not Route 4");
-			// return;
-			// }
 			CallParam toCallParam = new CallParam();
 			toCallParam.setExtension(toExten);
 			fromCallParam.setBridgeCallParam(toCallParam);
@@ -34,11 +25,28 @@ public class CallService {
 			// TODO: CreateConnection Mgcp Command Set toCallParam sdpLocalContent
 			toCallParam.setSdpLocalContent(fromCallParam.getSdpRemoteContent());
 
+			if (!toExten.isRegister()) {
+				BridgeService.noRoute(toCallParam);
+				logger.debug("Not Route 3");
+				return;
+			}
+
+			if (!toExten.isAlive()) {
+				BridgeService.noRoute(toCallParam);
+				logger.debug("Not Route 3 " + toExten.getExten());
+				return;
+			}
+
 			Request request = ClientTransaction.createInviteMessage(toCallParam);
 			request.setContent(toCallParam.getSdpLocalContent(), toExten.getTransport().getHeaderFactory().createContentTypeHeader("application", "sdp"));
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(request, toExten.getAddress(), toExten.getPort(), toExten.getTransport());
-			toCallParam.setTransaction(clientTransaction).setRequest(request);
+			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(request, toExten);
+			if (Objects.isNull(clientTransaction)) {
+				BridgeService.noRoute(fromCallParam);
+				logger.debug("Not Route 3");
+				return;
+			}
 			ChannelControlService.putChannel(clientTransaction.getCallId(), toCallParam);
+			toCallParam.setTransaction(clientTransaction).setRequest(request);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,23 +1,31 @@
 package sipserver.com.service.operational;
 
-import javax.sip.ServerTransaction;
+import java.util.Objects;
+
 import javax.sip.message.Response;
 
+import sipserver.com.executer.sip.transaction.ClientTransaction;
+import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.parameter.param.CallParam;
 
 public class BridgeService {
 
-	private static void sendBridgeResponse(CallParam toCallParam, int statusCode, String sdpContent) {
-		CallParam bridgeCallParam = toCallParam.getBridgeCallParam();
+	private static void sendBridgeResponse(CallParam fromCallParam, int statusCode, String sdpContent) {
+		if (Objects.isNull(fromCallParam)) {
+			return;
+		}
+		CallParam bridgeCallParam = fromCallParam.getBridgeCallParam();
+		if (Objects.isNull(bridgeCallParam)) {
+			return;
+		}
 		if (bridgeCallParam.getTransaction() instanceof ServerTransaction) {
-			// ServerCore.getServerCore().getTransportService().sendResponseMessage((ServerTransaction)
-			// bridgeCallParam.getTransaction(), bridgeCallParam.getRequest(), statusCode,
-			// sdpContent);
+			ServerTransaction serverTransaction = (ServerTransaction) bridgeCallParam.getTransaction();
+			serverTransaction.sendResponseMessage(statusCode, sdpContent);
 		}
 	}
 
-	public static void ringing(CallParam errorCallParam) {
-		sendBridgeResponse(errorCallParam, Response.RINGING, null);
+	public static void ringing(CallParam fromCallParam) {
+		sendBridgeResponse(fromCallParam, Response.RINGING, null);
 	}
 
 	public static void error(CallParam errorCallParam) {
@@ -37,14 +45,14 @@ public class BridgeService {
 	}
 
 	public static void noRoute(CallParam fromCallParam) {
-		if (fromCallParam.getTransaction() instanceof ServerTransaction) {
-			// ServerCore.getServerCore().getTransportService().sendResponseMessage((ServerTransaction)
-			// fromCallParam.getTransaction(), fromCallParam.getRequest(),
-			// Response.BUSY_HERE, null);
-		}
+		sendBridgeResponse(fromCallParam, Response.BUSY_HERE, null);
 	}
 
-	public static void ok(CallParam toCallParam) {
+	public static void ok(CallParam toCallParam, Response response) {
+		if (toCallParam.getTransaction() instanceof ClientTransaction) {
+			ClientTransaction clientTransaction = (ClientTransaction) toCallParam.getTransaction();
+			clientTransaction.sendACK();
+		}
 		sendBridgeResponse(toCallParam, Response.OK, toCallParam.getSdpRemoteContent());
 	}
 
@@ -60,9 +68,12 @@ public class BridgeService {
 		}
 	}
 
-	public static void bye(CallParam callParam) {
+	public static void bye(CallParam fromCallParam) {
 		try {
-
+			if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
+				return;
+			}
+			fromCallParam.getBridgeCallParam().getTransaction().sendByeMessage();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

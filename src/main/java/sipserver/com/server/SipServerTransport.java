@@ -7,11 +7,12 @@ import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 
+import com.noyan.Base;
 import com.noyan.network.socket.ServerSocketAdapter;
 
 import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 
-public abstract class SipServerTransport extends Thread implements ServerSocketAdapter {
+public abstract class SipServerTransport extends Thread implements ServerSocketAdapter, Base {
 
 	// SipServer
 	private SipFactory sipFactory = null;

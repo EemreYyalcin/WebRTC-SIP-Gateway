@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.noyan.util.log.Log;
 
-import sipserver.com.domain.Extension;
+import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.server.transport.UDPTransport;
 import sipserver.com.service.control.ExtensionControlService;
 
@@ -39,11 +39,11 @@ public class ServerCore {
 
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
 		ServerCore.serverCore.getUDPTransport().start();
-		ServerCore.getCoreElement().addLocalExtension(new Extension("1001", "test1001"));
-		ServerCore.getCoreElement().addLocalExtension(new Extension("1002", "test1002"));
-		ServerCore.getCoreElement().addLocalExtension(new Extension("1003", "test1003"));
-		ServerCore.getCoreElement().addLocalExtension(new Extension("1004", "test1004"));
-		ServerCore.getCoreElement().addLocalExtension(new Extension("1005", "test1005"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1002", "test1002"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1003", "test1003"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1004", "test1004"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1005", "test1005"));
 
 		ExtensionControlService.beginControl();
 

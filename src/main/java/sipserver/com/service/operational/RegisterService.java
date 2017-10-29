@@ -13,7 +13,7 @@ public class RegisterService {
 	public static void register(Extension extTrunk) {
 		try {
 			Request requestMessage = ClientTransaction.createRequestMessage(Request.REGISTER, extTrunk);
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk.getAddress(), extTrunk.getPort(), extTrunk.getTransport());
+			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk);
 			Objects.requireNonNull(clientTransaction);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -13,6 +13,7 @@ import gov.nist.javax.sip.message.SIPMessage;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
+import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.server.SipServerTransport;
 
@@ -35,11 +36,19 @@ public class Handler {
 			}
 
 			if (message instanceof Response) {
-				ClientTransaction clientTransaction = (ClientTransaction) ServerCore.getCoreElement().findTransaction(recieveAddress, callIdHeader.getCallId(), ClientTransaction.class);
-				if (Objects.isNull(clientTransaction)) {
+
+				Transaction transaction = ServerCore.getCoreElement().findTransaction(callIdHeader.getCallId());
+				if (Objects.isNull(transaction)) {
 					logger.warn("ClientTransaction has not Found");
 					return;
 				}
+
+				if (transaction instanceof ServerTransaction) {
+					// Bye Message Response
+					return;
+				}
+
+				ClientTransaction clientTransaction = (ClientTransaction) transaction;
 				clientTransaction.processResponse((Response) message);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Message Recieved  " + recieveAddress + ":" + recievePort + "\n\n" + message.toString());
@@ -47,16 +56,15 @@ public class Handler {
 				return;
 			}
 
-			ServerTransaction serverTransaction = (ServerTransaction) ServerCore.getCoreElement().findTransaction(recieveAddress, callIdHeader.getCallId(), ServerTransaction.class);
-			if (Objects.nonNull(serverTransaction)) {
-				return;
-			}
-			serverTransaction = TransactionBuilder.createAndStartServerTransaction((Request) message, recieveAddress, recievePort, transport, callIdHeader.getCallId());
+			TransactionBuilder.createAndStartServerTransaction((Request) message, recieveAddress, recievePort, transport, callIdHeader.getCallId());
 			if (logger.isTraceEnabled()) {
 				logger.trace(message.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error(message.toString());
+			logger.error(recieveAddress);
+			logger.error(recievePort);
 		}
 	}
 

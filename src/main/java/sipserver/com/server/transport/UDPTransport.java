@@ -28,10 +28,17 @@ public class UDPTransport extends SipServerTransport {
 	public void processRecieveData(byte[] data, InetAddress recieveAddress, int recievePort) {
 		try {
 			StringMsgParser smp = new StringMsgParser();
+			StringMsgParser.setComputeContentLengthFromMessage(true);
 			SIPMessage sipMessage = smp.parseSIPMessage(data, true, false, null);
 			Handler.processSipMessage(sipMessage, recieveAddress, recievePort, this);
 		} catch (Exception e) {
+			String message = new String(data);
+			if (message.startsWith("PUBLISH") || message.startsWith("SUBSCRIBE")) {
+				return;
+			}
 			e.printStackTrace();
+			error("Parse Exception " +  e);
+			error("Error Parse Message " + new String(data));
 		}
 	}
 

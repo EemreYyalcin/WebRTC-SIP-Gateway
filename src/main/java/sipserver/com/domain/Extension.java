@@ -3,10 +3,7 @@ package sipserver.com.domain;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.sip.header.ContactHeader;
-import javax.sip.header.HeaderAddress;
-
-import sipserver.com.executer.core.ServerCore;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.server.SipServerTransport;
 
 public class Extension {
@@ -17,30 +14,12 @@ public class Extension {
 	private String displayName;
 	private int port = 5060;
 	private String pass;
-	private boolean isAlive = false;
 	private SipServerTransport transport;
 	private Long registerTime;
+	private Long aliveTime;
 
-	public Extension(String exten, String pass, InetAddress address, int port) {
-		setExten(exten);
-		setPass(pass);
-		setPort(port);
-		setAddress(address);
-	}
-
-	public Extension(String exten, String pass, InetAddress address) {
-		setExten(exten);
-		setPass(pass);
-		setAddress(address);
-	}
-
-	public Extension(String exten, String pass) {
-		setExten(exten);
-		setPass(pass);
-	}
-
-	public Extension() {
-	}
+	private boolean isTrunk = false;
+	private boolean isAuthenticatedTrunk = false;
 
 	public String getExten() {
 		return exten;
@@ -82,14 +61,6 @@ public class Extension {
 		this.pass = pass;
 	}
 
-	public boolean isAlive() {
-		return isAlive;
-	}
-
-	public void setAlive(boolean isAlive) {
-		this.isAlive = isAlive;
-	}
-
 	public SipServerTransport getTransport() {
 		return transport;
 	}
@@ -108,49 +79,14 @@ public class Extension {
 		return false;
 	}
 
-	public static Extension getExtension(HeaderAddress headerAddress) {
-		try {
-			String uri = headerAddress.getAddress().getURI().toString().trim();
-			String scheme = headerAddress.getAddress().getURI().getScheme();
-			String[] parts = uri.split(";");
-			if (parts.length <= 0) {
-				throw new Exception();
-			}
-			uri = parts[0].substring(scheme.length() + 1);
-			if (uri.indexOf(":") > 0) {
-				uri = uri.split(":")[0];
-			}
-
-			if (uri.indexOf("@") < 0) {
-				throw new Exception();
-			}
-			String[] userAndHost = uri.split("@");
-			if (userAndHost.length < 2) {
-				throw new Exception();
-			}
-
-			Extension extLocalOrTrunk = ServerCore.getCoreElement().getLocalExtension(userAndHost[0]);
-			if (Objects.isNull(extLocalOrTrunk)) {
-				extLocalOrTrunk = ServerCore.getCoreElement().getTrunkExtension(userAndHost[0]);
-			}
-			if (Objects.isNull(extLocalOrTrunk)) {
-				return null;
-			}
-
-			extLocalOrTrunk.setAddress(InetAddress.getByName(userAndHost[1]));
-			extLocalOrTrunk.setDisplayName(headerAddress.getAddress().getDisplayName());
-			if (headerAddress instanceof ContactHeader) {
-				int expiresTime = ((ContactHeader) headerAddress).getExpires();
-				if (expiresTime != -1) {
-					extLocalOrTrunk.setExpiresTime(expiresTime);
-				}
-
-			}
-			return extLocalOrTrunk;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+	public boolean isAlive() {
+		if (Objects.isNull(aliveTime)) {
+			return false;
 		}
+		if (aliveTime + SipServerSharedProperties.optionsSendingIntervallForRegisterExten > System.currentTimeMillis()) {
+			return true;
+		}
+		return false;
 	}
 
 	public InetAddress getAddress() {
@@ -165,8 +101,28 @@ public class Extension {
 		registerTime = System.currentTimeMillis();
 	}
 
+	public void keepAlive() {
+		aliveTime = System.currentTimeMillis();
+	}
+
 	public void unregister() {
 		registerTime = null;
+	}
+
+	public boolean isTrunk() {
+		return isTrunk;
+	}
+
+	public void setIsTrunk(boolean isTrunk) {
+		this.isTrunk = isTrunk;
+	}
+
+	public boolean isAuthenticatedTrunk() {
+		return isAuthenticatedTrunk;
+	}
+
+	public void setAuthenticatedTrunkStatus(boolean isAuthenticatedTrunk) {
+		this.isAuthenticatedTrunk = isAuthenticatedTrunk;
 	}
 
 }

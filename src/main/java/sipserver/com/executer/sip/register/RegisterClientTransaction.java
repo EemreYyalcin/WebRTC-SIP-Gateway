@@ -1,28 +1,22 @@
 package sipserver.com.executer.sip.register;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.ContactHeader;
-import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
-import sipserver.com.server.SipServerTransport;
 
 public class RegisterClientTransaction extends ClientTransaction {
-
-	public RegisterClientTransaction(Request request, InetAddress address, int port, SipServerTransport transport) {
-		super(request, address, port, transport);
-	}
 
 	@Override
 	public void processResponse(Response response) {
 		try {
 			ContactHeader contactHeader = (ContactHeader) getRequest().getHeader(ContactHeader.NAME);
 			Objects.requireNonNull(contactHeader);
-			Extension trunkExtensionIncoming = Extension.getExtension(contactHeader);
+			Extension trunkExtensionIncoming = ExtensionBuilder.getExtension(contactHeader);
 			Objects.requireNonNull(trunkExtensionIncoming);
 			int statusCode = response.getStatusCode();
 
@@ -45,6 +39,7 @@ public class RegisterClientTransaction extends ClientTransaction {
 			if (statusCode == Response.FORBIDDEN) {
 				return;
 			}
+			setResponse(response);
 			trunkExtensionIncoming.keepRegistered();
 
 		} catch (Exception e) {
