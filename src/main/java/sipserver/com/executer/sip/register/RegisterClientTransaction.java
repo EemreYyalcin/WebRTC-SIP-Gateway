@@ -41,6 +41,7 @@ public class RegisterClientTransaction extends ClientTransaction {
 			}
 			setResponse(response);
 			trunkExtensionIncoming.keepRegistered();
+			sendACK();
 
 		} catch (Exception e) {
 			e.printStackTrace();

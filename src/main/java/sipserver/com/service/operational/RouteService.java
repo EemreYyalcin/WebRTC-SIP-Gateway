@@ -30,7 +30,6 @@ public class RouteService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 }

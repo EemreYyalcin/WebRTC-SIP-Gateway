@@ -16,6 +16,7 @@ import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.server.SipServerTransport;
+import sipserver.com.service.control.ChannelControlService;
 
 public class Handler {
 
@@ -44,7 +45,9 @@ public class Handler {
 				}
 
 				if (transaction instanceof ServerTransaction) {
-					// Bye Message Response
+					// Bye Or Cancel Message Response
+					logger.info("Bye Or Cancel Response Recieved !!");
+					ChannelControlService.takeChannel(transaction.getCallId());
 					return;
 				}
 
@@ -55,8 +58,25 @@ public class Handler {
 				}
 				return;
 			}
+			Request request = (Request) message;
+			Transaction transaction = ServerCore.getCoreElement().findTransaction(callIdHeader.getCallId());
+			if (Objects.nonNull(transaction)) {
+				if (request.getMethod().equals(Request.BYE)) {
+					transaction.processByeOrCancelRequest(request);
+					return;
+				}
+				if (request.getMethod().equals(Request.CANCEL)) {
+					((ServerTransaction) transaction).processByeOrCancelRequest(request);
+					return;
+				}
+				if (request.getMethod().equals(Request.ACK)) {
+					logger.trace("ACK Recieved " + request.getMethod());
+					return;
+				}
+				return;
+			}
 
-			TransactionBuilder.createAndStartServerTransaction((Request) message, recieveAddress, recievePort, transport, callIdHeader.getCallId());
+			TransactionBuilder.createAndStartServerTransaction(request, recieveAddress, recievePort, transport, callIdHeader.getCallId());
 			if (logger.isTraceEnabled()) {
 				logger.trace(message.toString());
 			}

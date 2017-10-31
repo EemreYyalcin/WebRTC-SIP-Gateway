@@ -49,34 +49,23 @@ public class BridgeService {
 	}
 
 	public static void ok(CallParam toCallParam, Response response) {
-		if (toCallParam.getTransaction() instanceof ClientTransaction) {
-			ClientTransaction clientTransaction = (ClientTransaction) toCallParam.getTransaction();
-			clientTransaction.sendACK();
-		}
 		sendBridgeResponse(toCallParam, Response.OK, toCallParam.getSdpRemoteContent());
 	}
 
 	public static void cancel(CallParam fromCallParam) {
-		try {
-			// ServerCore.getServerCore().getTransportService().sendResponseMessage((ServerTransaction)
-			// fromCallParam.getTransaction(), fromCallParam.getSecondrequest(),
-			// Response.OK, null);
-			// ServerCore.getServerCore().getInviteServiceOut().beginCancelFlow(fromCallParam.getBridgeCallParam(),
-			// transport);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
+			return;
 		}
+		ClientTransaction clientTransaction = (ClientTransaction) fromCallParam.getBridgeCallParam().getTransaction();
+		Objects.requireNonNull(clientTransaction);
+		clientTransaction.sendCancelMessage();
 	}
 
 	public static void bye(CallParam fromCallParam) {
-		try {
-			if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
-				return;
-			}
-			fromCallParam.getBridgeCallParam().getTransaction().sendByeMessage();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
+			return;
 		}
+		fromCallParam.getBridgeCallParam().getTransaction().sendByeMessage();
 	}
 
 }

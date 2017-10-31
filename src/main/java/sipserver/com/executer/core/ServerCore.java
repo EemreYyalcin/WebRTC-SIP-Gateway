@@ -44,6 +44,7 @@ public class ServerCore {
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1003", "test1003"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1004", "test1004"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1005", "test1005"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1006", "test1006"));
 
 		ExtensionControlService.beginControl();
 

@@ -18,6 +18,7 @@ import javax.sip.message.Response;
 import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.core.ServerCore;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.service.util.message.HeaderBuilder;
 
@@ -56,6 +57,31 @@ public abstract class ClientTransaction extends Transaction {
 
 	}
 
+	public void sendCancelMessage() {
+		try {
+			FromHeader fromHeader = (FromHeader) getRequest().getHeader(FromHeader.NAME);
+			Objects.requireNonNull(fromHeader);
+			ToHeader toHeader = (ToHeader) getRequest().getHeader(ToHeader.NAME);
+			Objects.requireNonNull(toHeader);
+			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
+			ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
+			viaHeaders.add((ViaHeader) getRequest().getHeader(ViaHeader.NAME));
+			CallIdHeader callIdHeader = (CallIdHeader) getRequest().getHeader(CallIdHeader.NAME);
+			Objects.requireNonNull(callIdHeader);
+			CSeqHeader cSeqHeaderRequest = (CSeqHeader) getRequest().getHeader(CSeqHeader.NAME);
+			Objects.requireNonNull(cSeqHeaderRequest);
+			CSeqHeader cseqHeader = getTransport().getHeaderFactory().createCSeqHeader(cSeqHeaderRequest.getSeqNumber(), Request.CANCEL);
+			Objects.requireNonNull(cseqHeader);
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, getExtension().getTransport());
+			Objects.requireNonNull(maxForwards);
+			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.CANCEL, callIdHeader, cseqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Objects.requireNonNull(request);
+			sendRequestMessage(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static Request createRequestMessage(String method, Extension extension) {
 		try {
 			FromHeader fromHeader = null;
@@ -75,7 +101,7 @@ public abstract class ClientTransaction extends Transaction {
 			Objects.requireNonNull(routeHeader);
 			CallIdHeader callIdHeader = HeaderBuilder.createCallIdHeader();
 			Objects.requireNonNull(callIdHeader);
-			CSeqHeader cSeqHeader = HeaderBuilder.createCseqHeader(extension.getTransport(), method);
+			CSeqHeader cSeqHeader = extension.getTransport().getHeaderFactory().createCSeqHeader(SipServerSharedProperties.cseqSequence++, method);
 			Objects.requireNonNull(cSeqHeader);
 			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, extension.getTransport());
 			Objects.requireNonNull(maxForwards);

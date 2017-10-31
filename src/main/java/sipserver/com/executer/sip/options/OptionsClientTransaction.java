@@ -19,6 +19,7 @@ public class OptionsClientTransaction extends ClientTransaction {
 			Extension extension = ExtensionBuilder.getExtension(toHeader);
 			Objects.requireNonNull(extension);
 			setResponse(response);
+			sendACK();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

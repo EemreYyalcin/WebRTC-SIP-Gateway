@@ -17,6 +17,7 @@ import javax.sip.message.Response;
 import com.noyan.Base;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.control.ChannelControlService;
@@ -28,14 +29,14 @@ public class Transaction implements Base {
 	private Request request;
 	private Response response;
 	private InetAddress address;
-	private int port = 5060;
+	private int port = SipServerSharedProperties.blankCode;
 	private String callId;
 
 	private Extension extension;
 
 	private SipServerTransport transport;
 
-	public void processByeRequest(Request request) {
+	public void processByeOrCancelRequest(Request request) {
 		try {
 			CallParam fromCallParam = ChannelControlService.getChannel(getCallId());
 			if (Objects.isNull(fromCallParam)) {
@@ -46,7 +47,18 @@ public class Transaction implements Base {
 			if (Objects.nonNull(getTransport())) {
 				getTransport().sendData(response.toString(), getAddress(), getPort());
 			}
-			BridgeService.bye(fromCallParam);
+			if (request.getMethod().equals(Request.BYE)) {
+				BridgeService.bye(fromCallParam);
+				return;
+			}
+			//For Cancel
+			Response responseRequestTerminated = getTransport().getMessageFactory().createResponse(Response.REQUEST_TERMINATED, getRequest());
+			if (Objects.nonNull(getTransport())) {
+				getTransport().sendData(responseRequestTerminated.toString(), getAddress(), getPort());
+			}
+			
+			BridgeService.cancel(fromCallParam);
+
 		} catch (Exception e) {
 			error(e);
 		}

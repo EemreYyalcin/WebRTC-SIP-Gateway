@@ -12,7 +12,6 @@ import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.parameter.param.CallParam;
-import sipserver.com.service.control.ChannelControlService;
 import sipserver.com.service.operational.RouteService;
 
 public class InviteServerTransaction extends ServerTransaction {
@@ -51,7 +50,6 @@ public class InviteServerTransaction extends ServerTransaction {
 				fromCallParam.setSdpRemoteContent(new String(getRequest().getRawContent()));
 			}
 
-			ChannelControlService.putChannel(fromExtension.getExten(), fromCallParam);
 			RouteService.route(fromCallParam, toHeader);
 
 		} catch (Exception e) {

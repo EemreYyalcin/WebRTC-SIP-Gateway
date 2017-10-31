@@ -89,6 +89,7 @@ public class InviteClientTransaction extends ClientTransaction {
 			if (statusCode == Response.OK) {
 				info("Call Started Exten:" + toExtension.getExten());
 				setResponse(response);
+				sendACK();
 				BridgeService.ok(toCallParam, response);
 				return;
 			}

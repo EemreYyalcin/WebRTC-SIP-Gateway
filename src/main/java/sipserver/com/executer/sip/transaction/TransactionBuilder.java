@@ -24,25 +24,11 @@ public class TransactionBuilder {
 
 	public static ServerTransaction createAndStartServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport, String callID) {
 		try {
-
 			if (Objects.isNull(request) || Objects.isNull(address) || Objects.isNull(transport) || Objects.isNull(callID)) {
 				return null;
 			}
-
-			Transaction transaction = ServerCore.getCoreElement().findTransaction(callID);
-			if (Objects.nonNull(transaction)) {
-				if (request.getMethod().equals(Request.BYE)) {
-					transaction.processByeRequest(request);
-				}
-
-				if (transaction instanceof ServerTransaction) {
-					return (ServerTransaction) transaction;
-				}
-				return null;
-			}
-
-			ServerTransaction serverTransaction = (ServerTransaction) transaction;
-
+			
+			ServerTransaction serverTransaction = null;
 			if (request.getMethod().equals(Request.REGISTER)) {
 				serverTransaction = new RegisterServerTransaction();
 			} else if (request.getMethod().equals(Request.OPTIONS)) {
