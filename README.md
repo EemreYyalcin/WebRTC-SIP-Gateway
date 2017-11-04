@@ -1,4 +1,4 @@
-# SIPSERVER
+# WebRTC-SIP-Gateway
 SipServer Designing with JAIN-SIP
 For Cloud or On-promise System
 
