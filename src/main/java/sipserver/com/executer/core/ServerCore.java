@@ -1,11 +1,12 @@
 package sipserver.com.executer.core;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.configuration.GeneralConfiguration;
+import com.mgcp.transport.MGCPTransportLayer;
 import com.noyan.util.log.Log;
 
 import sipserver.com.domain.ExtensionBuilder;
@@ -21,15 +22,16 @@ public class ServerCore {
 	// Core Transport
 	private UDPTransport udpTransport;
 
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws Exception {
 
 		Logger.getRootLogger().setLevel(Level.DEBUG);
 		Logger.getRootLogger().addAppender(Log.createConsoleAppender(null));
 		ServerCore.serverCore = new ServerCore();
 		ServerCore.coreElement = new CoreElement();
-		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.107"));
+		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.108"));
 		ServerCore.coreElement.setLocalSipPort(5060);
-
+		ServerCore.coreElement.setMediaServerAddress(InetAddress.getByName("192.168.1.104"));
+	
 		if (args != null && args.length > 0) {
 			ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName(args[0]));
 			if (args.length > 1) {
@@ -37,6 +39,18 @@ public class ServerCore {
 			}
 		}
 
+		/*
+		 * 
+		 * Mgcp Configuration
+		 * 
+		 */
+
+		MGCPTransportLayer.createAndStartMgcpTransportLayer(2727);
+		MGCPTransportLayer.getMgcpTransportLayer().setMediaServerAddress(coreElement.getMediaServerAddress());
+		MGCPTransportLayer.getMgcpTransportLayer().setMediaServerPort(2427);
+		MGCPTransportLayer.getMgcpTransportLayer().setIvrEndpointID(GeneralConfiguration.ivrEndpointID);
+		
+		////////////
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
 		ServerCore.serverCore.getUDPTransport().start();
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));

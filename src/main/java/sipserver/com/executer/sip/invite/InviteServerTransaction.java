@@ -45,7 +45,6 @@ public class InviteServerTransaction extends ServerTransaction {
 			setExtension(fromExtension);
 			CallParam fromCallParam = new CallParam();
 			fromCallParam.setExtension(fromExtension).setTransaction(this).setRequest(getRequest());
-
 			if (Objects.nonNull(getRequest().getRawContent())) {
 				fromCallParam.setSdpRemoteContent(new String(getRequest().getRawContent()));
 			}

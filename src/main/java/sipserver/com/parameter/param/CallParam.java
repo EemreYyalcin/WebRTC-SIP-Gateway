@@ -2,6 +2,8 @@ package sipserver.com.parameter.param;
 
 import javax.sip.message.Request;
 
+import com.mgcp.transport.MgcpSession;
+
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.sip.transaction.Transaction;
 
@@ -13,6 +15,9 @@ public class CallParam {
 	private Extension extension;
 	private String sdpLocalContent;
 	private String sdpRemoteContent;
+	
+	private MgcpSession mgcpSession;
+	
 
 	private CallParam bridgeCallParam;
 
@@ -73,6 +78,14 @@ public class CallParam {
 
 	public void setSecondrequest(Request secondrequest) {
 		this.secondrequest = secondrequest;
+	}
+
+	public MgcpSession getMgcpSession() {
+		return mgcpSession;
+	}
+
+	public void setMgcpSession(MgcpSession mgcpSession) {
+		this.mgcpSession = mgcpSession;
 	}
 
 }
