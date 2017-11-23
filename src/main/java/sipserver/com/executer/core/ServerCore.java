@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 
 import com.configuration.GeneralConfiguration;
 import com.mgcp.transport.MGCPTransportLayer;
-import com.noyan.util.log.Log;
 
 import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.server.transport.udp.UDPTransport;
+import sipserver.com.server.transport.ws.WebsocketListener;
 import sipserver.com.service.control.ExtensionControlService;
 
 public class ServerCore {
@@ -21,11 +21,15 @@ public class ServerCore {
 
 	// Core Transport
 	private UDPTransport udpTransport;
+	private WebsocketListener websocketListenerTransport;
 
 	public static void main(String[] args) throws Exception {
+		gettinStarted(args);
+	}
 
+	public static void gettinStarted(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		Logger.getRootLogger().addAppender(Log.createConsoleAppender(null));
+		// Logger.getRootLogger().addAppender(Log.createConsoleAppender(null));
 		ServerCore.serverCore = new ServerCore();
 		ServerCore.coreElement = new CoreElement();
 		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.108"));
@@ -57,6 +61,10 @@ public class ServerCore {
 		////////////
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
 		ServerCore.serverCore.getUDPTransport().start();
+
+		ServerCore.serverCore.setWebsocketListenerTransport(new WebsocketListener());
+		ServerCore.serverCore.getWebsocketListenerTransport().start();
+
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1002", "test1002"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1003", "test1003"));
@@ -67,6 +75,7 @@ public class ServerCore {
 		ExtensionControlService.beginControl();
 
 		Logger.getLogger(ServerCore.class).info("Server Core Started");
+
 	}
 
 	public static ServerCore getServerCore() {
@@ -83,5 +92,13 @@ public class ServerCore {
 
 	public static CoreElement getCoreElement() {
 		return coreElement;
+	}
+
+	public WebsocketListener getWebsocketListenerTransport() {
+		return websocketListenerTransport;
+	}
+
+	public void setWebsocketListenerTransport(WebsocketListener websocketListenerTransport) {
+		this.websocketListenerTransport = websocketListenerTransport;
 	}
 }

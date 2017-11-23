@@ -19,7 +19,6 @@ import javax.websocket.Session;
 import com.noyan.Base;
 
 import sipserver.com.domain.Extension;
-import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
@@ -89,7 +88,7 @@ public class Transaction implements Base {
 			if (getRequest().getMethod().equals(Request.INVITE)) {
 				return;
 			}
-//			ServerCore.getCoreElement().removeTransaction(getCallId());
+			// ServerCore.getCoreElement().removeTransaction(getCallId());
 		} catch (Exception e) {
 			error(e);
 		}

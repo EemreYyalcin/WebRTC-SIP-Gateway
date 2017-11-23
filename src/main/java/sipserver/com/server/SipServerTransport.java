@@ -9,7 +9,6 @@ import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.Message;
 import javax.sip.message.MessageFactory;
-import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
 import com.noyan.Base;
@@ -30,10 +29,6 @@ public abstract class SipServerTransport extends Thread implements ServerSocketA
 
 	protected abstract void sendData(String data, InetAddress toAddress, int port);
 
-	public void sendSipMessage(Message sipMessage, InetAddress toAddress, int port) {
-		sendSipMessage(sipMessage, toAddress, port, null);
-	}
-
 	public void sendSipMessage(Message sipMessage, InetAddress toAddress, int port, Session session) {
 		if (Objects.isNull(sipMessage)) {
 			return;
@@ -43,13 +38,10 @@ public abstract class SipServerTransport extends Thread implements ServerSocketA
 			return;
 		}
 		try {
-			session.getBasicRemote().sendObject(sipMessage);
+			session.getBasicRemote().sendText(sipMessage.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (EncodeException e) {
-			e.printStackTrace();
 		}
-
 	}
 
 	@Override

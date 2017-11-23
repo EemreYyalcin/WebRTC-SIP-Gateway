@@ -7,6 +7,7 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,10 @@ public class Handler {
 	private static Logger logger = Logger.getLogger(Handler.class);
 
 	public static void processSipMessage(SIPMessage message, SipServerTransport transport) {
+		processSipMessage(message, transport, null);
+	}
+
+	public static void processSipMessage(SIPMessage message, SipServerTransport transport, Session session) {
 		try {
 			if (Objects.isNull(message)) {
 				logger.warn("Null Message Recieved");
@@ -45,7 +50,7 @@ public class Handler {
 					logger.warn("ClientTransaction has not Found");
 					return;
 				}
-
+				transaction.setSession(session);
 				if (transaction instanceof ServerTransaction) {
 					// Bye Or Cancel Message Response
 					logger.info("Bye Or Cancel Response Recieved !!");
@@ -70,6 +75,7 @@ public class Handler {
 			}
 
 			if (Objects.nonNull(transaction)) {
+				transaction.setSession(session);
 				if (request.getMethod().equals(Request.BYE)) {
 					transaction.processByeOrCancelRequest(request);
 					return;
@@ -83,7 +89,7 @@ public class Handler {
 					if (request.getMethod().equals(Request.INVITE)) {
 						return;
 					}
-//					ServerCore.getCoreElement().removeTransaction(transaction.getCallId());
+					// ServerCore.getCoreElement().removeTransaction(transaction.getCallId());
 					return;
 				}
 				return;
@@ -94,6 +100,7 @@ public class Handler {
 				logger.trace("Ignored Message " + request.getMethod());
 				return;
 			}
+			serverTransaction.setSession(session);
 			Objects.requireNonNull(serverTransaction);
 			serverTransaction.processRequest();
 			if (logger.isTraceEnabled()) {
