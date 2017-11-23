@@ -1,0 +1,62 @@
+Client Tran.
+
+INVITE sip:902129630700@158.177.80.44:5060 SIP/2.0
+CANCEL sip:902129630700@158.177.80.44:5060 SIP/2.0
+
+Via: SIP/2.0/UDP 194.49.126.26;branch=z9hG4bKb835.d7fe92dd3d2352132dc04a93c81a9483.0
+Via: SIP/2.0/UDP 194.49.126.26;branch=z9hG4bKb835.d7fe92dd3d2352132dc04a93c81a9483.0
+Via: SIP/2.0/UDP 194.49.126.26:5071;branch=z9hG4bK1cda120895e2c0a8fab60ef998e28a02;rport=5071
+Via: SIP/2.0/UDP 194.49.126.26:5071;rport=5071;branch=z9hG4bK1cda120895e2c0a8fab60ef998e28a02
+
+
+Max-Forwards: 69
+Max-Forwards: 69
+
+From: <sip:05445302167@194.49.126.26>;tag=960cb4b4e405deae1c9649162996656d
+From: <sip:05445302167@194.49.126.26>;tag=960cb4b4e405deae1c9649162996656d
+
+To: <sip:902129630700@158.177.80.44>
+To: <sip:902129630700@158.177.80.44>
+
+Call-ID: 87536010-3718463544-931947@TcomNextoneSBC2.mydomain.com-onnet_1-b2b_1
+
+CSeq: 200 INVITE
+CSeq: 200 CANCEL
+
+Contact: Anonymous <sip:05445302167@194.49.126.26:5071>
+
+Expires: 300
+
+User-Agent: Verimor Softswitch v4.5-PRODUCTION.179
+User-Agent: Verimor Softswitch v4.5-PRODUCTION.179
+
+cisco-GUID: 2947925559-3961717774-2313773605-1616159987
+h323-conf-id: 2947925559-3961717774-2313773605-1616159987
+Content-Length: 327
+Content-Type: application/sdp
+
+
+Content-Length: 0
+
+
+Server Tran.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

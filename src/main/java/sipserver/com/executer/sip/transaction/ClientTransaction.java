@@ -24,38 +24,7 @@ import sipserver.com.service.util.message.HeaderBuilder;
 
 public abstract class ClientTransaction extends Transaction {
 
-	public void sendRequestMessage() {
-		getTransport().sendData(getRequest().toString(), getAddress(), getPort());
-	}
-
-	public void sendRequestMessage(Request request) {
-		getTransport().sendData(request.toString(), getAddress(), getPort());
-	}
-
 	public abstract void processResponse(Response response);
-
-	public void sendACK() {
-		try {
-			if (Objects.isNull(getResponse())) {
-				return;
-			}
-			FromHeader fromHeader = (FromHeader) getResponse().getHeader(FromHeader.NAME);
-			ToHeader toHeader = (ToHeader) getResponse().getHeader(ToHeader.NAME);
-			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(getExtension().getTransport());
-			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
-			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
-			CSeqHeader cSeqHeader = getExtension().getTransport().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, getExtension().getTransport());
-			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
-			ContactHeader contactHeader = HeaderBuilder.createContactHeader(getExtension());
-			request.addHeader(contactHeader);
-			sendRequestMessage(request);
-		} catch (Exception e) {
-			error(e);
-		}
-
-	}
 
 	public void sendCancelMessage() {
 		try {
@@ -76,7 +45,7 @@ public abstract class ClientTransaction extends Transaction {
 			Objects.requireNonNull(maxForwards);
 			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.CANCEL, callIdHeader, cseqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			Objects.requireNonNull(request);
-			sendRequestMessage(request);
+			getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -118,9 +87,9 @@ public abstract class ClientTransaction extends Transaction {
 		}
 	}
 
-	public static Request createInviteMessage(CallParam toCallParam) {
+	public static Request createInviteMessage(CallParam toCallParam, CallParam fromCallParam) {
 		try {
-			FromHeader fromHeader = HeaderBuilder.createFromHeader(toCallParam.getBridgeCallParam().getExtension());
+			FromHeader fromHeader = HeaderBuilder.createFromHeader(fromCallParam.getExtension());
 			Objects.requireNonNull(fromHeader);
 			ToHeader toHeader = HeaderBuilder.createToHeader(toCallParam.getExtension());
 			Objects.requireNonNull(toHeader);

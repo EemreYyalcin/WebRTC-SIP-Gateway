@@ -10,7 +10,7 @@ import com.mgcp.transport.MGCPTransportLayer;
 import com.noyan.util.log.Log;
 
 import sipserver.com.domain.ExtensionBuilder;
-import sipserver.com.server.transport.UDPTransport;
+import sipserver.com.server.transport.udp.UDPTransport;
 import sipserver.com.service.control.ExtensionControlService;
 
 public class ServerCore {
@@ -30,8 +30,7 @@ public class ServerCore {
 		ServerCore.coreElement = new CoreElement();
 		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.108"));
 		ServerCore.coreElement.setLocalSipPort(5060);
-		ServerCore.coreElement.setMediaServerAddress(InetAddress.getByName("192.168.1.104"));
-	
+
 		if (args != null && args.length > 0) {
 			ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName(args[0]));
 			if (args.length > 1) {
@@ -45,11 +44,16 @@ public class ServerCore {
 		 * 
 		 */
 
-		MGCPTransportLayer.createAndStartMgcpTransportLayer(2727);
-		MGCPTransportLayer.getMgcpTransportLayer().setMediaServerAddress(coreElement.getMediaServerAddress());
-		MGCPTransportLayer.getMgcpTransportLayer().setMediaServerPort(2427);
-		MGCPTransportLayer.getMgcpTransportLayer().setIvrEndpointID(GeneralConfiguration.ivrEndpointID);
-		
+		if (SipServerSharedProperties.mediaServerActive) {
+			ServerCore.coreElement.setMediaServerAddress(InetAddress.getByName("192.168.1.104"));
+			MGCPTransportLayer.createAndStartMgcpTransportLayer(2727);
+			MGCPTransportLayer.getMgcpTransportLayer().setMediaServerAddress(coreElement.getMediaServerAddress());
+			MGCPTransportLayer.getMgcpTransportLayer().setMediaServerPort(2427);
+			MGCPTransportLayer.getMgcpTransportLayer().setIvrEndpointID(GeneralConfiguration.ivrEndpointID);
+			MGCPTransportLayer.getMgcpTransportLayer().setConferenceEndpointID(GeneralConfiguration.conferenceEndpointID);
+			MGCPTransportLayer.getMgcpTransportLayer().setBridgeEndpointID(GeneralConfiguration.bridgeEndpointID);
+		}
+
 		////////////
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
 		ServerCore.serverCore.getUDPTransport().start();

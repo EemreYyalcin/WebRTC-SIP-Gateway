@@ -4,6 +4,8 @@ import javax.sip.message.Request;
 
 public class SipServerSharedProperties {
 
+	public static boolean mediaServerActive = false;
+
 	public static Long cseqSequence = 1L;
 
 	public static int errorResponseCode = 911;

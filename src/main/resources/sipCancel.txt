@@ -1,0 +1,93 @@
+in
+
+INVITE sip:05445302167@ucakbileti.tegsoftcloud.com SIP/2.0
+Via: SIP/2.0/UDP 78.179.113.40:11670;rport;branch=z9hG4bK-57p4591394728906994438r
+From: "1005" <sip:1005@ucakbileti.tegsoftcloud.com>;tag=56g8456785143664747623m
+To: <sip:05445302167@ucakbileti.tegsoftcloud.com>
+Call-ID: 54e984230673859143695k42154rmwp
+CSeq: 12178 INVITE
+Max-Forwards: 60
+Contact: "1005" <sip:1005@78.179.113.40:11670>
+User-Agent: MizuWebPhone/6.4.17062
+FinalUA: MizuWebPhone E9Lzfhrk
+Supported: replaces
+Allow: ACK,PRACK,BYE,CANCEL,INVITE,UPDATE,MESSAGE,INFO,OPTIONS,SUBSCRIBE,NOTIFY,REFER
+Allow-Events: presence,refer,telephone-event,keep-alive,dialog
+Accept: application/sdp,application/dtmf-relay,text/plain
+Content-Type: application/sdp
+Content-Length: 297
+
+v=0
+o=1005 86 721 IN IP4 78.179.113.40
+s=webphone
+c=IN IP4 78.179.113.40
+t=0 0
+m=audio 12822 RTP/AVP 8 18 0 101
+a=rtpmap:8 PCMA/8000
+a=rtpmap:18 G729/8000
+a=fmtp:18 annexb=no
+a=rtpmap:0 PCMU/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=sendrecv
+a=silenceSupp:off - - - -
+
+
+
+in
+
+CANCEL sip:05445302167@ucakbileti.tegsoftcloud.com SIP/2.0
+Via: SIP/2.0/UDP 78.179.113.40:11670;rport;branch=z9hG4bK-57p4591394728906994438r
+From: "1005" <sip:1005@ucakbileti.tegsoftcloud.com>;tag=56g8456785143664747623m
+To: <sip:05445302167@ucakbileti.tegsoftcloud.com>
+Call-ID: 54e984230673859143695k42154rmwp
+CSeq: 12178 CANCEL
+Max-Forwards: 60
+Reason: SIP;description="User Hung Up (exB-2)"
+Warning: 399 192.168.1.104 "User Hung Up (exB-2)"
+Proxy-Authorization: Digest username="1005",realm="asterisk",nonce="0e2019c4",uri="sip:05445302167@ucakbileti.tegsoftcloud.com",response="3fb2da2b8a30abce0141642f0927a2a9",algorithm=MD5
+User-Agent: MizuWebPhone/6.4.17062
+FinalUA: MizuWebPhone E9Lzfhrk
+Content-Length: 0
+
+out
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 78.179.113.40:11670;branch=z9hG4bK-57p4591394728906994438r;received=78.179.113.40;rport=11670
+From: "1005" <sip:1005@ucakbileti.tegsoftcloud.com>;tag=56g8456785143664747623m
+To: <sip:05445302167@ucakbileti.tegsoftcloud.com>;tag=as730215e9
+Call-ID: 54e984230673859143695k42154rmwp
+CSeq: 12178 CANCEL
+Server: TegsoftPBX
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH
+Supported: replaces, timer
+Content-Length: 0
+
+out
+
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 78.179.113.40:11670;branch=z9hG4bK-57p4591394728906994438r;received=78.179.113.40;rport=11670
+From: "1005" <sip:1005@ucakbileti.tegsoftcloud.com>;tag=56g8456785143664747623m
+To: <sip:05445302167@ucakbileti.tegsoftcloud.com>;tag=as730215e9
+Call-ID: 54e984230673859143695k42154rmwp
+CSeq: 12178 INVITE
+Server: TegsoftPBX
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH
+Supported: replaces, timer
+Content-Length: 0
+
+in
+
+
+ACK sip:05445302167@158.177.80.44:5060 SIP/2.0
+Via: SIP/2.0/UDP 78.179.113.40:11670;rport;branch=z9hG4bK-57p4591394728906994438r
+From: "1005" <sip:1005@ucakbileti.tegsoftcloud.com>;tag=56g8456785143664747623m
+To: <sip:05445302167@ucakbileti.tegsoftcloud.com>;tag=as730215e9
+Call-ID: 54e984230673859143695k42154rmwp
+CSeq: 12178 ACK
+Max-Forwards: 60
+User-Agent: MizuWebPhone/6.4.17062
+FinalUA: MizuWebPhone E9Lzfhrk
+Content-Length: 0
+
+

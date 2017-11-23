@@ -22,12 +22,12 @@ public class TransactionBuilder {
 
 	private static Logger logger = Logger.getLogger(TransactionBuilder.class);
 
-	public static ServerTransaction createAndStartServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport, String callID) {
+	public static ServerTransaction createServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport, String callID) {
 		try {
 			if (Objects.isNull(request) || Objects.isNull(address) || Objects.isNull(transport) || Objects.isNull(callID)) {
 				return null;
 			}
-			
+
 			ServerTransaction serverTransaction = null;
 			if (request.getMethod().equals(Request.REGISTER)) {
 				serverTransaction = new RegisterServerTransaction();
@@ -51,7 +51,6 @@ public class TransactionBuilder {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Recieved Request :" + request.toString());
 			}
-			serverTransaction.processRequest();
 			return serverTransaction;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -59,7 +58,7 @@ public class TransactionBuilder {
 		return null;
 	}
 
-	public static ClientTransaction createAndStartClientTransaction(Request request, Extension toExten) {
+	public static ClientTransaction createClientTransaction(Request request, Extension toExten) {
 		try {
 
 			if (Objects.isNull(request) || Objects.isNull(toExten.getAddress()) || Objects.isNull(toExten.getTransport())) {
@@ -73,7 +72,7 @@ public class TransactionBuilder {
 
 			ClientTransaction clientTransaction = (ClientTransaction) ServerCore.getCoreElement().findTransaction(callIdHeader.getCallId());
 			if (Objects.nonNull(clientTransaction)) {
-				clientTransaction.sendRequestMessage();
+				clientTransaction.getTransport().sendSipMessage(clientTransaction.getRequest(), clientTransaction.getAddress(), clientTransaction.getPort(), clientTransaction.getSession());
 				return clientTransaction;
 			}
 
@@ -98,10 +97,6 @@ public class TransactionBuilder {
 			clientTransaction.setExtension(toExten);
 
 			ServerCore.getCoreElement().addTransaction(callIdHeader.getCallId(), clientTransaction);
-			if (logger.isTraceEnabled()) {
-				logger.trace("Sending Request :" + request.toString());
-			}
-			clientTransaction.sendRequestMessage();
 			return clientTransaction;
 		} catch (Exception e) {
 			e.printStackTrace();

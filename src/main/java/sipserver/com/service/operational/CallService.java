@@ -6,50 +6,92 @@ import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
 
+import com.mgcp.transport.MgcpSession;
+import com.noyan.util.NullUtil;
+
 import sipserver.com.domain.Extension;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
+import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.parameter.param.CallParam;
-import sipserver.com.service.control.ChannelControlService;
+import sipserver.com.server.mediaserver.IncomingCallMediaSession;
+import sipserver.com.server.mediaserver.OutgoingCallMediaSession;
 
 public class CallService {
 
 	private static Logger logger = Logger.getLogger(CallService.class);
 
-	public static void beginCall(CallParam fromCallParam, Extension toExten) {
+	public static void bridgeCall(ServerTransaction serverTransaction, Extension toExten) {
 		try {
+			CallParam fromCallParam = serverTransaction.getCallParam();
 			CallParam toCallParam = new CallParam();
 			toCallParam.setExtension(toExten);
-			fromCallParam.setBridgeCallParam(toCallParam);
-			toCallParam.setBridgeCallParam(fromCallParam);
-			// TODO: CreateConnection Mgcp Command Set toCallParam sdpLocalContent
+			if (SipServerSharedProperties.mediaServerActive) {
+				IncomingCallMediaSession incomingCallMediaSession = new IncomingCallMediaSession(serverTransaction, toCallParam);
+				MgcpSession mgcpSession = new MgcpSession(incomingCallMediaSession);
+				if (Objects.isNull(mgcpSession)) {
+					BridgeService.noRoute(serverTransaction);
+					return;
+				}
+				fromCallParam.setMgcpSession(mgcpSession);
+				mgcpSession.createBRIDGE(fromCallParam.getSdpRemoteContent());
+				return;
+			}
+
 			toCallParam.setSdpLocalContent(fromCallParam.getSdpRemoteContent());
-
-			if (!toExten.isRegister()) {
-				BridgeService.noRoute(toCallParam);
-				logger.debug("Not Route 3");
-				return;
-			}
-
-			if (!toExten.isAlive()) {
-				BridgeService.noRoute(toCallParam);
-				logger.debug("Not Route 3 " + toExten.getExten());
-				return;
-			}
-
-			Request request = ClientTransaction.createInviteMessage(toCallParam);
-			request.setContent(toCallParam.getSdpLocalContent(), toExten.getTransport().getHeaderFactory().createContentTypeHeader("application", "sdp"));
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(request, toExten);
-			if (Objects.isNull(clientTransaction)) {
-				BridgeService.noRoute(fromCallParam);
-				logger.debug("Not Route 3");
-				return;
-			}
-			ChannelControlService.putChannel(clientTransaction.getCallId(), toCallParam);
-			toCallParam.setTransaction(clientTransaction).setRequest(request);
-
+			beginCall(toCallParam, serverTransaction);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	public static void beginCall(CallParam toCallParam, ServerTransaction serverTransaction) {
+		try {
+
+			if (!toCallParam.getExtension().isRegister()) {
+				BridgeService.noRoute(serverTransaction);
+				logger.debug("Not Route 3");
+				return;
+			}
+
+			if (!toCallParam.getExtension().isAlive()) {
+				BridgeService.noRoute(serverTransaction);
+				logger.debug("Not Route 3 " + toCallParam.getExtension().getExten());
+				return;
+			}
+
+			if (SipServerSharedProperties.mediaServerActive) {
+				OutgoingCallMediaSession outgoingCallMediaSession = new OutgoingCallMediaSession(toCallParam, serverTransaction);
+
+				MgcpSession mgcpSession = new MgcpSession(outgoingCallMediaSession);
+				if (Objects.isNull(mgcpSession)) {
+					return;
+				}
+				if (NullUtil.isNull(serverTransaction)) {
+					// TODO: Only Out Call Without Bridge
+					return;
+				}
+				toCallParam.setMgcpSession(mgcpSession);
+				mgcpSession.createBRIDGEwithEndpointName(serverTransaction.getCallParam().getMgcpSession().getSpecificEndpointName());
+				return;
+			}
+
+			Request request = ClientTransaction.createInviteMessage(toCallParam, serverTransaction.getCallParam());
+			request.setContent(toCallParam.getSdpLocalContent(), toCallParam.getExtension().getTransport().getHeaderFactory().createContentTypeHeader("application", "sdp"));
+			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(request, toCallParam.getExtension());
+			if (Objects.isNull(clientTransaction)) {
+				BridgeService.noRoute(serverTransaction);
+				return;
+			}
+			toCallParam.setRequest(request);
+			clientTransaction.setCallParam(toCallParam);
+			clientTransaction.setBridgeTransaction(serverTransaction);
+			serverTransaction.setBridgeTransaction(clientTransaction);
+			clientTransaction.getTransport().sendSipMessage(clientTransaction.getRequest(), clientTransaction.getAddress(), clientTransaction.getPort(), clientTransaction.getSession());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }

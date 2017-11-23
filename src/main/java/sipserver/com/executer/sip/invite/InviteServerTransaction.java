@@ -38,18 +38,19 @@ public class InviteServerTransaction extends ServerTransaction {
 
 			Extension fromExtension = ExtensionBuilder.getExtension(fromHeader, (ViaHeader) getRequest().getHeader(ViaHeader.NAME));
 			if (Objects.isNull(fromExtension)) {
-				sendResponseMessage(Response.FORBIDDEN);
+				sendResponseMessage(Response.UNAUTHORIZED);
 				info("Undefined Peer " + fromHeader.toString());
 				return;
 			}
 			setExtension(fromExtension);
 			CallParam fromCallParam = new CallParam();
-			fromCallParam.setExtension(fromExtension).setTransaction(this).setRequest(getRequest());
+			fromCallParam.setExtension(fromExtension).setRequest(getRequest());
 			if (Objects.nonNull(getRequest().getRawContent())) {
 				fromCallParam.setSdpRemoteContent(new String(getRequest().getRawContent()));
 			}
+			setCallParam(fromCallParam);
 
-			RouteService.route(fromCallParam, toHeader);
+			RouteService.route(this, toHeader);
 
 		} catch (Exception e) {
 			e.printStackTrace();

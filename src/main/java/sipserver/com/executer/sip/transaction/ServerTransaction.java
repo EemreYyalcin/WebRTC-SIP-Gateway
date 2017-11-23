@@ -40,7 +40,7 @@ public abstract class ServerTransaction extends Transaction {
 			if (getLogger().isTraceEnabled()) {
 				trace(response.toString());
 			}
-			getTransport().sendData(response.toString(), getAddress(), getPort());
+			getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
 			setResponse(response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,7 +55,7 @@ public abstract class ServerTransaction extends Transaction {
 		if (getLogger().isTraceEnabled()) {
 			trace(response.toString());
 		}
-		getTransport().sendData(response.toString(), getAddress(), getPort());
+		getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
 	}
 
 }

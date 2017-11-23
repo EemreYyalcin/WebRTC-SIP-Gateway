@@ -15,8 +15,9 @@ public class OptionsService {
 			Objects.requireNonNull(extTrunk.getTransport());
 			Request requestMessage = ClientTransaction.createRequestMessage(Request.OPTIONS, extTrunk);
 			Objects.requireNonNull(requestMessage);
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk);
+			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(requestMessage, extTrunk);
 			Objects.requireNonNull(clientTransaction);
+			clientTransaction.getTransport().sendSipMessage(clientTransaction.getRequest(), clientTransaction.getAddress(), clientTransaction.getPort(), clientTransaction.getSession());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

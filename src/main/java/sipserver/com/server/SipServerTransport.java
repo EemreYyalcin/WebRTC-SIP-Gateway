@@ -1,11 +1,16 @@
 package sipserver.com.server;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Objects;
 
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
+import javax.sip.message.Message;
 import javax.sip.message.MessageFactory;
+import javax.websocket.EncodeException;
+import javax.websocket.Session;
 
 import com.noyan.Base;
 import com.noyan.network.socket.ServerSocketAdapter;
@@ -23,7 +28,29 @@ public abstract class SipServerTransport extends Thread implements ServerSocketA
 
 	protected abstract void listen();
 
-	public abstract void sendData(String data, InetAddress toAddress, int port);
+	protected abstract void sendData(String data, InetAddress toAddress, int port);
+
+	public void sendSipMessage(Message sipMessage, InetAddress toAddress, int port) {
+		sendSipMessage(sipMessage, toAddress, port, null);
+	}
+
+	public void sendSipMessage(Message sipMessage, InetAddress toAddress, int port, Session session) {
+		if (Objects.isNull(sipMessage)) {
+			return;
+		}
+		if (Objects.isNull(session)) {
+			sendData(sipMessage.toString(), toAddress, port);
+			return;
+		}
+		try {
+			session.getBasicRemote().sendObject(sipMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (EncodeException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	@Override
 	public void run() {

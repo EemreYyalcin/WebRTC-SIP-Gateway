@@ -13,8 +13,9 @@ public class RegisterService {
 	public static void register(Extension extTrunk) {
 		try {
 			Request requestMessage = ClientTransaction.createRequestMessage(Request.REGISTER, extTrunk);
-			ClientTransaction clientTransaction = TransactionBuilder.createAndStartClientTransaction(requestMessage, extTrunk);
+			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(requestMessage, extTrunk);
 			Objects.requireNonNull(clientTransaction);
+			clientTransaction.getTransport().sendSipMessage(clientTransaction.getRequest(), clientTransaction.getAddress(), clientTransaction.getPort(), clientTransaction.getSession());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

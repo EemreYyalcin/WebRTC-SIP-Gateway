@@ -1,4 +1,4 @@
-package sipserver.com.server.transport;
+package sipserver.com.server.transport.udp;
 
 import java.net.InetAddress;
 
@@ -30,14 +30,14 @@ public class UDPTransport extends SipServerTransport {
 			StringMsgParser smp = new StringMsgParser();
 			StringMsgParser.setComputeContentLengthFromMessage(true);
 			SIPMessage sipMessage = smp.parseSIPMessage(data, true, false, null);
-			Handler.processSipMessage(sipMessage, recieveAddress, recievePort, this);
+			Handler.processSipMessage(sipMessage, this);
 		} catch (Exception e) {
 			String message = new String(data);
 			if (message.startsWith("PUBLISH") || message.startsWith("SUBSCRIBE")) {
 				return;
 			}
 			e.printStackTrace();
-			error("Parse Exception " +  e);
+			error("Parse Exception " + e);
 			error("Error Parse Message " + new String(data));
 		}
 	}
@@ -49,7 +49,7 @@ public class UDPTransport extends SipServerTransport {
 	}
 
 	@Override
-	public void sendData(String data, InetAddress toAddress, int port) {
+	protected void sendData(String data, InetAddress toAddress, int port) {
 		udpServerSocket.send(data.getBytes(), toAddress, port);
 	}
 

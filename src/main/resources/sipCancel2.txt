@@ -1,0 +1,111 @@
+out 
+
+INVITE sip:05445302167@194.49.126.26:5060 SIP/2.0
+Via: SIP/2.0/UDP 158.177.80.44:5060;branch=z9hG4bK38f8dd35;rport
+Max-Forwards: 70
+From: "902129630700" <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>
+Contact: <sip:902129630700@158.177.80.44:5060>
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 INVITE
+User-Agent: TegsoftPBX
+Date: Tue, 31 Oct 2017 18:31:04 GMT
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH
+Supported: replaces, timer
+Content-Type: application/sdp
+Content-Length: 307
+
+v=0
+o=root 908060153 908060153 IN IP4 158.177.80.44
+s=Asterisk PBX 10.12.3
+c=IN IP4 158.177.80.44
+t=0 0
+m=audio 13066 RTP/AVP 18 0 8 101
+a=rtpmap:18 G729/8000
+a=fmtp:18 annexb=no
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=ptime:20
+a=sendrecv
+
+
+in
+
+SIP/2.0 183 Session Progress
+Via: SIP/2.0/UDP 158.177.80.44:5060;rport=5060;branch=z9hG4bK38f8dd35
+Record-Route: <sip:194.49.126.26;ftag=as7fe4e40b;lr>
+From: 902129630700 <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>;tag=dd77bdc7d8d65886bbbaf7c65c6a7e5d
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 INVITE
+Server: Verimor Softswitch v4.5-PRODUCTION.179
+Content-Length: 236
+Content-Type: application/sdp
+
+v=0
+o=- 3252364 3252364 IN IP4 194.49.126.26
+s=FreeSWITCH
+c=IN IP4 194.49.126.26
+t=0 0
+m=audio 36328 RTP/AVP 18 101
+a=rtpmap:18 G729/8000
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-16
+a=silenceSupp:off - - - -
+a=ptime:20
+
+
+out
+
+CANCEL sip:05445302167@194.49.126.26:5060 SIP/2.0
+Via: SIP/2.0/UDP 158.177.80.44:5060;branch=z9hG4bK38f8dd35;rport
+Max-Forwards: 70
+From: "902129630700" <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 CANCEL
+User-Agent: TegsoftPBX
+Content-Length: 0
+
+in
+
+SIP/2.0 200 canceling
+Via: SIP/2.0/UDP 158.177.80.44:5060;branch=z9hG4bK38f8dd35;rport=5060
+From: "902129630700" <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>;tag=0d030efb59d338ddb0faac4347bb80c8-6d83
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 CANCEL
+Server: Verimor Softswitch v4.5-PRODUCTION.179
+Content-Length: 0
+
+in
+
+SIP/2.0 487 Request Terminated
+Via: SIP/2.0/UDP 158.177.80.44:5060;branch=z9hG4bK38f8dd35;rport=5060
+Record-Route: <sip:194.49.126.26;ftag=as7fe4e40b;lr>
+From: 902129630700 <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>;tag=7253a2f72a0befb418069bc182b28b37
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 INVITE
+Server: Verimor Softswitch v4.5-PRODUCTION.179
+Content-Length: 0
+
+out
+
+ACK sip:05445302167@194.49.126.26:5060 SIP/2.0
+Via: SIP/2.0/UDP 158.177.80.44:5060;branch=z9hG4bK38f8dd35;rport
+Max-Forwards: 70
+From: "902129630700" <sip:902129630700@158.177.80.44>;tag=as7fe4e40b
+To: <sip:05445302167@194.49.126.26:5060>;tag=7253a2f72a0befb418069bc182b28b37
+Contact: <sip:902129630700@158.177.80.44:5060>
+Call-ID: 0ab2ac8f0aba836b3bcb68603cc0bb48@158.177.80.44:5060
+CSeq: 102 ACK
+User-Agent: TegsoftPBX
+Content-Length: 0
+
+
+
+
+

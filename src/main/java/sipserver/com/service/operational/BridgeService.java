@@ -1,71 +1,74 @@
 package sipserver.com.service.operational;
 
-import java.util.Objects;
-
 import javax.sip.message.Response;
+
+import com.noyan.util.NullUtil;
 
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
-import sipserver.com.parameter.param.CallParam;
+import sipserver.com.executer.sip.transaction.Transaction;
 
 public class BridgeService {
 
-	private static void sendBridgeResponse(CallParam fromCallParam, int statusCode, String sdpContent) {
-		if (Objects.isNull(fromCallParam)) {
+	private static void sendBridgeResponse(Transaction transaction, int statusCode) {
+		sendBridgeResponse(transaction, statusCode, null);
+	}
+
+	private static void sendBridgeResponse(Transaction transaction, int statusCode, String sdp) {
+
+		if (NullUtil.isNull(transaction)) {
 			return;
 		}
-		CallParam bridgeCallParam = fromCallParam.getBridgeCallParam();
-		if (Objects.isNull(bridgeCallParam)) {
-			return;
+		if (transaction instanceof ServerTransaction) {
+			((ServerTransaction) transaction).sendResponseMessage(statusCode, sdp);
 		}
-		if (bridgeCallParam.getTransaction() instanceof ServerTransaction) {
-			ServerTransaction serverTransaction = (ServerTransaction) bridgeCallParam.getTransaction();
-			serverTransaction.sendResponseMessage(statusCode, sdpContent);
+
+		if (NullUtil.isNotNull(transaction.getBridgeTransaction())) {
+			if (transaction.getBridgeTransaction() instanceof ServerTransaction) {
+				((ServerTransaction) transaction.getBridgeTransaction()).sendResponseMessage(statusCode, sdp);
+			}
 		}
 	}
 
-	public static void ringing(CallParam fromCallParam) {
-		sendBridgeResponse(fromCallParam, Response.RINGING, null);
+	public static void ringing(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.RINGING);
 	}
 
-	public static void error(CallParam errorCallParam) {
-		sendBridgeResponse(errorCallParam, Response.SERVER_INTERNAL_ERROR, null);
+	public static void error(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.SERVER_INTERNAL_ERROR);
 	}
 
-	public static void noAnswer(CallParam noAnswerCallParam) {
-		sendBridgeResponse(noAnswerCallParam, Response.DECLINE, null);
+	public static void noAnswer(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.DECLINE);
 	}
 
-	public static void busy(CallParam toCallParam) {
-		sendBridgeResponse(toCallParam, Response.BUSY_HERE, null);
+	public static void busy(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.BUSY_HERE);
 	}
 
-	public static void declined(CallParam toCallParam) {
-		sendBridgeResponse(toCallParam, Response.DECLINE, null);
+	public static void declined(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.DECLINE);
 	}
 
-	public static void noRoute(CallParam fromCallParam) {
-		sendBridgeResponse(fromCallParam, Response.BUSY_HERE, null);
+	public static void noRoute(Transaction transaction) {
+		sendBridgeResponse(transaction, Response.BUSY_HERE);
 	}
 
-	public static void ok(CallParam toCallParam, Response response) {
-		sendBridgeResponse(toCallParam, Response.OK, toCallParam.getSdpRemoteContent());
+	public static void ok(Transaction transaction, String sdp) {
+		sendBridgeResponse(transaction, Response.OK, sdp);
 	}
 
-	public static void cancel(CallParam fromCallParam) {
-		if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
-			return;
-		}
-		ClientTransaction clientTransaction = (ClientTransaction) fromCallParam.getBridgeCallParam().getTransaction();
-		Objects.requireNonNull(clientTransaction);
+	public static void cancel(ClientTransaction clientTransaction) {
 		clientTransaction.sendCancelMessage();
 	}
 
-	public static void bye(CallParam fromCallParam) {
-		if (Objects.isNull(fromCallParam.getBridgeCallParam())) {
+	public static void bye(Transaction transaction) {
+		// transaction.sendByeMessage();
+		if (NullUtil.isNull(transaction.getBridgeTransaction())) {
 			return;
 		}
-		fromCallParam.getBridgeCallParam().getTransaction().sendByeMessage();
+		transaction.getBridgeTransaction().sendByeMessage();
+
 	}
 
 }

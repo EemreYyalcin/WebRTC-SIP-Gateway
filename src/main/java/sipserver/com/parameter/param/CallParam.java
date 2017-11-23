@@ -5,21 +5,17 @@ import javax.sip.message.Request;
 import com.mgcp.transport.MgcpSession;
 
 import sipserver.com.domain.Extension;
-import sipserver.com.executer.sip.transaction.Transaction;
 
 public class CallParam {
 
 	private Request request;
 	private Request secondrequest;
-	private Transaction transaction;
 	private Extension extension;
 	private String sdpLocalContent;
 	private String sdpRemoteContent;
-	
-	private MgcpSession mgcpSession;
-	
 
-	private CallParam bridgeCallParam;
+	private MgcpSession mgcpSession;
+	private boolean isError = false;
 
 	public Request getRequest() {
 		return request;
@@ -27,15 +23,6 @@ public class CallParam {
 
 	public CallParam setRequest(Request request) {
 		this.request = request;
-		return this;
-	}
-
-	public Transaction getTransaction() {
-		return transaction;
-	}
-
-	public CallParam setTransaction(Transaction transaction) {
-		this.transaction = transaction;
 		return this;
 	}
 
@@ -64,14 +51,6 @@ public class CallParam {
 		this.sdpRemoteContent = sdpRemoteContent;
 	}
 
-	public CallParam getBridgeCallParam() {
-		return bridgeCallParam;
-	}
-
-	public void setBridgeCallParam(CallParam bridgeCallParam) {
-		this.bridgeCallParam = bridgeCallParam;
-	}
-
 	public Request getSecondrequest() {
 		return secondrequest;
 	}
@@ -86,6 +65,14 @@ public class CallParam {
 
 	public void setMgcpSession(MgcpSession mgcpSession) {
 		this.mgcpSession = mgcpSession;
+	}
+
+	public boolean isError() {
+		return isError;
+	}
+
+	public void setError(boolean isError) {
+		this.isError = isError;
 	}
 
 }

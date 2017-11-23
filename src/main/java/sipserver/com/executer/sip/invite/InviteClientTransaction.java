@@ -8,10 +8,10 @@ import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
+import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.service.control.ChannelControlService;
 import sipserver.com.service.operational.BridgeService;
 import sipserver.com.service.util.AliasService;
 
@@ -32,7 +32,7 @@ public class InviteClientTransaction extends ClientTransaction {
 			FromHeader fromHeader = (FromHeader) response.getHeader(FromHeader.NAME);
 			Objects.requireNonNull(fromHeader);
 
-			toCallParam = ChannelControlService.getChannel(getCallId());
+			toCallParam = getCallParam();
 			if (Objects.isNull(toCallParam)) {
 				error("Channel is not Found from:" + fromHeader.toString() + "\n toExten:" + toExtension.getExten());
 				return;
@@ -43,26 +43,23 @@ public class InviteClientTransaction extends ClientTransaction {
 			}
 
 			if (statusCode == Response.RINGING || statusCode == Response.SESSION_PROGRESS) {
-				BridgeService.ringing(toCallParam);
+				BridgeService.ringing(this);
 				return;
 			}
 
 			if (statusCode == Response.DECLINE) {
 				info("Declined From Exten:" + toExtension.getExten());
-				BridgeService.declined(toCallParam);
-				ChannelControlService.takeChannel(getCallId());
+				BridgeService.declined(this);
 				return;
 			}
 			if (statusCode == Response.FORBIDDEN) {
-				ChannelControlService.takeChannel(getCallId());
 				warn("Forbidden From Exten:" + toExtension.getExten());
 				return;
 			}
 
 			if (statusCode == Response.BUSY_HERE) {
 				warn("Busy Detected From Exten:" + toExtension.getExten());
-				BridgeService.busy(toCallParam);
-				ChannelControlService.takeChannel(getCallId());
+				BridgeService.busy(this);
 				return;
 			}
 			if (statusCode == Response.UNAUTHORIZED || statusCode == Response.PROXY_AUTHENTICATION_REQUIRED) {
@@ -88,9 +85,15 @@ public class InviteClientTransaction extends ClientTransaction {
 
 			if (statusCode == Response.OK) {
 				info("Call Started Exten:" + toExtension.getExten());
+				if (SipServerSharedProperties.mediaServerActive) {
+					toCallParam.getMgcpSession().modify(new String(response.getRawContent()));
+				} else {
+					toCallParam.setSdpRemoteContent(new String(response.getRawContent()));
+					getBridgeTransaction().getCallParam().setSdpLocalContent(toCallParam.getSdpRemoteContent());
+					BridgeService.ok(this, toCallParam.getSdpRemoteContent());
+				}
 				setResponse(response);
 				sendACK();
-				BridgeService.ok(toCallParam, response);
 				return;
 			}
 
@@ -98,8 +101,7 @@ public class InviteClientTransaction extends ClientTransaction {
 			e.printStackTrace();
 			error("Call Transction Error. Exception " + e.getMessage());
 			if (toCallParam != null) {
-				BridgeService.error(toCallParam);
-				ChannelControlService.takeChannel(getCallId());
+				BridgeService.error(this);
 			}
 		}
 	}
