@@ -1,6 +1,5 @@
 package sipserver.com.executer.sip.transaction;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.CallIdHeader;
@@ -16,15 +15,15 @@ import sipserver.com.executer.sip.options.OptionsClientTransaction;
 import sipserver.com.executer.sip.options.OptionsServerTransaction;
 import sipserver.com.executer.sip.register.RegisterClientTransaction;
 import sipserver.com.executer.sip.register.RegisterServerTransaction;
-import sipserver.com.server.SipServerTransport;
+import sipserver.com.parameter.constant.Constant.TransportType;
 
 public class TransactionBuilder {
 
 	private static Logger logger = Logger.getLogger(TransactionBuilder.class);
 
-	public static ServerTransaction createServerTransaction(Request request, InetAddress address, int port, SipServerTransport transport, String callID) {
+	public static ServerTransaction createServerTransaction(Request request, String address, int port, TransportType transportType, String callID) {
 		try {
-			if (Objects.isNull(request) || Objects.isNull(address) || Objects.isNull(transport) || Objects.isNull(callID)) {
+			if (Objects.isNull(request) || Objects.isNull(address) || Objects.isNull(transportType) || Objects.isNull(callID)) {
 				return null;
 			}
 
@@ -43,7 +42,7 @@ public class TransactionBuilder {
 			serverTransaction.setRequest(request);
 			serverTransaction.setAddress(address);
 			serverTransaction.setPort(port);
-			serverTransaction.setTransport(transport);
+			serverTransaction.setTransportType(transportType);
 			serverTransaction.setCallId(callID);
 
 			ServerCore.getCoreElement().addTransaction(callID, serverTransaction);
@@ -61,7 +60,7 @@ public class TransactionBuilder {
 	public static ClientTransaction createClientTransaction(Request request, Extension toExten) {
 		try {
 
-			if (Objects.isNull(request) || Objects.isNull(toExten.getAddress()) || Objects.isNull(toExten.getTransport())) {
+			if (Objects.isNull(request) || Objects.isNull(toExten.getAddress()) || Objects.isNull(toExten.getTransportType())) {
 				return null;
 			}
 
@@ -92,7 +91,7 @@ public class TransactionBuilder {
 			clientTransaction.setRequest(request);
 			clientTransaction.setAddress(toExten.getAddress());
 			clientTransaction.setPort(toExten.getPort());
-			clientTransaction.setTransport(toExten.getTransport());
+			clientTransaction.setTransportType(toExten.getTransportType());
 			clientTransaction.setCallId(callIdHeader.getCallId());
 			clientTransaction.setExtension(toExten);
 

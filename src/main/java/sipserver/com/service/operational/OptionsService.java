@@ -12,7 +12,7 @@ public class OptionsService {
 
 	public static void pingExtension(Extension extTrunk) {
 		try {
-			Objects.requireNonNull(extTrunk.getTransport());
+			Objects.requireNonNull(extTrunk.getTransportType());
 			Request requestMessage = ClientTransaction.createRequestMessage(Request.OPTIONS, extTrunk);
 			Objects.requireNonNull(requestMessage);
 			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(requestMessage, extTrunk);

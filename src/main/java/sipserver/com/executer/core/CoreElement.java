@@ -17,7 +17,7 @@ public class CoreElement {
 
 	private ArrayList<Task> taskList = new ArrayList<Task>();
 
-	private InetAddress localServerAddress;;
+	private String localServerAddress;;
 	private int localSipPort = 5060;
 	private InetAddress mediaServerAddress;
 	private int mediaServerPort = 2427;
@@ -59,14 +59,6 @@ public class CoreElement {
 		getLocalExtensionList().put(extension.getExten(), extension);
 	}
 
-	public InetAddress getLocalServerAddress() {
-		return localServerAddress;
-	}
-
-	public void setLocalServerAddress(InetAddress localServerAddress) {
-		this.localServerAddress = localServerAddress;
-	}
-
 	public InetAddress getMediaServerAddress() {
 		return mediaServerAddress;
 	}
@@ -96,6 +88,14 @@ public class CoreElement {
 
 	public ArrayList<Task> getTaskList() {
 		return taskList;
+	}
+
+	public String getLocalServerAddress() {
+		return localServerAddress;
+	}
+
+	public void setLocalServerAddress(String localServerAddress) {
+		this.localServerAddress = localServerAddress;
 	}
 
 }

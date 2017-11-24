@@ -31,7 +31,7 @@ public abstract class ServerTransaction extends Transaction {
 			}
 
 			// Create the contact name address.
-			SipURI contactURI = getTransport().getAddressFactory().createSipURI(displayName, ServerCore.getCoreElement().getLocalServerAddress().getHostAddress());
+			SipURI contactURI = getTransport().getAddressFactory().createSipURI(displayName, ServerCore.getCoreElement().getLocalServerAddress());
 			contactURI.setPort(ServerCore.getCoreElement().getLocalSipPort());
 
 			ContactHeader contactHeader = getTransport().getHeaderFactory().createContactHeader(getTransport().getAddressFactory().createAddress(contactURI));

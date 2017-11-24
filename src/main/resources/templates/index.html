@@ -1,9 +1,10 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<link rel="icon" type="image/png" href="resources/images/favicon.png">
-		<link href="resources/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-		<link href="resources/css/bootstrap-switch.css" rel="stylesheet">
+		<link rel="icon" type="image/png" th:src="@{images/favicon.png}"/>
+		<link  th:href="@{css/bootstrap-combined.no-icons.min.css}" rel="stylesheet"/>
+		<link th:src="@{css/bootstrap-switch.css}" rel="stylesheet"/>
 		<style type="text/css">
 
 			.sidebar-nav {
@@ -85,28 +86,28 @@
 
 
 		</style>
-<!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"> -->
-	 	<link href="resources/css/bootstrap-combined.no-icons.min.css" rel="stylesheet" />
-		<link href="resources/css/font-awesome.css" rel="stylesheet">
+<!-- <link th:href="@{//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<link th:href="@{//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"> -->
+	 	<link th:href="@{css/bootstrap-combined.no-icons.min.css}" rel="stylesheet" />
+		<link th:href="@{css/font-awesome.css}" rel="stylesheet" />
 		<!-- custom -->
-		<link href="resources/css/main.css" rel="stylesheet" />
-		<link href="resources/css/chatbox.css" rel="stylesheet" />
+		<link th:href="@{css/main.css}" rel="stylesheet" />
+		<link th:href="@{css/chatbox.css}" rel="stylesheet" />
 		
-		<script src="resources/js/jquery-1.9.1.js"></script>
-		<script src="resources/js/jquery-ui.min.js"></script>
-		<script src="resources/js/bootstrap.js"></script>
-		<script src="resources/js/bootstrap-switch.js"></script>
-		<script src="resources/js/moment.min.js"></script>
-		<script src="resources/js/livestamp.min.js"></script>
-		<!--script src="resources/js/hammer.min.js"></script>
-		<script src="resources/js/dragend-0.2.0_rc2.js"></script-->
+		<script  th:src="@{js/jquery-1.9.1.js}"></script>
+<script th:src="@{js/jquery-ui.min.js}"></script>
+<script  th:src="@{js/bootstrap.js}"></script>
+		<script  th:src="@{js/bootstrap-switch.js}"></script>
+		<script  th:src="@{js/moment.min.js}"></script>
+		<script  th:src="@{js/livestamp.min.js}"></script>
+		<!--script  th:src="@{js/hammer.min.js}"></script>
+		<script  th:src="@{js/dragend-0.2.0_rc2.js}"></script-->
 		<!-- custom -->		
-		<script src="resources/js/chatbox.js" type="text/javascript"></script>
-		<script src="resources/js/telscale-rtm.js" type="text/javascript"></script>
-		<script src="resources/js/jain-sip.js" type="text/javascript"></script> 
-        	<script src="resources/js/WebRTComm.js" type="text/javascript"></script>  
-	        <script src="resources/js/TelScaleRTMController.js" type="text/javascript"></script>        
+		<script  th:src="@{js/chatbox.js}" type="text/javascript"></script>
+		<script  th:src="@{js/telscale-rtm.js}" type="text/javascript"></script>
+		<script  th:src="@{js/jain-sip.js}" type="text/javascript"></script> 
+        	<script  th:src="@{js/WebRTComm.js}" type="text/javascript"></script>  
+	        <script  th:src="@{js/TelScaleRTMController.js}" type="text/javascript"></script>        
    		<script>
    		mobicentsWebRTCPhoneController = new MobicentsWebRTCPhoneController(this);
    		</script>
@@ -122,13 +123,13 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<span class="brand" style="vertical-align: bottom;"><img src="resources/images/telestax-logo-dark.png" />Room</span>
+						<span class="brand" style="vertical-align: bottom;"><img  th:src="@{images/telestax-logo-dark.png}" />Room</span>
 						<div class="nav-collapse collapse">
 							<p class="navbar-text pull-right" style="font-size: 1.2em;">
 								<span id="user" style="margin-top: 15px; vertical-align: sub;">
-									<i class="icon-user"></i> <a id="username" href="#" class="navbar-link">John Doe</a>
+									<i class="icon-user"></i> <a id="username" th:href="@{#}" class="navbar-link">John Doe</a>
 								</span>
-								 &nbsp; <span id="unregister"><a href="#"  onclick="mobicentsWebRTCPhoneController.onClickDisconnectButtonViewEventHandler();" class="btn btn-danger btn-small"><i class="icon-off"></i> Sign Out</a></span>
+								 &nbsp; <span id="unregister"><a th:href="@{#}"  onclick="mobicentsWebRTCPhoneController.onClickDisconnectButtonViewEventHandler();" class="btn btn-danger btn-small"><i class="icon-off"></i> Sign Out</a></span>
 							</p>
 						</div><!--/.nav-collapse -->
 					</div>

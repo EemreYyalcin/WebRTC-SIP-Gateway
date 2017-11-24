@@ -1,6 +1,7 @@
 package sipserver.com.executer.core;
 
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -9,6 +10,8 @@ import com.configuration.GeneralConfiguration;
 import com.mgcp.transport.MGCPTransportLayer;
 
 import sipserver.com.domain.ExtensionBuilder;
+import sipserver.com.parameter.constant.Constant.TransportType;
+import sipserver.com.server.SipServerTransport;
 import sipserver.com.server.transport.udp.UDPTransport;
 import sipserver.com.server.transport.ws.WebsocketListener;
 import sipserver.com.service.control.ExtensionControlService;
@@ -32,15 +35,8 @@ public class ServerCore {
 		// Logger.getRootLogger().addAppender(Log.createConsoleAppender(null));
 		ServerCore.serverCore = new ServerCore();
 		ServerCore.coreElement = new CoreElement();
-		ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName("192.168.1.108"));
+		ServerCore.coreElement.setLocalServerAddress("192.168.1.108");
 		ServerCore.coreElement.setLocalSipPort(5060);
-
-		if (args != null && args.length > 0) {
-			ServerCore.coreElement.setLocalServerAddress(InetAddress.getByName(args[0]));
-			if (args.length > 1) {
-				ServerCore.coreElement.setLocalSipPort(Integer.valueOf(args[1]));
-			}
-		}
 
 		/*
 		 * 
@@ -60,10 +56,10 @@ public class ServerCore {
 
 		////////////
 		ServerCore.serverCore.setUDPTransport(new UDPTransport());
-		ServerCore.serverCore.getUDPTransport().start();
+		ServerCore.serverCore.getTransport(TransportType.UDP).start();
 
 		ServerCore.serverCore.setWebsocketListenerTransport(new WebsocketListener());
-		ServerCore.serverCore.getWebsocketListenerTransport().start();
+		ServerCore.serverCore.getTransport(TransportType.WS).start();
 
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1002", "test1002"));
@@ -82,8 +78,16 @@ public class ServerCore {
 		return serverCore;
 	}
 
-	public UDPTransport getUDPTransport() {
-		return udpTransport;
+	public SipServerTransport getTransport(TransportType transportType) {
+		if (Objects.isNull(transportType)) {
+			return null;
+		}
+		if (transportType.equals(TransportType.UDP)) {
+			return udpTransport;
+		} else if (transportType.equals(TransportType.WS)) {
+			return websocketListenerTransport;
+		}
+		return null;
 	}
 
 	public void setUDPTransport(UDPTransport udpTransport) {
@@ -92,10 +96,6 @@ public class ServerCore {
 
 	public static CoreElement getCoreElement() {
 		return coreElement;
-	}
-
-	public WebsocketListener getWebsocketListenerTransport() {
-		return websocketListenerTransport;
 	}
 
 	public void setWebsocketListenerTransport(WebsocketListener websocketListenerTransport) {

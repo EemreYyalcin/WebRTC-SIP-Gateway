@@ -23,8 +23,9 @@ import sipserver.com.service.util.GeneraterService;
 public class HeaderBuilder {
 
 	public static Address createAddress(Extension extension) throws Exception {
-		SipURI addressUri = extension.getTransport().getAddressFactory().createSipURI(extension.getExten(), extension.getAddress().getHostAddress());
-		Address address = extension.getTransport().getAddressFactory().createAddress(addressUri);
+		SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
+		SipURI addressUri = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getAddress());
+		Address address = transport.getAddressFactory().createAddress(addressUri);
 		if (Objects.nonNull(extension.getDisplayName())) {
 			address.setDisplayName(extension.getDisplayName());
 		}
@@ -33,8 +34,8 @@ public class HeaderBuilder {
 
 	public static SipURI createSipUri(Extension extension) {
 		try {
-			String serverHostPort = ServerCore.getCoreElement().getLocalServerAddress().getHostAddress() + ":" + ServerCore.getCoreElement().getLocalSipPort();
-			return extension.getTransport().getAddressFactory().createSipURI(extension.getExten(), serverHostPort);
+			String serverHostPort = ServerCore.getCoreElement().getLocalServerAddress() + ":" + ServerCore.getCoreElement().getLocalSipPort();
+			return ServerCore.getServerCore().getTransport(extension.getTransportType()).getAddressFactory().createSipURI(extension.getExten(), serverHostPort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -44,7 +45,7 @@ public class HeaderBuilder {
 	public static ArrayList<ViaHeader> createViaHeaders(SipServerTransport transport) {
 		try {
 			ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
-			ViaHeader viaHeader = transport.getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress().getHostAddress(), ServerCore.getCoreElement().getLocalSipPort(), "UDP", GeneraterService.getUUidForBranch());
+			ViaHeader viaHeader = transport.getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort(), "UDP", GeneraterService.getUUidForBranch());
 			viaHeaders.add(viaHeader);
 			return viaHeaders;
 		} catch (Exception e) {
@@ -55,7 +56,8 @@ public class HeaderBuilder {
 
 	public static RouteHeader createRouteHeader(Extension extension) {
 		try {
-			return extension.getTransport().getHeaderFactory().createRouteHeader(extension.getTransport().getAddressFactory().createAddress(createSipUri(extension)));
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
+			return transport.getHeaderFactory().createRouteHeader(transport.getAddressFactory().createAddress(createSipUri(extension)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,7 +66,8 @@ public class HeaderBuilder {
 
 	public static FromHeader createFromHeader(Extension extension) {
 		try {
-			return extension.getTransport().getHeaderFactory().createFromHeader(createAddress(extension), GeneraterService.getUUidForTag());
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
+			return transport.getHeaderFactory().createFromHeader(createAddress(extension), GeneraterService.getUUidForTag());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -73,7 +76,8 @@ public class HeaderBuilder {
 
 	public static ToHeader createToHeader(Extension extension) {
 		try {
-			return extension.getTransport().getHeaderFactory().createToHeader(createAddress(extension), null);
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
+			return transport.getHeaderFactory().createToHeader(createAddress(extension), null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -109,11 +113,12 @@ public class HeaderBuilder {
 
 	public static ContactHeader createContactHeader(Extension extension) {
 		try {
-			Address contactAddress = extension.getTransport().getAddressFactory().createAddress(createSipUri(extension));
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
+			Address contactAddress = transport.getAddressFactory().createAddress(createSipUri(extension));
 			if (Objects.nonNull(extension.getDisplayName())) {
 				contactAddress.setDisplayName(extension.getDisplayName());
 			}
-			return extension.getTransport().getHeaderFactory().createContactHeader(contactAddress);
+			return transport.getHeaderFactory().createContactHeader(contactAddress);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

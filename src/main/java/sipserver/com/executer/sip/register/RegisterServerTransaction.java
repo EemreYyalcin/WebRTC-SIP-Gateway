@@ -37,7 +37,7 @@ public class RegisterServerTransaction extends ServerTransaction {
 					ServerCore.getCoreElement().removeTransaction(getCallId());
 					return;
 				}
-				extIncoming.setTransport(getTransport());
+				extIncoming.setTransportType(getTransportType());
 				setExtension(extIncoming);
 
 				ViaHeader viaHeader = (ViaHeader) getRequest().getHeader(ViaHeader.NAME);
@@ -84,7 +84,7 @@ public class RegisterServerTransaction extends ServerTransaction {
 					return;
 				}
 
-				if (!extIncoming.getTransport().getDigestServerAuthentication().doAuthenticatePlainTextPassword(getRequest(), extIncoming.getPass())) {
+				if (!ServerCore.getServerCore().getTransport(extIncoming.getTransportType()).getDigestServerAuthentication().doAuthenticatePlainTextPassword(getRequest(), extIncoming.getPass())) {
 					sendResponseMessage(Response.FORBIDDEN);
 					info("Forbidden Peer Wrong Password Exten:" + extIncoming.getExten());
 					ServerCore.getCoreElement().removeTransaction(getCallId());

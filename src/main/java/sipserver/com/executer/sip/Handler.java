@@ -1,6 +1,5 @@
 package sipserver.com.executer.sip;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.header.CallIdHeader;
@@ -19,17 +18,17 @@ import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
-import sipserver.com.server.SipServerTransport;
+import sipserver.com.parameter.constant.Constant.TransportType;
 
 public class Handler {
 
 	private static Logger logger = Logger.getLogger(Handler.class);
 
-	public static void processSipMessage(SIPMessage message, SipServerTransport transport) {
-		processSipMessage(message, transport, null);
+	public static void processSipMessage(SIPMessage message, TransportType transportType) {
+		processSipMessage(message, transportType, null);
 	}
 
-	public static void processSipMessage(SIPMessage message, SipServerTransport transport, Session session) {
+	public static void processSipMessage(SIPMessage message, TransportType transportType, Session session) {
 		try {
 			if (Objects.isNull(message)) {
 				logger.warn("Null Message Recieved");
@@ -95,7 +94,19 @@ public class Handler {
 				return;
 			}
 
-			ServerTransaction serverTransaction = TransactionBuilder.createServerTransaction(request, InetAddress.getByName(viaHeader.getHost()), viaHeader.getPort(), transport, callIdHeader.getCallId());
+			String peerHost = null;
+			int peerPort = 0;
+			if (Objects.isNull(session)) {
+				peerHost = viaHeader.getHost();
+				peerPort = viaHeader.getPort();
+			} else {
+				System.out.println("Host: " + viaHeader.getHost() + "");
+				System.out.println("Port: " + viaHeader.getPort() + "");
+
+				throw new Exception();
+			}
+
+			ServerTransaction serverTransaction = TransactionBuilder.createServerTransaction(request, peerHost, peerPort, transportType, callIdHeader.getCallId());
 			if (NullUtil.isNull(serverTransaction)) {
 				logger.trace("Ignored Message " + request.getMethod());
 				return;

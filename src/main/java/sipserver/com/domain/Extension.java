@@ -1,20 +1,19 @@
 package sipserver.com.domain;
 
-import java.net.InetAddress;
 import java.util.Objects;
 
 import sipserver.com.executer.core.SipServerSharedProperties;
-import sipserver.com.server.SipServerTransport;
+import sipserver.com.parameter.constant.Constant.TransportType;
 
 public class Extension {
 
 	private String exten;
 	private int expiresTime = 3600;
-	private InetAddress address;
+	private String address;
 	private String displayName;
 	private int port = 5060;
 	private String pass;
-	private SipServerTransport transport;
+	private TransportType transportType;
 	private Long registerTime;
 	private Long aliveTime;
 
@@ -61,14 +60,6 @@ public class Extension {
 		this.pass = pass;
 	}
 
-	public SipServerTransport getTransport() {
-		return transport;
-	}
-
-	public void setTransport(SipServerTransport transport) {
-		this.transport = transport;
-	}
-
 	public boolean isRegister() {
 		if (Objects.isNull(registerTime)) {
 			return false;
@@ -87,14 +78,6 @@ public class Extension {
 			return true;
 		}
 		return false;
-	}
-
-	public InetAddress getAddress() {
-		return address;
-	}
-
-	public void setAddress(InetAddress address) {
-		this.address = address;
 	}
 
 	public void keepRegistered() {
@@ -123,6 +106,22 @@ public class Extension {
 
 	public void setAuthenticatedTrunkStatus(boolean isAuthenticatedTrunk) {
 		this.isAuthenticatedTrunk = isAuthenticatedTrunk;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public TransportType getTransportType() {
+		return transportType;
+	}
+
+	public void setTransportType(TransportType transportType) {
+		this.transportType = transportType;
 	}
 
 }

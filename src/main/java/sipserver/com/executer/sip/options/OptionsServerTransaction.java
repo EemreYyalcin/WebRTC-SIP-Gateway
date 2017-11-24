@@ -23,7 +23,7 @@ public class OptionsServerTransaction extends ServerTransaction {
 				return;
 			}
 			setExtension(extIncoming);
-			extIncoming.setTransport(getTransport());
+			extIncoming.setTransportType(getTransportType());
 			debug("Keep Alive Exten:" + extIncoming.getExten());
 			sendResponseMessage(Response.OK);
 		} catch (Exception e) {

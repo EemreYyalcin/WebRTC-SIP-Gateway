@@ -10,6 +10,7 @@ import com.mgcp.transport.MgcpSession;
 import com.noyan.util.NullUtil;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
@@ -78,7 +79,7 @@ public class CallService {
 			}
 
 			Request request = ClientTransaction.createInviteMessage(toCallParam, serverTransaction.getCallParam());
-			request.setContent(toCallParam.getSdpLocalContent(), toCallParam.getExtension().getTransport().getHeaderFactory().createContentTypeHeader("application", "sdp"));
+			request.setContent(toCallParam.getSdpLocalContent(), ServerCore.getServerCore().getTransport(toCallParam.getExtension().getTransportType()).getHeaderFactory().createContentTypeHeader("application", "sdp"));
 			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(request, toCallParam.getExtension());
 			if (Objects.isNull(clientTransaction)) {
 				BridgeService.noRoute(serverTransaction);

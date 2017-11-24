@@ -12,7 +12,7 @@ import sipserver.com.executer.core.SipServerSharedProperties;
 
 public class ExtensionBuilder {
 
-	public static Extension createExtension(String exten, String pass, InetAddress address, int port) {
+	public static Extension createExtension(String exten, String pass, String address, int port) {
 		if (Objects.isNull(exten) || Objects.isNull(pass)) {
 			return null;
 		}
@@ -84,7 +84,7 @@ public class ExtensionBuilder {
 
 			}
 			if (Objects.nonNull(viaHeader)) {
-				extLocalOrTrunk.setAddress(InetAddress.getByName(viaHeader.getHost()));
+				extLocalOrTrunk.setAddress(viaHeader.getHost());
 				extLocalOrTrunk.setPort(viaHeader.getPort());
 			}
 			extLocalOrTrunk.keepAlive();

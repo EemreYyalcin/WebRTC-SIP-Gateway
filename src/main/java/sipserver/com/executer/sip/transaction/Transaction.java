@@ -1,6 +1,5 @@
 package sipserver.com.executer.sip.transaction;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -19,7 +18,9 @@ import javax.websocket.Session;
 import com.noyan.Base;
 
 import sipserver.com.domain.Extension;
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
+import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.operational.BridgeService;
@@ -29,13 +30,13 @@ public class Transaction implements Base {
 
 	private Request request;
 	private Response response;
-	private InetAddress address;
+	private String address;
 	private int port = SipServerSharedProperties.blankCode;
 	private String callId;
 
 	private Extension extension;
 
-	private SipServerTransport transport;
+	private TransportType transportType;
 	private Session session;
 
 	private CallParam callParam;
@@ -73,15 +74,17 @@ public class Transaction implements Base {
 			if (Objects.isNull(getResponse())) {
 				return;
 			}
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(getExtension().getTransportType());
+
 			FromHeader fromHeader = (FromHeader) getResponse().getHeader(FromHeader.NAME);
 			ToHeader toHeader = (ToHeader) getResponse().getHeader(ToHeader.NAME);
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(getExtension().getTransport());
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(transport);
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
 			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
-			CSeqHeader cSeqHeader = getExtension().getTransport().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, getExtension().getTransport());
-			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
+			Request request = transport.getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(getExtension());
 			request.addHeader(contactHeader);
 			getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
@@ -99,12 +102,13 @@ public class Transaction implements Base {
 		try {
 			FromHeader fromHeader = null;
 			ToHeader toHeader = null;
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(getExtension().getTransport());
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(getExtension().getTransportType());
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(transport);
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, getExtension().getTransport());
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
 			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
-			CSeqHeader cSeqHeader = getExtension().getTransport().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber() + 1, Request.BYE);
+			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber() + 1, Request.BYE);
 
 			if (this instanceof ClientTransaction) {
 				fromHeader = (FromHeader) getRequest().getHeader(FromHeader.NAME);
@@ -117,7 +121,7 @@ public class Transaction implements Base {
 
 			}
 
-			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.BYE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Request request = transport.getMessageFactory().createRequest(requestURI, Request.BYE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 
 			if (Objects.nonNull(getTransport())) {
 				getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
@@ -135,14 +139,6 @@ public class Transaction implements Base {
 		this.request = request;
 	}
 
-	public InetAddress getAddress() {
-		return address;
-	}
-
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
-
 	public int getPort() {
 		return port;
 	}
@@ -157,14 +153,6 @@ public class Transaction implements Base {
 
 	public void setCallId(String callId) {
 		this.callId = callId;
-	}
-
-	public SipServerTransport getTransport() {
-		return transport;
-	}
-
-	public void setTransport(SipServerTransport transport) {
-		this.transport = transport;
 	}
 
 	public Extension getExtension() {
@@ -205,6 +193,26 @@ public class Transaction implements Base {
 
 	public void setBridgeTransaction(Transaction bridgeTransaction) {
 		this.bridgeTransaction = bridgeTransaction;
+	}
+
+	public TransportType getTransportType() {
+		return transportType;
+	}
+
+	public void setTransportType(TransportType transportType) {
+		this.transportType = transportType;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public SipServerTransport getTransport() {
+		return ServerCore.getServerCore().getTransport(getTransportType());
 	}
 
 }

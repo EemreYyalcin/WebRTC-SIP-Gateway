@@ -22,7 +22,7 @@ public class WebsocketListener extends SipServerTransport {
 	}
 
 	@Override
-	public void sendData(String data, InetAddress toAddress, int port) {
+	public void sendData(String data, String toAddress, int port) {
 
 	}
 

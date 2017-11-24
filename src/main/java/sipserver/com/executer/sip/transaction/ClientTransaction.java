@@ -20,6 +20,7 @@ import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.param.CallParam;
+import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.util.message.HeaderBuilder;
 
 public abstract class ClientTransaction extends Transaction {
@@ -28,6 +29,7 @@ public abstract class ClientTransaction extends Transaction {
 
 	public void sendCancelMessage() {
 		try {
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(getExtension().getTransportType());
 			FromHeader fromHeader = (FromHeader) getRequest().getHeader(FromHeader.NAME);
 			Objects.requireNonNull(fromHeader);
 			ToHeader toHeader = (ToHeader) getRequest().getHeader(ToHeader.NAME);
@@ -41,9 +43,9 @@ public abstract class ClientTransaction extends Transaction {
 			Objects.requireNonNull(cSeqHeaderRequest);
 			CSeqHeader cseqHeader = getTransport().getHeaderFactory().createCSeqHeader(cSeqHeaderRequest.getSeqNumber(), Request.CANCEL);
 			Objects.requireNonNull(cseqHeader);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, getExtension().getTransport());
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
 			Objects.requireNonNull(maxForwards);
-			Request request = getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.CANCEL, callIdHeader, cseqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Request request = transport.getMessageFactory().createRequest(requestURI, Request.CANCEL, callIdHeader, cseqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			Objects.requireNonNull(request);
 			getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
 		} catch (Exception e) {
@@ -57,12 +59,13 @@ public abstract class ClientTransaction extends Transaction {
 			if (method.equals(Request.OPTIONS)) {
 				Extension serverExtension = ExtensionBuilder.createExtension("Unknown", "Unknown", ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort());
 				Objects.requireNonNull(serverExtension);
-				serverExtension.setTransport(extension.getTransport());
+				serverExtension.setTransportType(extension.getTransportType());
 				fromHeader = HeaderBuilder.createFromHeader(serverExtension);
 			}
 			if (Objects.isNull(fromHeader)) {
 				fromHeader = HeaderBuilder.createFromHeader(extension);
 			}
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
 			Objects.requireNonNull(fromHeader);
 			ToHeader toHeader = HeaderBuilder.createToHeader(extension);
 			Objects.requireNonNull(toHeader);
@@ -70,11 +73,11 @@ public abstract class ClientTransaction extends Transaction {
 			Objects.requireNonNull(routeHeader);
 			CallIdHeader callIdHeader = HeaderBuilder.createCallIdHeader();
 			Objects.requireNonNull(callIdHeader);
-			CSeqHeader cSeqHeader = extension.getTransport().getHeaderFactory().createCSeqHeader(SipServerSharedProperties.cseqSequence++, method);
+			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(SipServerSharedProperties.cseqSequence++, method);
 			Objects.requireNonNull(cSeqHeader);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, extension.getTransport());
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
 			Objects.requireNonNull(maxForwards);
-			Request request = extension.getTransport().getMessageFactory().createRequest(HeaderBuilder.createSipUri(extension), method, callIdHeader, cSeqHeader, fromHeader, toHeader, HeaderBuilder.createViaHeaders(extension.getTransport()), maxForwards);
+			Request request = transport.getMessageFactory().createRequest(HeaderBuilder.createSipUri(extension), method, callIdHeader, cSeqHeader, fromHeader, toHeader, HeaderBuilder.createViaHeaders(transport), maxForwards);
 			Objects.requireNonNull(request);
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(extension);
 			Objects.requireNonNull(contactHeader);
@@ -89,19 +92,20 @@ public abstract class ClientTransaction extends Transaction {
 
 	public static Request createInviteMessage(CallParam toCallParam, CallParam fromCallParam) {
 		try {
+			SipServerTransport transport = ServerCore.getServerCore().getTransport(toCallParam.getExtension().getTransportType());
 			FromHeader fromHeader = HeaderBuilder.createFromHeader(fromCallParam.getExtension());
 			Objects.requireNonNull(fromHeader);
 			ToHeader toHeader = HeaderBuilder.createToHeader(toCallParam.getExtension());
 			Objects.requireNonNull(toHeader);
 			SipURI requestURI = HeaderBuilder.createSipUri(toCallParam.getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(toCallParam.getExtension().getTransport());
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(transport);
 			CallIdHeader callIdHeader = HeaderBuilder.createCallIdHeader();
 			Objects.requireNonNull(callIdHeader);
-			CSeqHeader cSeqHeader = HeaderBuilder.createCseqHeader(toCallParam.getExtension().getTransport(), Request.INVITE);
+			CSeqHeader cSeqHeader = HeaderBuilder.createCseqHeader(transport, Request.INVITE);
 			Objects.requireNonNull(cSeqHeader);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, toCallParam.getExtension().getTransport());
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
 			Objects.requireNonNull(maxForwards);
-			Request request = toCallParam.getExtension().getTransport().getMessageFactory().createRequest(requestURI, Request.INVITE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Request request = transport.getMessageFactory().createRequest(requestURI, Request.INVITE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			Objects.requireNonNull(request);
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(toCallParam.getExtension());
 			request.addHeader(contactHeader);

@@ -1,7 +1,6 @@
 package sipserver.com.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Objects;
 
 import javax.sip.SipFactory;
@@ -27,9 +26,9 @@ public abstract class SipServerTransport extends Thread implements ServerSocketA
 
 	protected abstract void listen();
 
-	protected abstract void sendData(String data, InetAddress toAddress, int port);
+	protected abstract void sendData(String data, String toAddress, int port);
 
-	public void sendSipMessage(Message sipMessage, InetAddress toAddress, int port, Session session) {
+	public void sendSipMessage(Message sipMessage, String toAddress, int port, Session session) {
 		if (Objects.isNull(sipMessage)) {
 			return;
 		}

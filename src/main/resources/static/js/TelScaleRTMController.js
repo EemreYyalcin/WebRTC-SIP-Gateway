@@ -42,7 +42,7 @@ function MobicentsWebRTCPhoneController(view) {
 MobicentsWebRTCPhoneController.prototype.constructor=MobicentsWebRTCPhoneController;
 
 // Default SIP profile to use
-MobicentsWebRTCPhoneController.prototype.DEFAULT_SIP_OUTBOUND_PROXY="ws://" + window.location.hostname + ":8080/SIPSERVER/sipserver";
+MobicentsWebRTCPhoneController.prototype.DEFAULT_SIP_OUTBOUND_PROXY="ws://" + window.location.hostname + ":8080/sipserver";
 MobicentsWebRTCPhoneController.prototype.DEFAULT_SIP_USER_AGENT="TelScale RTM/1.0.0.Alpha3-SNAPSHOT" 
 MobicentsWebRTCPhoneController.prototype.DEFAULT_SIP_USER_AGENT_CAPABILITIES=undefined 
 MobicentsWebRTCPhoneController.prototype.DEFAULT_SIP_DOMAIN="192.168.1.108";
