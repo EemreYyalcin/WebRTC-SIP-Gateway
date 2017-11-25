@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import org.springframework.web.socket.server.standard.ServerEndpointRegistration;
 
-import sipserver.com.server.transport.ws.ProgrammaticEchoEnpoint;
+import sipserver.com.server.transport.ws.ProgrammaticEnpoint;
 
 @SpringBootApplication(scanBasePackages = { "sipserver.com" })
 public class ApplicationStarter {
@@ -20,15 +20,15 @@ public class ApplicationStarter {
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
-			 System.out.println("commandLineRunner 0");
-			 ServerCore.gettinStarted(null);
+			System.out.println("commandLineRunner 0");
+			ServerCore.gettinStarted(null);
 		};
 	}
 
 	// This bean is automatically picked up by ServerEndpointExporter
 	@Bean
 	public ServerEndpointRegistration addEndpointRegistration() {
-		return new ServerEndpointRegistration("/sipserver", new ProgrammaticEchoEnpoint());
+		return new ServerEndpointRegistration("/sipserver", new ProgrammaticEnpoint());
 	}
 
 	// @ServerEndpoint

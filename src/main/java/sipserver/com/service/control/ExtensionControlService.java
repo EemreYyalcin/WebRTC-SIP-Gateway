@@ -10,6 +10,7 @@ import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.task.TaskBuilder;
+import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.service.operational.OptionsService;
 import sipserver.com.service.operational.RegisterService;
 import sipserver.com.service.util.converter.Converter;
@@ -79,6 +80,9 @@ public class ExtensionControlService {
 
 			localExtenStream.forEach(e -> {
 				Extension localExtension = ServerCore.getCoreElement().getLocalExtension(e.toString());
+				if (localExtension.getTransportType() == TransportType.WS) {
+					return;
+				}
 				if (Objects.isNull(localExtension) || !localExtension.isRegister()) {
 					return;
 				}

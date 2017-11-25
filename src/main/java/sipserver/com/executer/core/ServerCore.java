@@ -3,12 +3,15 @@ package sipserver.com.executer.core;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.sip.SipFactory;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.configuration.GeneralConfiguration;
 import com.mgcp.transport.MGCPTransportLayer;
 
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.server.SipServerTransport;
@@ -26,9 +29,9 @@ public class ServerCore {
 	private UDPTransport udpTransport;
 	private WebsocketListener websocketListenerTransport;
 
-	public static void main(String[] args) throws Exception {
-		gettinStarted(args);
-	}
+//	public static void main(String[] args) throws Exception {
+//		gettinStarted(args);
+//	}
 
 	public static void gettinStarted(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.DEBUG);
@@ -55,11 +58,11 @@ public class ServerCore {
 		}
 
 		////////////
-		ServerCore.serverCore.setUDPTransport(new UDPTransport());
-		ServerCore.serverCore.getTransport(TransportType.UDP).start();
-
+		
+		setSipCreaterSettings();
+		
+		ServerCore.serverCore.setUDPTransport(UDPTransport.createAndStartUdpTransport());
 		ServerCore.serverCore.setWebsocketListenerTransport(new WebsocketListener());
-		ServerCore.serverCore.getTransport(TransportType.WS).start();
 
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1002", "test1002"));
@@ -67,6 +70,9 @@ public class ServerCore {
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1004", "test1004"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1005", "test1005"));
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1006", "test1006"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1007", "test1007"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1008", "test1008"));
+		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1009", "test1009"));
 
 		ExtensionControlService.beginControl();
 
@@ -101,4 +107,20 @@ public class ServerCore {
 	public void setWebsocketListenerTransport(WebsocketListener websocketListenerTransport) {
 		this.websocketListenerTransport = websocketListenerTransport;
 	}
+	
+	private static void setSipCreaterSettings() throws Exception {
+		try {
+			ServerCore.getCoreElement().setSipFactory(SipFactory.getInstance());
+			ServerCore.getCoreElement().getSipFactory().setPathName("gov.nist");
+			ServerCore.getCoreElement().setMessageFactory(ServerCore.getCoreElement().getSipFactory().createMessageFactory());
+			ServerCore.getCoreElement().setHeaderFactory(ServerCore.getCoreElement().getSipFactory().createHeaderFactory());
+			ServerCore.getCoreElement().setAddressFactory(ServerCore.getCoreElement().getSipFactory().createAddressFactory());
+			ServerCore.getCoreElement().setDigestServerAuthentication(new DigestServerAuthenticationHelper());			
+		} catch (Exception e) {
+			throw new Exception();
+		}
+	}
+	
+	
+	
 }

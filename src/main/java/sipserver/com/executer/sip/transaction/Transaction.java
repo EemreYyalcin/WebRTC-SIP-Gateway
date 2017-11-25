@@ -19,7 +19,6 @@ import com.noyan.Base;
 
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
@@ -30,18 +29,15 @@ public class Transaction implements Base {
 
 	private Request request;
 	private Response response;
-	private String address;
-	private int port = SipServerSharedProperties.blankCode;
-	private String callId;
-
 	private Extension extension;
-
-	private TransportType transportType;
-	private Session session;
 
 	private CallParam callParam;
 
 	private Transaction bridgeTransaction;
+
+	public Transaction(Extension extension) {
+		this.extension = extension;
+	}
 
 	public void processByeOrCancelRequest(Request request) {
 		try {
@@ -49,14 +45,14 @@ public class Transaction implements Base {
 				error("Channel Not Found " + request.getHeader(FromHeader.NAME).toString());
 				return;
 			}
-			Response response = getTransport().getMessageFactory().createResponse(Response.OK, request);
+			Response response = ServerCore.getCoreElement().getMessageFactory().createResponse(Response.OK, request);
 			getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
 			if (request.getMethod().equals(Request.BYE)) {
 				BridgeService.bye(this);
 				return;
 			}
 			// For Cancel
-			Response responseRequestTerminated = getTransport().getMessageFactory().createResponse(Response.REQUEST_TERMINATED, getRequest());
+			Response responseRequestTerminated = ServerCore.getCoreElement().getMessageFactory().createResponse(Response.REQUEST_TERMINATED, getRequest());
 			if (Objects.nonNull(getTransport())) {
 				getTransport().sendSipMessage(responseRequestTerminated, getAddress(), getPort(), getSession());
 			}
@@ -65,7 +61,7 @@ public class Transaction implements Base {
 			}
 
 		} catch (Exception e) {
-			error(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -74,17 +70,15 @@ public class Transaction implements Base {
 			if (Objects.isNull(getResponse())) {
 				return;
 			}
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(getExtension().getTransportType());
-
 			FromHeader fromHeader = (FromHeader) getResponse().getHeader(FromHeader.NAME);
 			ToHeader toHeader = (ToHeader) getResponse().getHeader(ToHeader.NAME);
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(transport);
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
 			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
-			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
-			Request request = transport.getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			CSeqHeader cSeqHeader = ServerCore.getCoreElement().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70);
+			Request request = ServerCore.getCoreElement().getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(getExtension());
 			request.addHeader(contactHeader);
 			getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
@@ -93,7 +87,7 @@ public class Transaction implements Base {
 			}
 			// ServerCore.getCoreElement().removeTransaction(getCallId());
 		} catch (Exception e) {
-			error(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -102,13 +96,12 @@ public class Transaction implements Base {
 		try {
 			FromHeader fromHeader = null;
 			ToHeader toHeader = null;
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(getExtension().getTransportType());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(transport);
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70, transport);
+			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70);
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
 			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
-			CSeqHeader cSeqHeader = transport.getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber() + 1, Request.BYE);
+			CSeqHeader cSeqHeader = ServerCore.getCoreElement().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber() + 1, Request.BYE);
 
 			if (this instanceof ClientTransaction) {
 				fromHeader = (FromHeader) getRequest().getHeader(FromHeader.NAME);
@@ -116,18 +109,18 @@ public class Transaction implements Base {
 			} else {
 				FromHeader fromHeaderResponse = (FromHeader) getResponse().getHeader(FromHeader.NAME);
 				ToHeader toHeaderResponse = (ToHeader) getResponse().getHeader(ToHeader.NAME);
-				toHeader = getTransport().getHeaderFactory().createToHeader(fromHeaderResponse.getAddress(), fromHeaderResponse.getTag());
-				fromHeader = getTransport().getHeaderFactory().createFromHeader(toHeaderResponse.getAddress(), toHeaderResponse.getTag());
+				toHeader = ServerCore.getCoreElement().getHeaderFactory().createToHeader(fromHeaderResponse.getAddress(), fromHeaderResponse.getTag());
+				fromHeader = ServerCore.getCoreElement().getHeaderFactory().createFromHeader(toHeaderResponse.getAddress(), toHeaderResponse.getTag());
 
 			}
 
-			Request request = transport.getMessageFactory().createRequest(requestURI, Request.BYE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
+			Request request = ServerCore.getCoreElement().getMessageFactory().createRequest(requestURI, Request.BYE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 
 			if (Objects.nonNull(getTransport())) {
 				getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
 			}
 		} catch (Exception e) {
-			error(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -140,27 +133,15 @@ public class Transaction implements Base {
 	}
 
 	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
+		return getExtension().getPort();
 	}
 
 	public String getCallId() {
-		return callId;
-	}
-
-	public void setCallId(String callId) {
-		this.callId = callId;
+		return ((CallIdHeader) getRequest().getHeader(CallIdHeader.NAME)).getCallId();
 	}
 
 	public Extension getExtension() {
 		return extension;
-	}
-
-	public void setExtension(Extension extension) {
-		this.extension = extension;
 	}
 
 	public Response getResponse() {
@@ -172,11 +153,7 @@ public class Transaction implements Base {
 	}
 
 	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
+		return getExtension().getSession();
 	}
 
 	public CallParam getCallParam() {
@@ -196,19 +173,11 @@ public class Transaction implements Base {
 	}
 
 	public TransportType getTransportType() {
-		return transportType;
-	}
-
-	public void setTransportType(TransportType transportType) {
-		this.transportType = transportType;
+		return getExtension().getTransportType();
 	}
 
 	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
+		return getExtension().getAddress();
 	}
 
 	public SipServerTransport getTransport() {

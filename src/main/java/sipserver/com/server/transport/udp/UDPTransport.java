@@ -3,10 +3,11 @@ package sipserver.com.server.transport.udp;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.sip.message.Message;
+import javax.websocket.Session;
+
 import com.noyan.network.socket.udp.UdpServerSocket;
 
-import gov.nist.javax.sip.message.SIPMessage;
-import gov.nist.javax.sip.parser.StringMsgParser;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.sip.Handler;
 import sipserver.com.parameter.constant.Constant.TransportType;
@@ -16,11 +17,17 @@ public class UDPTransport extends SipServerTransport {
 
 	private UdpServerSocket udpServerSocket;
 
-	public static UDPTransport createUdpTransport() {
+	private UDPTransport() {
+
+	}
+
+	public static UDPTransport createAndStartUdpTransport() {
 		try {
 			UDPTransport udpTransport = new UDPTransport();
 			UdpServerSocket udpServerSocket = new UdpServerSocket(udpTransport, InetAddress.getByName(ServerCore.getCoreElement().getLocalServerAddress()), ServerCore.getCoreElement().getLocalSipPort(), 1024);
 			udpTransport.setUdpServerSocket(udpServerSocket);
+			udpServerSocket.start();
+			return udpTransport;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -28,27 +35,8 @@ public class UDPTransport extends SipServerTransport {
 	}
 
 	@Override
-	public void listen() {
-		getUdpServerSocket().start();
-		super.startListening();
-	}
-
-	@Override
 	public void processRecieveData(byte[] data, InetAddress recieveAddress, int recievePort) {
-		try {
-			StringMsgParser smp = new StringMsgParser();
-			StringMsgParser.setComputeContentLengthFromMessage(true);
-			SIPMessage sipMessage = smp.parseSIPMessage(data, true, false, null);
-			Handler.processSipMessage(sipMessage, TransportType.UDP);
-		} catch (Exception e) {
-			String message = new String(data);
-			if (message.startsWith("PUBLISH") || message.startsWith("SUBSCRIBE")) {
-				return;
-			}
-			e.printStackTrace();
-			error("Parse Exception " + e);
-			error("Error Parse Message " + new String(data));
-		}
+		Handler.processSipMessage(SipServerTransport.decodeSipMessage(data), TransportType.UDP);
 	}
 
 	@Override
@@ -66,9 +54,9 @@ public class UDPTransport extends SipServerTransport {
 	}
 
 	@Override
-	protected void sendData(String data, String toAddress, int port) {
+	public void sendSipMessage(Message message, String toAddress, int port, Session session) {
 		try {
-			getUdpServerSocket().send(data.getBytes(), InetAddress.getByName(toAddress), port);
+			getUdpServerSocket().send(message.toString().getBytes(), InetAddress.getByName(toAddress), port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

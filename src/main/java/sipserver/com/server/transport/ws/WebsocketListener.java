@@ -1,6 +1,10 @@
 package sipserver.com.server.transport.ws;
 
+import java.io.IOException;
 import java.net.InetAddress;
+
+import javax.sip.message.Message;
+import javax.websocket.Session;
 
 import sipserver.com.server.SipServerTransport;
 
@@ -17,13 +21,12 @@ public class WebsocketListener extends SipServerTransport {
 	}
 
 	@Override
-	protected void listen() {
-		super.startListening();
-	}
-
-	@Override
-	public void sendData(String data, String toAddress, int port) {
-
+	public void sendSipMessage(Message message, String toAddress, int port, Session session) {
+		try {
+			session.getBasicRemote().sendText(message.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

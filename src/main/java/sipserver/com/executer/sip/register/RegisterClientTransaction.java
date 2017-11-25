@@ -11,6 +11,10 @@ import sipserver.com.executer.sip.transaction.ClientTransaction;
 
 public class RegisterClientTransaction extends ClientTransaction {
 
+	public RegisterClientTransaction(Extension extension) {
+		super(extension);
+	}
+
 	@Override
 	public void processResponse(Response response) {
 		try {

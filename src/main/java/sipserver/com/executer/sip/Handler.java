@@ -3,7 +3,6 @@ package sipserver.com.executer.sip;
 import java.util.Objects;
 
 import javax.sip.header.CallIdHeader;
-import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import javax.websocket.Session;
@@ -49,7 +48,6 @@ public class Handler {
 					logger.warn("ClientTransaction has not Found");
 					return;
 				}
-				transaction.setSession(session);
 				if (transaction instanceof ServerTransaction) {
 					// Bye Or Cancel Message Response
 					logger.info("Bye Or Cancel Response Recieved !!");
@@ -59,22 +57,11 @@ public class Handler {
 
 				ClientTransaction clientTransaction = (ClientTransaction) transaction;
 				clientTransaction.processResponse((Response) message);
-				if (logger.isTraceEnabled()) {
-					logger.trace("Message Recieved  " + clientTransaction.getAddress() + ":" + clientTransaction.getPort() + "\n\n" + message.toString());
-				}
 				return;
 			}
 			Request request = (Request) message;
 
-			ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
-			if (Objects.isNull(viaHeader)) {
-				logger.warn("Sip Message has not ViaHeader. ");
-				logger.warn(message.toString());
-				return;
-			}
-
 			if (Objects.nonNull(transaction)) {
-				transaction.setSession(session);
 				if (request.getMethod().equals(Request.BYE)) {
 					transaction.processByeOrCancelRequest(request);
 					return;
@@ -94,29 +81,12 @@ public class Handler {
 				return;
 			}
 
-			String peerHost = null;
-			int peerPort = 0;
-			if (Objects.isNull(session)) {
-				peerHost = viaHeader.getHost();
-				peerPort = viaHeader.getPort();
-			} else {
-				System.out.println("Host: " + viaHeader.getHost() + "");
-				System.out.println("Port: " + viaHeader.getPort() + "");
-
-				throw new Exception();
-			}
-
-			ServerTransaction serverTransaction = TransactionBuilder.createServerTransaction(request, peerHost, peerPort, transportType, callIdHeader.getCallId());
+			ServerTransaction serverTransaction = TransactionBuilder.createServerTransaction(request, transportType, session);
 			if (NullUtil.isNull(serverTransaction)) {
 				logger.trace("Ignored Message " + request.getMethod());
 				return;
 			}
-			serverTransaction.setSession(session);
-			Objects.requireNonNull(serverTransaction);
 			serverTransaction.processRequest();
-			if (logger.isTraceEnabled()) {
-				logger.trace(message.toString());
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(message.toString());

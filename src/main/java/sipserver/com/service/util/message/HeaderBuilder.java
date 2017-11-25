@@ -17,15 +17,13 @@ import javax.sip.header.ViaHeader;
 import gov.nist.javax.sip.header.CallID;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.util.GeneraterService;
 
 public class HeaderBuilder {
 
 	public static Address createAddress(Extension extension) throws Exception {
-		SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
-		SipURI addressUri = transport.getAddressFactory().createSipURI(extension.getExten(), extension.getAddress());
-		Address address = transport.getAddressFactory().createAddress(addressUri);
+		SipURI addressUri = ServerCore.getCoreElement().getAddressFactory().createSipURI(extension.getExten(), extension.getAddress());
+		Address address = ServerCore.getCoreElement().getAddressFactory().createAddress(addressUri);
 		if (Objects.nonNull(extension.getDisplayName())) {
 			address.setDisplayName(extension.getDisplayName());
 		}
@@ -35,17 +33,17 @@ public class HeaderBuilder {
 	public static SipURI createSipUri(Extension extension) {
 		try {
 			String serverHostPort = ServerCore.getCoreElement().getLocalServerAddress() + ":" + ServerCore.getCoreElement().getLocalSipPort();
-			return ServerCore.getServerCore().getTransport(extension.getTransportType()).getAddressFactory().createSipURI(extension.getExten(), serverHostPort);
+			return ServerCore.getCoreElement().getAddressFactory().createSipURI(extension.getExten(), serverHostPort);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public static ArrayList<ViaHeader> createViaHeaders(SipServerTransport transport) {
+	public static ArrayList<ViaHeader> createViaHeaders() {
 		try {
 			ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
-			ViaHeader viaHeader = transport.getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort(), "UDP", GeneraterService.getUUidForBranch());
+			ViaHeader viaHeader = ServerCore.getCoreElement().getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort(), "UDP", GeneraterService.getUUidForBranch());
 			viaHeaders.add(viaHeader);
 			return viaHeaders;
 		} catch (Exception e) {
@@ -56,8 +54,7 @@ public class HeaderBuilder {
 
 	public static RouteHeader createRouteHeader(Extension extension) {
 		try {
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
-			return transport.getHeaderFactory().createRouteHeader(transport.getAddressFactory().createAddress(createSipUri(extension)));
+			return ServerCore.getCoreElement().getHeaderFactory().createRouteHeader(ServerCore.getCoreElement().getAddressFactory().createAddress(createSipUri(extension)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -66,8 +63,7 @@ public class HeaderBuilder {
 
 	public static FromHeader createFromHeader(Extension extension) {
 		try {
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
-			return transport.getHeaderFactory().createFromHeader(createAddress(extension), GeneraterService.getUUidForTag());
+			return ServerCore.getCoreElement().getHeaderFactory().createFromHeader(createAddress(extension), GeneraterService.getUUidForTag());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,8 +72,7 @@ public class HeaderBuilder {
 
 	public static ToHeader createToHeader(Extension extension) {
 		try {
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
-			return transport.getHeaderFactory().createToHeader(createAddress(extension), null);
+			return ServerCore.getCoreElement().getHeaderFactory().createToHeader(createAddress(extension), null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,18 +88,18 @@ public class HeaderBuilder {
 		return null;
 	}
 
-	public static CSeqHeader createCseqHeader(SipServerTransport transport, String method) {
+	public static CSeqHeader createCseqHeader(String method) {
 		try {
-			return transport.getHeaderFactory().createCSeqHeader(1L, method);
+			return ServerCore.getCoreElement().getHeaderFactory().createCSeqHeader(1L, method);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public static MaxForwardsHeader createMaxForwardsHeader(int i, SipServerTransport transport) {
+	public static MaxForwardsHeader createMaxForwardsHeader(int i) {
 		try {
-			return transport.getHeaderFactory().createMaxForwardsHeader(i);
+			return ServerCore.getCoreElement().getHeaderFactory().createMaxForwardsHeader(i);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -113,12 +108,11 @@ public class HeaderBuilder {
 
 	public static ContactHeader createContactHeader(Extension extension) {
 		try {
-			SipServerTransport transport = ServerCore.getServerCore().getTransport(extension.getTransportType());
-			Address contactAddress = transport.getAddressFactory().createAddress(createSipUri(extension));
+			Address contactAddress = ServerCore.getCoreElement().getAddressFactory().createAddress(createSipUri(extension));
 			if (Objects.nonNull(extension.getDisplayName())) {
 				contactAddress.setDisplayName(extension.getDisplayName());
 			}
-			return transport.getHeaderFactory().createContactHeader(contactAddress);
+			return ServerCore.getCoreElement().getHeaderFactory().createContactHeader(contactAddress);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -17,6 +17,10 @@ import sipserver.com.service.util.AliasService;
 
 public class InviteClientTransaction extends ClientTransaction {
 
+	public InviteClientTransaction(Extension extension) {
+		super(extension);
+	}
+
 	@Override
 	public void processResponse(Response response) {
 		CallParam toCallParam = null;
@@ -99,7 +103,7 @@ public class InviteClientTransaction extends ClientTransaction {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			error("Call Transction Error. Exception " + e.getMessage());
+			error("Call Transction Error. ");
 			if (toCallParam != null) {
 				BridgeService.error(this);
 			}

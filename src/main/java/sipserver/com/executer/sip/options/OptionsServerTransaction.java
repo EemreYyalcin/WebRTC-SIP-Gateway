@@ -1,31 +1,22 @@
 package sipserver.com.executer.sip.options;
 
-import java.util.Objects;
-
-import javax.sip.header.ContactHeader;
-import javax.sip.header.ViaHeader;
 import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
-import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
 
 public class OptionsServerTransaction extends ServerTransaction {
 
+	public OptionsServerTransaction(Extension extension) {
+		super(extension);
+	}
+
 	@Override
 	public void processRequest() {
 		try {
-			ContactHeader contactHeader = (ContactHeader) getRequest().getHeader(ContactHeader.NAME);
-			Objects.requireNonNull(contactHeader);
-			Extension extIncoming = ExtensionBuilder.getExtension(contactHeader, (ViaHeader) getRequest().getHeader(ViaHeader.NAME));
-			if (Objects.isNull(extIncoming)) {
-				warn("Peer has not Register. " + contactHeader.toString());
-				return;
-			}
-			setExtension(extIncoming);
-			extIncoming.setTransportType(getTransportType());
-			debug("Keep Alive Exten:" + extIncoming.getExten());
+			debug("Keep Alive Exten:" + getExtension().getExten());
 			sendResponseMessage(Response.OK);
+			getExtension().keepRegistered();
 		} catch (Exception e) {
 			e.printStackTrace();
 			sendResponseMessage(Response.BAD_EVENT);

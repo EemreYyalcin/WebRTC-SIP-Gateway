@@ -25,7 +25,6 @@ public class RouteService {
 			}
 
 			CallService.bridgeCall(serverTransaction, toExtenFromHeaderExtension);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -7,10 +7,15 @@ import javax.sip.header.ContactHeader;
 import javax.sip.header.ContentTypeHeader;
 import javax.sip.message.Response;
 
+import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 
 public abstract class ServerTransaction extends Transaction {
+
+	public ServerTransaction(Extension extension) {
+		super(extension);
+	}
 
 	public abstract void processRequest();
 
@@ -18,12 +23,12 @@ public abstract class ServerTransaction extends Transaction {
 		try {
 			Response response = null;
 			if (Objects.nonNull(content)) {
-				response = getTransport().getMessageFactory().createResponse(responseCode, getRequest(), (ContentTypeHeader) getRequest().getHeader(ContentTypeHeader.NAME), content.getBytes());
-				response.setContent(content.getBytes(), getTransport().getHeaderFactory().createContentTypeHeader("application", "sdp"));
+				response = ServerCore.getCoreElement().getMessageFactory().createResponse(responseCode, getRequest(), (ContentTypeHeader) getRequest().getHeader(ContentTypeHeader.NAME), content.getBytes());
+				response.setContent(content.getBytes(), ServerCore.getCoreElement().getHeaderFactory().createContentTypeHeader("application", "sdp"));
 			} else {
-				response = getTransport().getMessageFactory().createResponse(responseCode, getRequest());
+				response = ServerCore.getCoreElement().getMessageFactory().createResponse(responseCode, getRequest());
 			}
-			response.addHeader(getTransport().getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
+			response.addHeader(ServerCore.getCoreElement().getHeaderFactory().createAllowHeader(SipServerSharedProperties.allowHeaderValue));
 
 			String displayName = "Anonymous";
 			if (Objects.nonNull(getExtension())) {
@@ -31,16 +36,13 @@ public abstract class ServerTransaction extends Transaction {
 			}
 
 			// Create the contact name address.
-			SipURI contactURI = getTransport().getAddressFactory().createSipURI(displayName, ServerCore.getCoreElement().getLocalServerAddress());
+			SipURI contactURI = ServerCore.getCoreElement().getAddressFactory().createSipURI(displayName, ServerCore.getCoreElement().getLocalServerAddress());
 			contactURI.setPort(ServerCore.getCoreElement().getLocalSipPort());
 
-			ContactHeader contactHeader = getTransport().getHeaderFactory().createContactHeader(getTransport().getAddressFactory().createAddress(contactURI));
+			ContactHeader contactHeader = ServerCore.getCoreElement().getHeaderFactory().createContactHeader(ServerCore.getCoreElement().getAddressFactory().createAddress(contactURI));
 			response.addHeader(contactHeader);
 
-			if (getLogger().isTraceEnabled()) {
-				trace(response.toString());
-			}
-			getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
+			sendResponseMessage(response);
 			setResponse(response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -52,8 +54,8 @@ public abstract class ServerTransaction extends Transaction {
 	}
 
 	public void sendResponseMessage(Response response) {
-		if (getLogger().isTraceEnabled()) {
-			trace(response.toString());
+		if (response.getStatusCode() != Response.TRYING && response.getStatusCode() != Response.RINGING) {
+			ServerCore.getCoreElement().removeTransaction(getCallId());
 		}
 		getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
 	}

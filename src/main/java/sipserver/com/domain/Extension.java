@@ -2,6 +2,8 @@ package sipserver.com.domain;
 
 import java.util.Objects;
 
+import javax.websocket.Session;
+
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.constant.Constant.TransportType;
 
@@ -11,9 +13,10 @@ public class Extension {
 	private int expiresTime = 3600;
 	private String address;
 	private String displayName;
-	private int port = 5060;
+	private int port = SipServerSharedProperties.blankCode;
 	private String pass;
 	private TransportType transportType;
+	private Session session;
 	private Long registerTime;
 	private Long aliveTime;
 
@@ -61,6 +64,10 @@ public class Extension {
 	}
 
 	public boolean isRegister() {
+		if (Objects.nonNull(getSession())) {
+			return true;
+		}
+
 		if (Objects.isNull(registerTime)) {
 			return false;
 		}
@@ -71,6 +78,10 @@ public class Extension {
 	}
 
 	public boolean isAlive() {
+		if (Objects.nonNull(getSession())) {
+			return true;
+		}
+
 		if (Objects.isNull(aliveTime)) {
 			return false;
 		}
@@ -122,6 +133,18 @@ public class Extension {
 
 	public void setTransportType(TransportType transportType) {
 		this.transportType = transportType;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		if (Objects.isNull(session)) {
+			return;
+		}
+		this.session = session;
+		this.session.getUserProperties().put(Extension.class.getName(), this);
 	}
 
 }

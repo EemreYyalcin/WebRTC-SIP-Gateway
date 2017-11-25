@@ -11,6 +11,10 @@ import sipserver.com.executer.sip.transaction.ClientTransaction;
 
 public class OptionsClientTransaction extends ClientTransaction {
 
+	public OptionsClientTransaction(Extension extension) {
+		super(extension);
+	}
+
 	@Override
 	public void processResponse(Response response) {
 		try {

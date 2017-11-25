@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.sip.SipFactory;
+import javax.sip.address.AddressFactory;
+import javax.sip.header.HeaderFactory;
+import javax.sip.message.MessageFactory;
+
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.task.Task;
@@ -22,6 +28,13 @@ public class CoreElement {
 	private InetAddress mediaServerAddress;
 	private int mediaServerPort = 2427;
 	private int mediaClientPort = 2727;
+
+	// SipMessage Creater Element
+	private SipFactory sipFactory = null;
+	private MessageFactory messageFactory;
+	private HeaderFactory headerFactory;
+	private AddressFactory addressFactory;
+	private DigestServerAuthenticationHelper digestServerAuthentication;
 
 	public Properties getLocalExtensionList() {
 		return localExtensionList;
@@ -96,6 +109,46 @@ public class CoreElement {
 
 	public void setLocalServerAddress(String localServerAddress) {
 		this.localServerAddress = localServerAddress;
+	}
+
+	public SipFactory getSipFactory() {
+		return sipFactory;
+	}
+
+	public void setSipFactory(SipFactory sipFactory) {
+		this.sipFactory = sipFactory;
+	}
+
+	public MessageFactory getMessageFactory() {
+		return messageFactory;
+	}
+
+	public void setMessageFactory(MessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
+	}
+
+	public HeaderFactory getHeaderFactory() {
+		return headerFactory;
+	}
+
+	public void setHeaderFactory(HeaderFactory headerFactory) {
+		this.headerFactory = headerFactory;
+	}
+
+	public AddressFactory getAddressFactory() {
+		return addressFactory;
+	}
+
+	public void setAddressFactory(AddressFactory addressFactory) {
+		this.addressFactory = addressFactory;
+	}
+
+	public DigestServerAuthenticationHelper getDigestServerAuthentication() {
+		return digestServerAuthentication;
+	}
+
+	public void setDigestServerAuthentication(DigestServerAuthenticationHelper digestServerAuthentication) {
+		this.digestServerAuthentication = digestServerAuthentication;
 	}
 
 }
