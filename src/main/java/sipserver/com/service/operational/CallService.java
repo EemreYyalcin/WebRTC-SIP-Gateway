@@ -3,6 +3,7 @@ package sipserver.com.service.operational;
 import java.util.Objects;
 
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class CallService {
 				IncomingCallMediaSession incomingCallMediaSession = new IncomingCallMediaSession(serverTransaction, toCallParam);
 				MgcpSession mgcpSession = new MgcpSession(incomingCallMediaSession);
 				if (Objects.isNull(mgcpSession)) {
-					BridgeService.noRoute(serverTransaction);
+					BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, null);
 					return;
 				}
 				fromCallParam.setMgcpSession(mgcpSession);
@@ -51,14 +52,14 @@ public class CallService {
 		try {
 
 			if (!toCallParam.getExtension().isRegister()) {
-				BridgeService.noRoute(serverTransaction);
-				logger.debug("Not Route 3");
+				BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, null);
+				logger.debug("Not Route 1");
 				return;
 			}
 
 			if (!toCallParam.getExtension().isAlive()) {
-				BridgeService.noRoute(serverTransaction);
-				logger.debug("Not Route 3 " + toCallParam.getExtension().getExten());
+				BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, null);
+				logger.debug("Not Route 2 " + toCallParam.getExtension().getExten());
 				return;
 			}
 
@@ -82,7 +83,7 @@ public class CallService {
 			request.setContent(toCallParam.getSdpLocalContent(), ServerCore.getCoreElement().getHeaderFactory().createContentTypeHeader("application", "sdp"));
 			ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(request, toCallParam.getExtension());
 			if (Objects.isNull(clientTransaction)) {
-				BridgeService.noRoute(serverTransaction);
+				BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, null);
 				return;
 			}
 			toCallParam.setRequest(request);

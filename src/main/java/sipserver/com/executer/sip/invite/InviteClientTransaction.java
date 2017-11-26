@@ -8,10 +8,10 @@ import javax.sip.message.Response;
 
 import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
+import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.parameter.param.CallParam;
-import sipserver.com.server.SipServerTransport;
 import sipserver.com.service.operational.BridgeService;
 import sipserver.com.service.util.AliasService;
 
@@ -47,23 +47,24 @@ public class InviteClientTransaction extends ClientTransaction {
 			}
 
 			if (statusCode == Response.RINGING || statusCode == Response.SESSION_PROGRESS) {
-				BridgeService.ringing(this);
+				BridgeService.observeTransaction(this, Response.RINGING);
 				return;
 			}
 
 			if (statusCode == Response.DECLINE) {
 				info("Declined From Exten:" + toExtension.getExten());
-				BridgeService.declined(this);
+				BridgeService.observeTransaction(this, Response.DECLINE);
 				return;
 			}
 			if (statusCode == Response.FORBIDDEN) {
 				warn("Forbidden From Exten:" + toExtension.getExten());
+				BridgeService.observeTransaction(this, Response.DECLINE);
 				return;
 			}
 
 			if (statusCode == Response.BUSY_HERE) {
 				warn("Busy Detected From Exten:" + toExtension.getExten());
-				BridgeService.busy(this);
+				BridgeService.observeTransaction(this, Response.BUSY_HERE);
 				return;
 			}
 			if (statusCode == Response.UNAUTHORIZED || statusCode == Response.PROXY_AUTHENTICATION_REQUIRED) {
@@ -94,35 +95,22 @@ public class InviteClientTransaction extends ClientTransaction {
 				} else {
 					toCallParam.setSdpRemoteContent(new String(response.getRawContent()));
 					getBridgeTransaction().getCallParam().setSdpLocalContent(toCallParam.getSdpRemoteContent());
-					BridgeService.ok(this, toCallParam.getSdpRemoteContent());
+					BridgeService.observeTransaction(this, Response.OK, toCallParam.getSdpRemoteContent());
 				}
 				setResponse(response);
-				sendACK();
 				return;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			error("Call Transction Error. ");
-			if (toCallParam != null) {
-				BridgeService.error(this);
-			}
 		}
 	}
 
-	public void beginCancelFlow(CallParam toCallParam, SipServerTransport transport) {
-		try {
+	@Override
+	public void processACK() {
 
-			// Request cancelRequest = ((ClientTransaction)
-			// toCallParam.getTransaction()).createCancel();
-			// ClientTransaction cancelClientTransaction =
-			// transport.getSipProvider().getNewClientTransaction(cancelRequest);
-			// LogTest.log(this, "Cancel Message Sended");
-			// TODO: Waitng Cancel Response
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		ServerCore.getCoreElement().removeTransaction(getCallId());
 	}
 
 }

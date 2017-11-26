@@ -63,7 +63,6 @@ public class TransactionBuilder {
 			}
 			serverTransaction.setRequest(request);
 			ServerCore.getCoreElement().addTransaction(((CallIdHeader) request.getHeader(CallIdHeader.NAME)).getCallId(), serverTransaction);
-
 			return serverTransaction;
 		} catch (Exception e) {
 			e.printStackTrace();

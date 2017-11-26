@@ -3,6 +3,7 @@ package sipserver.com.server.mediaserver;
 import java.util.Objects;
 
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 import com.mgcp.message.command.commandLine.MGCPCommandLine.MGCPVerb;
 import com.mgcp.message.response.MGCPResponse;
@@ -43,7 +44,7 @@ public class OutgoingCallMediaSession implements MgcpSessionInterface, Base {
 				request.setContent(toCallParam.getSdpLocalContent(), ServerCore.getCoreElement().getHeaderFactory().createContentTypeHeader("application", "sdp"));
 				ClientTransaction clientTransaction = TransactionBuilder.createClientTransaction(request, toCallParam.getExtension());
 				if (Objects.isNull(clientTransaction)) {
-					BridgeService.noRoute(serverTransaction);
+					BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, null);
 					debug("Not Route 3");
 					return;
 				}
@@ -54,7 +55,7 @@ public class OutgoingCallMediaSession implements MgcpSessionInterface, Base {
 			if (verb.equals(MGCPVerb.MDCX)) {
 				info("MDCX SDP " + mgcpResponse.getSdpInformation());
 				toCallParam.setSdpLocalContent(mgcpResponse.getSdpInformation());
-				BridgeService.ok(serverTransaction, serverTransaction.getCallParam().getSdpLocalContent());
+				BridgeService.observeServerTransaction(serverTransaction, Response.BUSY_HERE, serverTransaction.getCallParam().getSdpLocalContent());
 				return;
 			}
 

@@ -64,4 +64,9 @@ public class RegisterServerTransaction extends ServerTransaction {
 			sendResponseMessage(Response.BAD_EVENT);
 		}
 	}
+
+	@Override
+	public void processACK() {
+		super.processACK();
+	}
 }

@@ -18,6 +18,7 @@ import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.parameter.constant.Constant.TransportType;
+import sipserver.com.service.operational.BridgeService;
 
 public class Handler {
 
@@ -63,19 +64,16 @@ public class Handler {
 
 			if (Objects.nonNull(transaction)) {
 				if (request.getMethod().equals(Request.BYE)) {
-					transaction.processByeOrCancelRequest(request);
+					BridgeService.observeTransaction(transaction, Response.REQUEST_TERMINATED);
 					return;
 				}
 				if (request.getMethod().equals(Request.CANCEL)) {
-					transaction.processByeOrCancelRequest(request);
+					BridgeService.observeTransaction(transaction, Response.TEMPORARILY_UNAVAILABLE);
 					return;
 				}
 				if (request.getMethod().equals(Request.ACK)) {
 					logger.trace("ACK Recieved " + request.getMethod());
-					if (request.getMethod().equals(Request.INVITE)) {
-						return;
-					}
-					// ServerCore.getCoreElement().removeTransaction(transaction.getCallId());
+					transaction.processACK();
 					return;
 				}
 				return;

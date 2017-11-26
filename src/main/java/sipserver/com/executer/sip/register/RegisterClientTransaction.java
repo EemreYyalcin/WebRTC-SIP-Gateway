@@ -52,4 +52,10 @@ public class RegisterClientTransaction extends ClientTransaction {
 		}
 	}
 
+	@Override
+	public void processACK() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

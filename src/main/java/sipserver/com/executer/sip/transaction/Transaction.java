@@ -1,7 +1,10 @@
 package sipserver.com.executer.sip.transaction;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.sip.address.SipURI;
 import javax.sip.header.CSeqHeader;
@@ -22,47 +25,31 @@ import sipserver.com.executer.core.ServerCore;
 import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.service.operational.BridgeService;
 import sipserver.com.service.util.message.HeaderBuilder;
 
-public class Transaction implements Base {
+public abstract class Transaction implements Base {
 
 	private Request request;
+	private Request byeRequest;
+	private Request cancelRequest;
 	private Response response;
 	private Extension extension;
+
+	private int lastResponseCode = Response.GONE;
+	private int currentResponseCode = Response.GONE;
 
 	private CallParam callParam;
 
 	private Transaction bridgeTransaction;
 
+	public Predicate<Integer> predicateLastResponseState = t -> (t == getLastResponseCode());
+
+	public Predicate<List<Integer>> predicateLastResponseStateList = t -> t.stream().filter(predicateLastResponseState).collect(Collectors.<Integer>toList()).size() > 0;
+
+	public abstract void processACK();
+
 	public Transaction(Extension extension) {
 		this.extension = extension;
-	}
-
-	public void processByeOrCancelRequest(Request request) {
-		try {
-			if (Objects.isNull(getCallParam())) {
-				error("Channel Not Found " + request.getHeader(FromHeader.NAME).toString());
-				return;
-			}
-			Response response = ServerCore.getCoreElement().getMessageFactory().createResponse(Response.OK, request);
-			getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
-			if (request.getMethod().equals(Request.BYE)) {
-				BridgeService.bye(this);
-				return;
-			}
-			// For Cancel
-			Response responseRequestTerminated = ServerCore.getCoreElement().getMessageFactory().createResponse(Response.REQUEST_TERMINATED, getRequest());
-			if (Objects.nonNull(getTransport())) {
-				getTransport().sendSipMessage(responseRequestTerminated, getAddress(), getPort(), getSession());
-			}
-			if (this instanceof ClientTransaction) {
-				BridgeService.cancel((ClientTransaction) this);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void sendACK() {
@@ -82,10 +69,7 @@ public class Transaction implements Base {
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(getExtension());
 			request.addHeader(contactHeader);
 			getTransport().sendSipMessage(request, getAddress(), getPort(), getSession());
-			if (getRequest().getMethod().equals(Request.INVITE)) {
-				return;
-			}
-			// ServerCore.getCoreElement().removeTransaction(getCallId());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -184,4 +168,32 @@ public class Transaction implements Base {
 		return ServerCore.getServerCore().getTransport(getTransportType());
 	}
 
+	public int getLastResponseCode() {
+		return lastResponseCode;
+	}
+
+	public int getCurrentResponseCode() {
+		return currentResponseCode;
+	}
+
+	public void setCurrentResponseCode(int currentResponseCode) {
+		this.lastResponseCode = this.currentResponseCode;
+		this.currentResponseCode = currentResponseCode;
+	}
+
+	public Request getByeRequest() {
+		return byeRequest;
+	}
+
+	public void setByeRequest(Request byeRequest) {
+		this.byeRequest = byeRequest;
+	}
+
+	public Request getCancelRequest() {
+		return cancelRequest;
+	}
+
+	public void setCancelRequest(Request cancelRequest) {
+		this.cancelRequest = cancelRequest;
+	}
 }

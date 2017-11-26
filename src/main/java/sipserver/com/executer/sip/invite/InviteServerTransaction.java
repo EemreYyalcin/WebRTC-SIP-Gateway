@@ -41,4 +41,10 @@ public class InviteServerTransaction extends ServerTransaction {
 			error("Invite Server Transaction Message Error! " + e.getMessage());
 		}
 	}
+
+	@Override
+	public void processACK() {
+		super.processACK();
+
+	}
 }

@@ -18,7 +18,7 @@ public class WebSocketMessageHandler implements MessageHandler.Whole<String> {
 	@Override
 	public void onMessage(String message) {
 		Handler.processSipMessage(SipServerTransport.decodeSipMessage(message.getBytes()), TransportType.WS, session);
-		System.out.println("Message :" + message);
+//		System.out.println("Message :" + message);
 	}
 
 }
