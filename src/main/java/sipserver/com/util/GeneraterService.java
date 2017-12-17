@@ -1,4 +1,4 @@
-package sipserver.com.service.util;
+package sipserver.com.util;
 
 import java.util.UUID;
 

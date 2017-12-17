@@ -8,7 +8,7 @@ import javax.sip.message.Response;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
-import sipserver.com.service.util.AliasService;
+import sipserver.com.util.AliasService;
 
 public class RegisterServerTransaction extends ServerTransaction {
 

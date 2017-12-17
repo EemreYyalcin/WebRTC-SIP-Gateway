@@ -1,4 +1,4 @@
-package sipserver.com.service.util.message;
+package sipserver.com.util.message;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -17,7 +17,7 @@ import javax.sip.header.ViaHeader;
 import gov.nist.javax.sip.header.CallID;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.service.util.GeneraterService;
+import sipserver.com.util.GeneraterService;
 
 public class HeaderBuilder {
 

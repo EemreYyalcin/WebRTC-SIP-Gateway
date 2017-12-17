@@ -13,7 +13,7 @@ import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.executer.sip.transaction.ClientTransaction;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.service.operational.BridgeService;
-import sipserver.com.service.util.AliasService;
+import sipserver.com.util.AliasService;
 
 public class InviteClientTransaction extends ClientTransaction {
 
@@ -41,6 +41,7 @@ public class InviteClientTransaction extends ClientTransaction {
 				error("Channel is not Found from:" + fromHeader.toString() + "\n toExten:" + toExtension.getExten());
 				return;
 			}
+
 			int statusCode = response.getStatusCode();
 			if (Objects.nonNull(response.getRawContent())) {
 				toCallParam.setSdpRemoteContent(new String(response.getRawContent()));
@@ -93,11 +94,12 @@ public class InviteClientTransaction extends ClientTransaction {
 				if (SipServerSharedProperties.mediaServerActive) {
 					toCallParam.getMgcpSession().modify(new String(response.getRawContent()));
 				} else {
-					toCallParam.setSdpRemoteContent(new String(response.getRawContent()));
+					if (Objects.nonNull(response.getRawContent())) {
+						toCallParam.setSdpRemoteContent(new String(response.getRawContent()));
+					}
 					getBridgeTransaction().getCallParam().setSdpLocalContent(toCallParam.getSdpRemoteContent());
 					BridgeService.observeTransaction(this, Response.OK, toCallParam.getSdpRemoteContent());
 				}
-				setResponse(response);
 				return;
 			}
 
@@ -109,7 +111,6 @@ public class InviteClientTransaction extends ClientTransaction {
 
 	@Override
 	public void processACK() {
-
 		ServerCore.getCoreElement().removeTransaction(getCallId());
 	}
 

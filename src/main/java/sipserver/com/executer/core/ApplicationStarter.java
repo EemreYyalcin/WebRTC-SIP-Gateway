@@ -21,7 +21,14 @@ public class ApplicationStarter {
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
 			System.out.println("commandLineRunner 0");
-			ServerCore.gettinStarted(null);
+			try {
+				ServerCore.gettinStarted(null);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println("commandLineRunner ee :" + e);
+				e.printStackTrace();
+			}
+			
 		};
 	}
 

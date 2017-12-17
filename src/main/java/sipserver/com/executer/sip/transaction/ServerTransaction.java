@@ -45,7 +45,6 @@ public abstract class ServerTransaction extends Transaction {
 			response.addHeader(contactHeader);
 
 			sendResponseMessage(response);
-			setResponse(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -56,6 +55,7 @@ public abstract class ServerTransaction extends Transaction {
 	}
 
 	public void sendResponseMessage(Response response) {
+		setResponse(response);
 		getTransport().sendSipMessage(response, getAddress(), getPort(), getSession());
 	}
 

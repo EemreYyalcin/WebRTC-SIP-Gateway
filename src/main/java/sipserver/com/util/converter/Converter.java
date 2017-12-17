@@ -1,4 +1,4 @@
-package sipserver.com.service.util.converter;
+package sipserver.com.util.converter;
 
 import java.util.Objects;
 import java.util.Properties;

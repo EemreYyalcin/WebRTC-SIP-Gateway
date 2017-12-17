@@ -20,7 +20,7 @@ import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.executer.core.SipServerSharedProperties;
 import sipserver.com.parameter.param.CallParam;
-import sipserver.com.service.util.message.HeaderBuilder;
+import sipserver.com.util.message.HeaderBuilder;
 
 public abstract class ClientTransaction extends Transaction {
 

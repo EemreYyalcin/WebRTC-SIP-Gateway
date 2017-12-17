@@ -43,7 +43,6 @@ public class RegisterClientTransaction extends ClientTransaction {
 			if (statusCode == Response.FORBIDDEN) {
 				return;
 			}
-			setResponse(response);
 			trunkExtensionIncoming.keepRegistered();
 			sendACK();
 

@@ -13,7 +13,7 @@ import sipserver.com.executer.task.TaskBuilder;
 import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.service.operational.OptionsService;
 import sipserver.com.service.operational.RegisterService;
-import sipserver.com.service.util.converter.Converter;
+import sipserver.com.util.converter.Converter;
 
 public class ExtensionControlService {
 

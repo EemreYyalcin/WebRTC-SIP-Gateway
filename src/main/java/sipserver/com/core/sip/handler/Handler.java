@@ -1,4 +1,4 @@
-package sipserver.com.executer.sip;
+package sipserver.com.core.sip.handler;
 
 import java.util.Objects;
 
@@ -12,13 +12,13 @@ import org.apache.log4j.Logger;
 import com.noyan.util.NullUtil;
 
 import gov.nist.javax.sip.message.SIPMessage;
+import sipserver.com.core.sip.handler.invite.InviteServerMessageHandler;
 import sipserver.com.executer.core.ServerCore;
-import sipserver.com.executer.sip.transaction.ClientTransaction;
+import sipserver.com.executer.sip.invite.InviteServerTransaction;
 import sipserver.com.executer.sip.transaction.ServerTransaction;
 import sipserver.com.executer.sip.transaction.Transaction;
 import sipserver.com.executer.sip.transaction.TransactionBuilder;
 import sipserver.com.parameter.constant.Constant.TransportType;
-import sipserver.com.service.operational.BridgeService;
 
 public class Handler {
 
@@ -44,46 +44,67 @@ public class Handler {
 
 			Transaction transaction = ServerCore.getCoreElement().findTransaction(callIdHeader.getCallId());
 			if (message instanceof Response) {
-
 				if (Objects.isNull(transaction)) {
 					logger.warn("ClientTransaction has not Found");
 					return;
 				}
-				if (transaction instanceof ServerTransaction) {
-					// Bye Or Cancel Message Response
-					logger.info("Bye Or Cancel Response Recieved !!");
-					transaction.sendACK();
+				Response response = (Response) message;
+				if (Objects.isNull(transaction.getMessageHandler())) {
+					throw new Exception();
+				}
+
+				if (response.getStatusCode() == Response.RINGING) {
+					transaction.getMessageHandler().onRinging();
 					return;
 				}
 
-				ClientTransaction clientTransaction = (ClientTransaction) transaction;
-				if (Objects.nonNull(clientTransaction.getCancelRequest()) || Objects.nonNull(clientTransaction.getByeRequest())) {
-					ServerCore.getCoreElement().removeTransaction(clientTransaction.getCallId());
-					clientTransaction.sendACK((Response) message);
+				if (response.getStatusCode() == Response.BUSY_HERE) {
+					transaction.getMessageHandler().onReject(response.getStatusCode());
 					return;
 				}
-				clientTransaction.setResponse((Response) message);
-				clientTransaction.processResponse((Response) message);
+
+				if (response.getStatusCode() == Response.OK) {
+					if (Objects.isNull(response.getRawContent())) {
+						transaction.getMessageHandler().onOk(null);
+						return;
+					}
+					transaction.getMessageHandler().onOk(new String(response.getRawContent()));
+					return;
+				}
+
+				if (response.getStatusCode() < 300 && response.getStatusCode() > 200) {
+					if (Objects.isNull(response.getRawContent())) {
+						transaction.getMessageHandler().onOk(null);
+						return;
+					}
+					transaction.getMessageHandler().onOk(new String(response.getRawContent()));
+					return;
+				}
+
+				if (response.getStatusCode() > 300) {
+					transaction.getMessageHandler().onReject(response.getStatusCode());
+					return;
+				}
+				logger.error("Specific Response Message");
 				return;
+
 			}
 			Request request = (Request) message;
 
 			if (Objects.nonNull(transaction)) {
 				if (request.getMethod().equals(Request.BYE)) {
-					transaction.setByeRequest(request);
-					BridgeService.observeTransaction(transaction, Response.REQUEST_TERMINATED);
+					transaction.getMessageHandler().onBye(request);
 					return;
 				}
 				if (request.getMethod().equals(Request.CANCEL)) {
-					transaction.setCancelRequest(request);
-					BridgeService.observeTransaction(transaction, Response.TEMPORARILY_UNAVAILABLE);
+					transaction.getMessageHandler().onCancel(request);
 					return;
 				}
 				if (request.getMethod().equals(Request.ACK)) {
-					logger.trace("ACK Recieved " + request.getMethod());
-					transaction.processACK();
+					transaction.getMessageHandler().onACK();
 					return;
 				}
+				logger.error("Specific Request Message");
 				return;
 			}
 
@@ -92,7 +113,16 @@ public class Handler {
 				logger.trace("Ignored Message " + request.getMethod());
 				return;
 			}
-			serverTransaction.processRequest();
+			
+			//TODO: Remove Transactions
+			if (serverTransaction instanceof InviteServerTransaction) {
+				if (Objects.isNull(session)) {
+					///TODO: For UDP
+				}else {
+					serverTransaction.setMessageHandler(new InviteServerMessageHandler(request, session));										
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(message.toString());

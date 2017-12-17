@@ -61,7 +61,7 @@ public class ServerCore {
 		
 		setSipCreaterSettings();
 		
-		ServerCore.serverCore.setUDPTransport(UDPTransport.createAndStartUdpTransport());
+//		ServerCore.serverCore.setUDPTransport(UDPTransport.createAndStartUdpTransport());
 		ServerCore.serverCore.setWebsocketListenerTransport(new WebsocketListener());
 
 		ServerCore.getCoreElement().addLocalExtension(ExtensionBuilder.createExtension("1001", "test1001"));

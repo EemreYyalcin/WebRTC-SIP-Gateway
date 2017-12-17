@@ -20,12 +20,13 @@ import javax.websocket.Session;
 
 import com.noyan.Base;
 
+import sipserver.com.core.sip.handler.MessageHandler;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.core.ServerCore;
 import sipserver.com.parameter.constant.Constant.TransportType;
 import sipserver.com.parameter.param.CallParam;
 import sipserver.com.server.SipServerTransport;
-import sipserver.com.service.util.message.HeaderBuilder;
+import sipserver.com.util.message.HeaderBuilder;
 
 public abstract class Transaction implements Base {
 
@@ -34,6 +35,8 @@ public abstract class Transaction implements Base {
 	private Request cancelRequest;
 	private Response response;
 	private Extension extension;
+	
+	private MessageHandler messageHandler;
 
 	private int lastResponseCode = Response.GONE;
 	private int currentResponseCode = Response.GONE;
@@ -52,17 +55,14 @@ public abstract class Transaction implements Base {
 		this.extension = extension;
 	}
 
-	public void sendACK() {
+	public void sendACK(Response response) {
 		try {
-			if (Objects.isNull(getResponse())) {
-				return;
-			}
-			FromHeader fromHeader = (FromHeader) getResponse().getHeader(FromHeader.NAME);
-			ToHeader toHeader = (ToHeader) getResponse().getHeader(ToHeader.NAME);
+			FromHeader fromHeader = (FromHeader) response.getHeader(FromHeader.NAME);
+			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
 			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
-			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
-			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
+			CallIdHeader callIdHeader = (CallIdHeader) response.getHeader(CallIdHeader.NAME);
+			CSeqHeader responseCseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 			CSeqHeader cSeqHeader = ServerCore.getCoreElement().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
 			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70);
 			Request request = ServerCore.getCoreElement().getMessageFactory().createRequest(requestURI, Request.ACK, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
@@ -73,7 +73,10 @@ public abstract class Transaction implements Base {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	public void sendACK() {
+		sendACK(getResponse());
 	}
 
 	public void sendByeMessage() {
@@ -195,5 +198,13 @@ public abstract class Transaction implements Base {
 
 	public void setCancelRequest(Request cancelRequest) {
 		this.cancelRequest = cancelRequest;
+	}
+
+	public MessageHandler getMessageHandler() {
+		return messageHandler;
+	}
+
+	public void setMessageHandler(MessageHandler messageHandler) {
+		this.messageHandler = messageHandler;
 	}
 }

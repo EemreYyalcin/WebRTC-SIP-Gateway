@@ -1,5 +1,7 @@
 package sipserver.com.parameter.param;
 
+import java.util.Objects;
+
 import javax.sip.message.Request;
 
 import com.mgcp.transport.MgcpSession;
@@ -16,6 +18,17 @@ public class CallParam {
 
 	private MgcpSession mgcpSession;
 	private boolean isError = false;
+	
+	
+	public static CallParam createCallParam(Extension extension, byte[] content) {
+		CallParam callParam = new CallParam();
+		callParam.setExtension(extension);
+		if (Objects.nonNull(content)) {
+			callParam.setSdpRemoteContent(new String(content));
+		}
+		return callParam;
+	}
+	
 
 	public Request getRequest() {
 		return request;
