@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import javax.websocket.Session;
 
-import sipserver.com.executer.core.SipServerSharedProperties;
-import sipserver.com.parameter.constant.Constant.TransportType;
+import sipserver.com.core.sip.parameter.constant.Constant.TransportType;
+import sipserver.com.executer.starter.SipServerSharedProperties;
 
 public class Extension {
 

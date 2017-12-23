@@ -7,8 +7,8 @@ import javax.sip.header.ContactHeader;
 import javax.sip.header.HeaderAddress;
 import javax.sip.header.ViaHeader;
 
-import sipserver.com.executer.core.ServerCore;
-import sipserver.com.executer.core.SipServerSharedProperties;
+import sipserver.com.executer.starter.ServerCore;
+import sipserver.com.executer.starter.SipServerSharedProperties;
 
 public class ExtensionBuilder {
 

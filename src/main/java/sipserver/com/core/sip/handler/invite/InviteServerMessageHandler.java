@@ -7,8 +7,9 @@ import javax.sip.message.Response;
 import javax.websocket.Session;
 
 import sipserver.com.core.sip.handler.MessageHandler;
-import sipserver.com.core.state.State.MessageState;
-import sipserver.com.parameter.param.CallParam;
+import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
+import sipserver.com.core.sip.parameter.param.CallParam;
+import sipserver.com.core.sip.service.RouteService;
 
 public class InviteServerMessageHandler extends MessageHandler {
 
@@ -27,13 +28,14 @@ public class InviteServerMessageHandler extends MessageHandler {
 		}
 		sendResponseMessage(Response.TRYING);
 
-		CallParam fromCallParam = CallParam.createCallParam(getExtension(), getRequest().getRawContent());
-		if (Objects.isNull(fromCallParam)) {
-			return onReject(Response.BUSY_HERE);
+		CallParam fromCallParam = new CallParam(getExtension());
+		if (Objects.nonNull(getRequest().getRawContent())) {
+			fromCallParam.setSdpLocalContent(new String(getRequest().getRawContent()));
 		}
-
+		fromCallParam.setMessageHandler(this);
+		setCallParam(fromCallParam);
 		messageState = MessageState.TRYING;
-		// RouteService.route(this, toHeader);
+		RouteService.route(fromCallParam);
 		return true;
 	}
 
@@ -51,24 +53,26 @@ public class InviteServerMessageHandler extends MessageHandler {
 	public boolean onReject(int statusCode) {
 		messageState = MessageState.BUSY;
 		sendResponseMessage(Response.BUSY_HERE);
+		onFinish();
 		return false;
 	}
 
 	@Override
 	public boolean onOk(String content) {
 		if (messageState == MessageState.BYE || messageState == MessageState.CANCELING) {
+			sendACK();
 			onFinish();
 			return true;
 		}
 
 		if (!super.onOk(content)) {
+			messageState = MessageState.FAIL;
 			return false;
 		}
 		messageState = MessageState.OK;
 		sendResponseMessage(Response.OK, content);
 		return true;
 	}
-
 
 	@Override
 	public boolean onACK() {
@@ -94,7 +98,6 @@ public class InviteServerMessageHandler extends MessageHandler {
 		messageState = MessageState.FINISH;
 		return false;
 	}
-
 
 	@Override
 	public boolean onCancel() {

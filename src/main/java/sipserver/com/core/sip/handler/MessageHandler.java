@@ -18,13 +18,14 @@ import javax.sip.message.Response;
 import javax.websocket.Session;
 
 import sipserver.com.core.event.BaseEvent;
-import sipserver.com.core.state.State.MessageState;
+import sipserver.com.core.sip.builder.HeaderBuilder;
+import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
+import sipserver.com.core.sip.parameter.constant.Constant.TransportType;
+import sipserver.com.core.sip.parameter.param.CallParam;
 import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
-import sipserver.com.executer.core.ServerCore;
-import sipserver.com.executer.core.SipServerSharedProperties;
-import sipserver.com.parameter.constant.Constant.TransportType;
-import sipserver.com.util.message.HeaderBuilder;
+import sipserver.com.executer.starter.ServerCore;
+import sipserver.com.executer.starter.SipServerSharedProperties;
 import sipserver.com.util.operation.MicroOperation;
 
 public abstract class MessageHandler implements BaseEvent {
@@ -35,6 +36,8 @@ public abstract class MessageHandler implements BaseEvent {
 	private int remotePort;
 	private Session session;
 	private Extension extension;
+
+	private CallParam callParam;
 
 	public MessageState messageState = MessageState.STARTING;
 
@@ -47,6 +50,14 @@ public abstract class MessageHandler implements BaseEvent {
 	protected MessageHandler(Request request, Session session) {
 		this.request = request;
 		this.session = session;
+	}
+
+	protected MessageHandler(Request request, Extension extension) {
+		this.request = request;
+		this.extension = extension;
+		this.remoteAddress = extension.getAddress();
+		this.remotePort = extension.getPort();
+		this.session = extension.getSession();
 	}
 
 	protected void sendACK() {
@@ -113,7 +124,7 @@ public abstract class MessageHandler implements BaseEvent {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean onBye(Request byeRequest) {
 		if (messageState != MessageState.CALLING) {
@@ -124,11 +135,11 @@ public abstract class MessageHandler implements BaseEvent {
 		setRequest(byeRequest);
 		messageState = MessageState.BYE;
 		sendResponseMessage(Response.OK);
-		
+
 		// TODO: Observer Router
 		return false;
 	}
-	
+
 	@Override
 	public boolean onBye() {
 		try {
@@ -160,7 +171,7 @@ public abstract class MessageHandler implements BaseEvent {
 
 		return false;
 	}
-	
+
 	@Override
 	public boolean onCancel(Request cancelRequest) {
 		if (messageState != MessageState.TRYING || messageState != MessageState.RINGING) {
@@ -233,6 +244,22 @@ public abstract class MessageHandler implements BaseEvent {
 
 	public void setResponse(Response response) {
 		this.response = response;
+	}
+
+	public CallParam getToCallParam() {
+		Extension toExtenFromHeaderExtension = ExtensionBuilder.getExtension((ToHeader) getRequest().getHeader(ToHeader.NAME));
+		if (Objects.isNull(toExtenFromHeaderExtension)) {
+			return null;
+		}
+		return new CallParam(toExtenFromHeaderExtension);
+	}
+
+	public CallParam getCallParam() {
+		return callParam;
+	}
+
+	public void setCallParam(CallParam callParam) {
+		this.callParam = callParam;
 	}
 
 }

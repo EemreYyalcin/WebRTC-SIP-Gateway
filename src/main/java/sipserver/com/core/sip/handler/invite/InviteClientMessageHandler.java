@@ -4,30 +4,34 @@ import javax.sip.message.Request;
 import javax.websocket.Session;
 
 import sipserver.com.core.sip.handler.MessageHandler;
-import sipserver.com.core.state.State.MessageState;
+import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
+import sipserver.com.core.sip.service.RouteService;
+import sipserver.com.domain.Extension;
 
 public class InviteClientMessageHandler extends MessageHandler {
 
 	public InviteClientMessageHandler(Request request, String remoteAddress, int remotePort) {
 		super(request, remoteAddress, remotePort);
-		sendMessage(request);
 	}
 
 	public InviteClientMessageHandler(Request request, Session session) {
 		super(request, session);
-		sendMessage(request);
+	}
+
+	public InviteClientMessageHandler(Request request, Extension extension) {
+		super(request, extension);
 	}
 
 	@Override
 	public boolean onTrying() {
 		messageState = MessageState.TRYING;
+		sendMessage(getRequest());
 		return true;
 	}
 
 	@Override
 	public boolean onReject(int statusCode) {
-		// TODO: Observer Router
-		// ?? SendACK ??
+		RouteService.observeBridgingForReject(getCallParam(), statusCode);
 		messageState = MessageState.BUSY;
 		onFinish();
 		return false;
@@ -36,18 +40,19 @@ public class InviteClientMessageHandler extends MessageHandler {
 	@Override
 	public boolean onOk(String content) {
 		if (messageState == MessageState.BYE) {
+			RouteService.observeBridgingForBye(getCallParam());
 			sendACK();
 			onFinish();
 			return true;
 		}
 		if (!super.onOk(content)) {
+			messageState = MessageState.FAIL;
 			return false;
 		}
+		RouteService.observeBridgingForAcceptCall(getCallParam(), content);
 		messageState = MessageState.CALLING;
-		// TODO: Observer Router
 		sendACK();
 		return true;
-
 	}
 
 	@Override
@@ -61,7 +66,7 @@ public class InviteClientMessageHandler extends MessageHandler {
 		if (messageState != MessageState.TRYING && messageState != MessageState.STARTING) {
 			return false;
 		}
-		// TODO: Observer Router
+		RouteService.observeBridgingForRinging(getCallParam());
 		messageState = MessageState.RINGING;
 		return true;
 	}
