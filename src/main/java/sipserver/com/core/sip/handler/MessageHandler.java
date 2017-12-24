@@ -72,7 +72,7 @@ public abstract class MessageHandler implements BaseEvent {
 			FromHeader fromHeader = (FromHeader) getResponse().getHeader(FromHeader.NAME);
 			ToHeader toHeader = (ToHeader) getResponse().getHeader(ToHeader.NAME);
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(Objects.nonNull(getExtension().getSession()));
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
 			CSeqHeader responseCseq = (CSeqHeader) getResponse().getHeader(CSeqHeader.NAME);
 			CSeqHeader cSeqHeader = ServerCore.getCoreElement().getHeaderFactory().createCSeqHeader(responseCseq.getSeqNumber(), Request.ACK);
@@ -151,7 +151,7 @@ public abstract class MessageHandler implements BaseEvent {
 			}
 			FromHeader fromHeader = null;
 			ToHeader toHeader = null;
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(Objects.nonNull(getExtension().getSession()));
 			SipURI requestURI = HeaderBuilder.createSipUri(getExtension());
 			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70);
 			CallIdHeader callIdHeader = (CallIdHeader) getResponse().getHeader(CallIdHeader.NAME);
@@ -228,6 +228,9 @@ public abstract class MessageHandler implements BaseEvent {
 	}
 
 	protected void sendMessage(Message message) {
+		if (message instanceof Response) {
+			setResponse((Response)message);
+		}
 		ServerCore.getServerCore().getTransport(Objects.nonNull(session)).sendSipMessage(message, remoteAddress, remotePort, session);
 	}
 

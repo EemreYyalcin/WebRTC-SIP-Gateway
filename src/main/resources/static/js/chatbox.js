@@ -289,7 +289,7 @@
                     .html('<tr><td style="text-align:center;width:50%;background-color:green" onclick="mobicentsWebRTCPhoneController.onClickAcceptCallButtonViewEventHandler()"><a id="acceptCall" href="#"><img src="resources/images/phone_pickup.png" width="25" height="25" style="font-size: 1.2em"/></a></td><td style="text-align:center;width:50%;background-color:red" onclick="mobicentsWebRTCPhoneController.onClickRejectCallButtonViewEventHandler()"><a id="rejectCall" href="#"><img src="resources/images/phone_hangup.png" width="25" height="25" style="font-size: 1.2em"/></a></td></tr>')
                     .appendTo(uiChatboxIncomingCall),*/
 	      uiChatboxIncomingCall = (self.uiChatboxIncomingCall = $('<span id="incomingCall' + title + '"></span>'))
-                .html('&nbsp;<a id="acceptCall" onclick="mobicentsWebRTCPhoneController.onClickAcceptCallButtonViewEventHandler()" href="#"><img src="resources/images/video-camera-icon-green.png" width="25" height="25" style="font-size: 1.2em"/></a>&nbsp;<a id="rejectCall" onclick="mobicentsWebRTCPhoneController.onClickRejectCallButtonViewEventHandler()" href="#"><img src="resources/images/video-camera-icon-red.png" width="25" height="25" style="font-size: 1.2em"/></a>&nbsp;')
+                .html('&nbsp;<a id="acceptCall" onclick="mobicentsWebRTCPhoneController.onClickAcceptCallButtonViewEventHandler()" href="#"><img src="images/video-camera-icon-green.png" width="25" height="25" style="font-size: 1.2em"/></a>&nbsp;<a id="rejectCall" onclick="mobicentsWebRTCPhoneController.onClickRejectCallButtonViewEventHandler()" href="#"><img src="images/video-camera-icon-red.png" width="25" height="25" style="font-size: 1.2em"/></a>&nbsp;')
                 .appendTo(uiChatboxContent),	   
 
 	    uiChatboxTitle = (self.uiChatboxTitle = $('<span id="commActions' + title + '"></span>'))
@@ -529,7 +529,7 @@ var chatboxManager = function() {
     this.activeChatBox = id;
     $("#contact-" + id).removeAttr("style");
     $("#contact-" + id).attr("style", "line-height: 25px; font-weight:bold;");
-    $('#participant_list > tbody:last').append('<tr id="participant-' + id + '"><td style="border-top:0px;overflow:hidden;"><img class="img-circle" style="height:140px; width:140px;" src="resources/images/userPic_generic.png">    ' + id + '</td></tr>');
+    $('#participant_list > tbody:last').append('<tr id="participant-' + id + '"><td style="border-top:0px;overflow:hidden;"><img class="img-circle" style="height:140px; width:140px;" src="images/userPic_generic.png">    ' + id + '</td></tr>');
     if(toggle) {
 	    numberOfNotifications[id] = 0;
 	    $("#notificationsStatus"+id).html('');
@@ -612,7 +612,7 @@ function addContact(contact) {
 	if($("#contact-" + contact).length <= 0) {
 		$('#contact_list > tbody:last').append(
 			'<tr onclick="chat(\'' + contact + '\', \'true\')" id="contact-' + contact + '" style="line-height: 25px; cursor: pointer;">' +
-				'<td style="border-top:0px;overflow:hidden;"><img class="img-circle" style="height:25px; width:25px;" src="resources/images/icon-users.jpg">  ' + contact + '</td>' +
+				'<td style="border-top:0px;overflow:hidden;"><img class="img-circle" style="height:25px; width:25px;" src="images/icon-users.jpg">  ' + contact + '</td>' +
 				'<td id="notificationsStatus' + contact + '" style="border-top:0px;overflow:hidden;">&nbsp;&nbsp;' +					
 				'</td>' +
 				'<td style="border-top:0px;overflow:hidden;">&nbsp;&nbsp;' +

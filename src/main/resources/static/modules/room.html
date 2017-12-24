@@ -82,8 +82,8 @@
 	                    <button class="btn btn-primary accept-btn" data-dismiss="modal">Share</button>
 	                </div>
             	</div>
-        <audio id="ringing" loop src="resources/audio/ringing.wav" ></audio>
-	<audio id="chat_notification" src="resources/audio/chat_notification.wav" ></audio>
+        <audio id="ringing" loop th:src="@{audio/ringing.wav}" ></audio>
+	<audio id="chat_notification" th:src="@{audio/chat_notification.wav}" ></audio>
 	<script type='text/javascript'>	 
 		$('#contact_search_list').hide();
 		$('#addNewContact').hide();		

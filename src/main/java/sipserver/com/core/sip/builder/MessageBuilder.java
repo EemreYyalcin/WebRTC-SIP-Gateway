@@ -29,7 +29,7 @@ public class MessageBuilder {
 			ToHeader toHeader = HeaderBuilder.createToHeader(toCallParam.getExtension());
 			Objects.requireNonNull(toHeader);
 			SipURI requestURI = HeaderBuilder.createSipUri(toCallParam.getExtension());
-			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders();
+			ArrayList<ViaHeader> viaHeaders = HeaderBuilder.createViaHeaders(Objects.nonNull(toCallParam.getExtension().getSession()));
 			CallIdHeader callIdHeader = HeaderBuilder.createCallIdHeader();
 			Objects.requireNonNull(callIdHeader);
 			CSeqHeader cSeqHeader = HeaderBuilder.createCseqHeader(Request.INVITE);
@@ -77,7 +77,7 @@ public class MessageBuilder {
 			Objects.requireNonNull(cSeqHeader);
 			MaxForwardsHeader maxForwards = HeaderBuilder.createMaxForwardsHeader(70);
 			Objects.requireNonNull(maxForwards);
-			Request request = ServerCore.getCoreElement().getMessageFactory().createRequest(HeaderBuilder.createSipUri(extension), method, callIdHeader, cSeqHeader, fromHeader, toHeader, HeaderBuilder.createViaHeaders(), maxForwards);
+			Request request = ServerCore.getCoreElement().getMessageFactory().createRequest(HeaderBuilder.createSipUri(extension), method, callIdHeader, cSeqHeader, fromHeader, toHeader, HeaderBuilder.createViaHeaders(Objects.nonNull(extension.getSession())), maxForwards);
 			Objects.requireNonNull(request);
 			ContactHeader contactHeader = HeaderBuilder.createContactHeader(extension);
 			Objects.requireNonNull(contactHeader);

@@ -45,10 +45,10 @@ public class HeaderBuilder {
 		return null;
 	}
 
-	public static ArrayList<ViaHeader> createViaHeaders() {
+	public static ArrayList<ViaHeader> createViaHeaders(boolean isWs) {
 		try {
 			ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
-			ViaHeader viaHeader = ServerCore.getCoreElement().getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort(), "UDP", GeneratorUtil.getUUidForBranch());
+			ViaHeader viaHeader = ServerCore.getCoreElement().getHeaderFactory().createViaHeader(ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort(), isWs ? "WS" : "UDP", GeneratorUtil.getUUidForBranch());
 			viaHeaders.add(viaHeader);
 			return viaHeaders;
 		} catch (Exception e) {
