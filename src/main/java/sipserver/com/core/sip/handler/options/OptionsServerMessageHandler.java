@@ -1,6 +1,5 @@
 package sipserver.com.core.sip.handler.options;
 
-import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import javax.websocket.Session;
@@ -9,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import sipserver.com.core.sip.handler.MessageHandler;
 import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
-import sipserver.com.executer.starter.ServerCore;
 
 public class OptionsServerMessageHandler extends MessageHandler {
 
@@ -27,7 +25,8 @@ public class OptionsServerMessageHandler extends MessageHandler {
 	public boolean onTrying() {
 		try {
 			if (!super.onTrying()) {
-				onFinish();
+				logger.error("Control Your Sip Message!!");
+				onFinishImmediately();
 				return false;
 			}
 			sendResponseMessage(Response.TRYING);
@@ -50,7 +49,6 @@ public class OptionsServerMessageHandler extends MessageHandler {
 	@Override
 	public boolean onFinish() {
 		messageState = MessageState.FINISH;
-		ServerCore.getCoreElement().removeHandler(((CallIdHeader) getRequest().getHeader(CallIdHeader.NAME)).getCallId());
 		return false;
 	}
 
@@ -67,8 +65,7 @@ public class OptionsServerMessageHandler extends MessageHandler {
 	@Override
 	public boolean onACK() {
 		logger.trace("OnACK Recieved ");
-		ServerCore.getCoreElement().removeHandler(((CallIdHeader) getRequest().getHeader(CallIdHeader.NAME)).getCallId());
-		onFinish();
+		onFinishImmediately();
 		return false;
 	}
 

@@ -61,7 +61,6 @@ public class MessageBuilder {
 			if (method.equals(Request.OPTIONS)) {
 				Extension serverExtension = ExtensionBuilder.createExtension("Unknown", "Unknown", ServerCore.getCoreElement().getLocalServerAddress(), ServerCore.getCoreElement().getLocalSipPort());
 				Objects.requireNonNull(serverExtension);
-				serverExtension.setTransportType(extension.getTransportType());
 				fromHeader = HeaderBuilder.createFromHeader(serverExtension);
 			}
 			if (Objects.isNull(fromHeader)) {

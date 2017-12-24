@@ -49,7 +49,7 @@ public class RegisterClientMessageHandler extends MessageHandler {
 	}
 
 	@Override
-	public boolean onOk(String content) {
+	public boolean onOk() {
 		messageState = MessageState.OK;
 		getExtension().keepRegistered();
 		sendACK();

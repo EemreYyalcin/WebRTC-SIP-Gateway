@@ -1,22 +1,24 @@
 /*
- * TeleStax, Open Source Cloud Communications
- * Copyright 2011-2014, Telestax Inc and individual contributors
- * by the @authors tag.
+ * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
- * This program is free software: you can redistribute it and/or modify
- * under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation; either version 3 of
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 
 /*
  *  Implementation of the JAIN-SIP GenericObject class.
@@ -25338,12 +25340,12 @@ DefaultRouter.prototype.getNextHop =function(request){
         hop = this.createHop(requestURI,request);
         return hop;
     } 
-    else if (this.defaultRoute != null) {
-        return this.defaultRoute;
-    } 
     else if (requestURI.isSipURI()) {
         hop = this.createHop(requestURI,request);
         return hop;
+    }
+    else if (this.defaultRoute != null) {
+        return this.defaultRoute;
     } 
     else {
         return null;
@@ -27481,7 +27483,6 @@ SIPTransaction.prototype.getCSeq =function(){
 }
 
 SIPTransaction.prototype.setState =function(newState){
-    console.debug("SIPTransaction.setState() " + this.branch + " currentState " + this.currentState);
     if (this.currentState == "COMPLETED") {
         if (newState != "TERMINATED" && newState != "CONFIRMED")
             newState = "COMPLETED";
@@ -27501,7 +27502,6 @@ SIPTransaction.prototype.setState =function(newState){
         newState = this.currentState;
     }
     currentState = newState;
-    console.debug("SIPTransaction.setState() " + this.branch + " newState " + this.currentState);
 }
 
 SIPTransaction.prototype.getState =function(){
@@ -27771,7 +27771,8 @@ SIPTransaction.prototype.startTransactionTimer =function(){
 
 SIPTransaction.prototype.isMessagePartOfTransaction =function(){
     
-}/*
+}
+/*
  * TeleStax, Open Source Cloud Communications  Copyright 2012. 
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
@@ -28063,7 +28064,6 @@ SIPClientTransaction.prototype.processResponseargu2 =function(sipResponse,incomi
 
 SIPClientTransaction.prototype.processResponseargu3 =function(transactionResponse,sourceChannel,dialog){
 
-    console.debug("processResponse() ctx state: "+ this.getState()); 
     if (this.getState() == null)
     {
         return;
@@ -28136,13 +28136,10 @@ SIPClientTransaction.prototype.nonInviteClientTransaction =function(transactionR
 
 SIPClientTransaction.prototype.inviteClientTransaction =function(transactionResponse,sourceChannel,dialog){
     var statusCode = transactionResponse.getStatusCode();
-    console.debug("inviteClientTransaction.processResponse() ctx state: "+ this.getState()); 
     if (this.TERMINATED == this.getState()) {
         var ackAlreadySent = false;
-        console.debug("inviteClientTransaction.processResponse() dialog: "+ dialog);
-		if(dialog != null) {
-		        console.debug("inviteClientTransaction.processResponse() dialog ackSeen : "+ dialog.isAckSeen() + "+ lastAckSent" + dialog.getLastAckSent()); 
-		} 
+	if(dialog != null) {
+	} 
         if (dialog != null && dialog.isAckSeen() && dialog.getLastAckSent() != null) {
             if (dialog.getLastAckSent().getCSeq().getSeqNumber() == transactionResponse.getCSeq().getSeqNumber()
                 && transactionResponse.getFromTag()==dialog.getLastAckSent().getFromTag()) {
@@ -28151,7 +28148,6 @@ SIPClientTransaction.prototype.inviteClientTransaction =function(transactionResp
         }
         if (dialog!= null && !ackAlreadySent
             && transactionResponse.getCSeq().getMethod()==dialog.getMethod()) {
-            console.debug("inviteClientTransaction.processResponse() retransmission, resendingAck"); 
             dialog.resendAck();
         }
         this.sipStack.removeTransaction(this);
@@ -31623,7 +31619,7 @@ function SipStackImpl(sipUserAgent) {
     this.isAutomaticDialogErrorHandlingEnabled = true;
     this.messageChannel=null;
     this.userAgentName=sipUserAgent;
-    this.lastTransaction=null;
+    //this.lastTransaction=null;
     this.reEntrantListener=true;
    
     this.setHostAddress(Utils.prototype.randomString(12)+".invalid");           
@@ -31867,6 +31863,10 @@ SipStackImpl.prototype.newSIPServerRequest =function(requestReceived,requestMess
                 }
 
             }
+            // TODO: when an ACK arrives after INVITE server transaction this leg is visited, which creates a new
+            // server transaction for the ACK, but which does nothing, since a bit later (check 'if (requestReceived.getMethod() == "ACK")' leg)
+            // we associate the ACK with an existing transaction using different matching. We could consider guarding against ACKs to 2xx in this
+            // leg, to avoid this redundancy. Also check https://github.com/RestComm/webrtcomm/issues/82
             currentTransaction = this.createServerTransaction(requestMessageChannel);
             currentTransaction.setOriginalRequest(requestReceived);
             requestReceived.setTransaction(currentTransaction);
@@ -31880,14 +31880,43 @@ SipStackImpl.prototype.newSIPServerRequest =function(requestReceived,requestMess
         currentTransaction.setRequestInterface(this.sipMessageFactory.newSIPServerRequest(
             requestReceived, currentTransaction));
     }
-    if(requestReceived.getMethod()=="ACK")
+    if (requestReceived.getMethod() == "ACK")
     {
-        currentTransaction=this.lastTransaction;
+        // ACKs are a special case because ACK to 200 OK has different transaction id, so we need other means to associate the ACK transaction 
+        // with the original INVITE server transaction. Let's match based on RFC rules:
+        //
+        // Quoting SIP RFC: The ACK request matches a transaction if the Request-
+        // URI, From tag, Call-ID, CSeq number (not the method), and top Via
+        // header field match those of the INVITE request which created the
+        // transaction, and the To tag of the ACK matches the To tag of the
+        // response sent by the server transaction.  Matching is done based on
+        // the matching rules defined for each of those header fields.
+        for (i = 0; i < this.serverTransactionTable.length; i++) {
+           transaction = this.serverTransactionTable[i][1];
+           // important note: we are comparing all the fields as described in the RFC, except for Via where we don't compare the branch (i.e. transactionId), 
+           // since it is different in the ACK that comes after 200 OK (remember a new transaction is created for that ACK from the client)
+
+           // also note that for request URI we leave parameters out and compare everything else, as it breaks some scenarios from RC/XMS: webrtcomm #94 
+           if (transaction.getOriginalRequest().getRequestURI().getScheme() == requestReceived.getRequestURI().getScheme() &&
+                transaction.getOriginalRequest().getRequestURI().getUser() == requestReceived.getRequestURI().getUser() &&
+                transaction.getOriginalRequest().getRequestURI().getHost() == requestReceived.getRequestURI().getHost() &&
+                transaction.getOriginalRequest().getRequestURI().getPort() == requestReceived.getRequestURI().getPort() &&
+                transaction.getOriginalRequest().getFromTag() == requestReceived.getFromTag() &&
+                transaction.getOriginalRequest().getCallId().getCallId().toString() == requestReceived.getCallId().getCallId().toString() &&
+                transaction.getOriginalRequest().getCSeq().getSeqNumber() == requestReceived.getCSeq().getSeqNumber() &&
+                transaction.getOriginalRequest().getTopmostViaHeader().getSentProtocol().encode() == requestReceived.getTopmostViaHeader().getSentProtocol().encode() &&
+                transaction.getOriginalRequest().getTopmostViaHeader().getSentBy().encode() == requestReceived.getTopmostViaHeader().getSentBy().encode() &&
+                transaction.getLastResponse().getToTag() == requestReceived.getToTag()) {
+              currentTransaction = transaction;
+           }
+        }
     }
+    /*
     else
     {
         this.lastTransaction=currentTransaction;
     }
+    */
     return currentTransaction;
 }
 
@@ -31986,7 +32015,8 @@ SipStackImpl.prototype.removeTransaction =function(sipTransaction){
             sipProvider.handleEvent(event, sipTransaction);
         }
     }
-}/*
+}
+/*
  * TeleStax, Open Source Cloud Communications  Copyright 2012. 
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a

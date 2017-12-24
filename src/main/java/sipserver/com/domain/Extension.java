@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import javax.websocket.Session;
 
-import sipserver.com.core.sip.parameter.constant.Constant.TransportType;
 import sipserver.com.executer.starter.SipServerSharedProperties;
 
 public class Extension {
@@ -15,7 +14,6 @@ public class Extension {
 	private String displayName;
 	private int port = SipServerSharedProperties.blankCode;
 	private String pass;
-	private TransportType transportType;
 	private Session session;
 	private Long registerTime;
 	private Long aliveTime;
@@ -125,14 +123,6 @@ public class Extension {
 
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public TransportType getTransportType() {
-		return transportType;
-	}
-
-	public void setTransportType(TransportType transportType) {
-		this.transportType = transportType;
 	}
 
 	public Session getSession() {

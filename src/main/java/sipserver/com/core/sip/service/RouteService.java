@@ -26,7 +26,7 @@ public class RouteService {
 				logger.error("Please Control Route Parameter!");
 				return false;
 			}
-			if (MicroOperation.isAnyNull(fromCallParam.getMessageHandler(), fromCallParam.getSdpLocalContent())) {
+			if (MicroOperation.isAnyNull(fromCallParam.getMessageHandler(), fromCallParam.getSdpRemoteContent())) {
 				logger.error("Please Control Route Parameter SDP Or Handler!");
 				return false;
 			}
@@ -72,6 +72,7 @@ public class RouteService {
 				logger.debug("Not Route 3 " + toCallParam.getExtension().getExten());
 				return false;
 			}
+			toCallParam.setSdpLocalContent(fromCallParam.getSdpRemoteContent());
 			request.setContent(toCallParam.getSdpLocalContent(), ServerCore.getCoreElement().getHeaderFactory().createContentTypeHeader("application", "sdp"));
 
 			InviteClientMessageHandler inviteClientMessageHandler = new InviteClientMessageHandler(request, toCallParam.getExtension());
@@ -105,12 +106,21 @@ public class RouteService {
 		toCallParam.getMessageHandler().onBye();
 	}
 
-	public static void observeBridgingForAcceptCall(CallParam callParam, String content) {
+	public static void observeBridgingForCancel(CallParam callParam) {
 		CallParam toCallParam = ServerCore.getCoreElement().getBridgeElement(callParam);
 		if (Objects.isNull(toCallParam)) {
 			return;
 		}
-		toCallParam.getMessageHandler().onOk(content);
+		toCallParam.getMessageHandler().onCancel();
+	}
+
+	public static void observeBridgingForAcceptCall(CallParam callParam) {
+		CallParam toCallParam = ServerCore.getCoreElement().getBridgeElement(callParam);
+		if (Objects.isNull(toCallParam)) {
+			return;
+		}
+		toCallParam.setSdpLocalContent(callParam.getSdpRemoteContent());
+		toCallParam.getMessageHandler().onOk();
 	}
 
 	public static void observeBridgingForRinging(CallParam callParam) {

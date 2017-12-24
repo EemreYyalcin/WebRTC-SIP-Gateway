@@ -17,11 +17,13 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import javax.websocket.Session;
 
+import org.apache.log4j.Logger;
+
 import sipserver.com.core.event.BaseEvent;
 import sipserver.com.core.sip.builder.HeaderBuilder;
 import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
-import sipserver.com.core.sip.parameter.constant.Constant.TransportType;
 import sipserver.com.core.sip.parameter.param.CallParam;
+import sipserver.com.core.sip.service.RouteService;
 import sipserver.com.domain.Extension;
 import sipserver.com.domain.ExtensionBuilder;
 import sipserver.com.executer.starter.ServerCore;
@@ -29,6 +31,8 @@ import sipserver.com.executer.starter.SipServerSharedProperties;
 import sipserver.com.util.operation.MicroOperation;
 
 public abstract class MessageHandler implements BaseEvent {
+
+	private static Logger logger = Logger.getLogger(MessageHandler.class);
 
 	private Request request;
 	private Response response;
@@ -85,7 +89,7 @@ public abstract class MessageHandler implements BaseEvent {
 	@Override
 	public boolean onTrying() {
 		try {
-			if (messageState == MessageState.STARTING) {
+			if (messageState != MessageState.STARTING) {
 				return false;
 			}
 			FromHeader fromHeader = (FromHeader) getRequest().getHeader(FromHeader.NAME);
@@ -115,7 +119,7 @@ public abstract class MessageHandler implements BaseEvent {
 	}
 
 	@Override
-	public boolean onOk(String content) {
+	public boolean onOk() {
 		if (messageState == MessageState.TRYING) {
 			return true;
 		}
@@ -135,8 +139,7 @@ public abstract class MessageHandler implements BaseEvent {
 		setRequest(byeRequest);
 		messageState = MessageState.BYE;
 		sendResponseMessage(Response.OK);
-
-		// TODO: Observer Router
+		RouteService.observeBridgingForBye(getCallParam());
 		return false;
 	}
 
@@ -168,20 +171,26 @@ public abstract class MessageHandler implements BaseEvent {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return true;
+	}
 
+	@Override
+	public boolean onFinishImmediately() {
+		ServerCore.getCoreElement().removeHandler(((CallIdHeader) getRequest().getHeader(CallIdHeader.NAME)).getCallId());
+		onFinish();
+		return true;
+	}
+
+	@Override
+	public boolean onCancel() {
+		logger.error("onCancel Request Error!!");
 		return false;
 	}
 
 	@Override
 	public boolean onCancel(Request cancelRequest) {
-		if (messageState != MessageState.TRYING || messageState != MessageState.RINGING) {
-			sendResponseMessage(Response.BAD_REQUEST);
-			return false;
-		}
-		setRequest(cancelRequest);
-		messageState = MessageState.CANCELING;
-		sendResponseMessage(Response.OK);
-		return true;
+		logger.error("onCancel Request Error with Parameter request!!");
+		return false;
 	}
 
 	protected void sendResponseMessage(int responseCode) {
@@ -219,11 +228,7 @@ public abstract class MessageHandler implements BaseEvent {
 	}
 
 	protected void sendMessage(Message message) {
-		if (Objects.nonNull(session)) {
-			ServerCore.getServerCore().getTransport(TransportType.WS).sendSipMessage(message, remoteAddress, remotePort, session);
-			return;
-		}
-		ServerCore.getServerCore().getTransport(TransportType.UDP).sendSipMessage(message, remoteAddress, remotePort, session);
+		ServerCore.getServerCore().getTransport(Objects.nonNull(session)).sendSipMessage(message, remoteAddress, remotePort, session);
 	}
 
 	protected Request getRequest() {

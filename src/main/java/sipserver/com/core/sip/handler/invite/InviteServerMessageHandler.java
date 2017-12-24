@@ -6,12 +6,16 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import javax.websocket.Session;
 
+import org.apache.log4j.Logger;
+
 import sipserver.com.core.sip.handler.MessageHandler;
 import sipserver.com.core.sip.parameter.constant.Constant.MessageState;
 import sipserver.com.core.sip.parameter.param.CallParam;
 import sipserver.com.core.sip.service.RouteService;
 
 public class InviteServerMessageHandler extends MessageHandler {
+
+	private static Logger logger = Logger.getLogger(InviteServerMessageHandler.class);
 
 	public InviteServerMessageHandler(Request request, Session session) {
 		super(request, session);
@@ -24,13 +28,15 @@ public class InviteServerMessageHandler extends MessageHandler {
 	@Override
 	public boolean onTrying() {
 		if (!super.onTrying()) {
+			logger.error("Control Your Sip Message!!");
+			onFinishImmediately();
 			return false;
 		}
 		sendResponseMessage(Response.TRYING);
 
 		CallParam fromCallParam = new CallParam(getExtension());
 		if (Objects.nonNull(getRequest().getRawContent())) {
-			fromCallParam.setSdpLocalContent(new String(getRequest().getRawContent()));
+			fromCallParam.setSdpRemoteContent(new String(getRequest().getRawContent()));
 		}
 		fromCallParam.setMessageHandler(this);
 		setCallParam(fromCallParam);
@@ -53,24 +59,24 @@ public class InviteServerMessageHandler extends MessageHandler {
 	public boolean onReject(int statusCode) {
 		messageState = MessageState.BUSY;
 		sendResponseMessage(Response.BUSY_HERE);
-		onFinish();
+		onFinishImmediately();
 		return false;
 	}
 
 	@Override
-	public boolean onOk(String content) {
+	public boolean onOk() {
 		if (messageState == MessageState.BYE || messageState == MessageState.CANCELING) {
 			sendACK();
-			onFinish();
+			onFinishImmediately();
 			return true;
 		}
 
-		if (!super.onOk(content)) {
+		if (!super.onOk()) {
 			messageState = MessageState.FAIL;
 			return false;
 		}
 		messageState = MessageState.OK;
-		sendResponseMessage(Response.OK, content);
+		sendResponseMessage(Response.OK, getCallParam().getSdpLocalContent());
 		return true;
 	}
 
@@ -82,26 +88,34 @@ public class InviteServerMessageHandler extends MessageHandler {
 		}
 
 		if (messageState == MessageState.BUSY) {
-			onFinish();
+			logger.warn("On Busy State Recieve ACK!");
+			onFinishImmediately();
 			return true;
 		}
 
-		if (messageState == MessageState.BYE) {
-			onFinish();
+		if (messageState == MessageState.BYE || messageState == MessageState.CANCELING) {
+			onFinishImmediately();
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean onCancel(Request cancelRequest) {
+		if (!(messageState != MessageState.TRYING || messageState != MessageState.RINGING)) {
+			sendResponseMessage(Response.BAD_REQUEST);
+			return false;
+		}
+		setRequest(cancelRequest);
+		messageState = MessageState.CANCELING;
+		sendResponseMessage(Response.OK);
+		RouteService.observeBridgingForCancel(getCallParam());
+		return true;
 	}
 
 	@Override
 	public boolean onFinish() {
 		messageState = MessageState.FINISH;
-		return false;
-	}
-
-	@Override
-	public boolean onCancel() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

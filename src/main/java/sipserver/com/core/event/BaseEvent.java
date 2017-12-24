@@ -6,11 +6,13 @@ public interface BaseEvent {
 
 	public boolean onTrying();
 
-	public boolean onOk(String content);
+	public boolean onOk();
 	
 	public boolean onReject(int statusCode);
 
 	public boolean onFinish();
+	
+	public boolean onFinishImmediately();
 
 	public boolean onBye();
 	

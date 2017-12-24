@@ -16,6 +16,8 @@ import com.noyan.util.NullUtil;
 import gov.nist.javax.sip.message.SIPMessage;
 import sipserver.com.core.sip.builder.HeaderBuilder;
 import sipserver.com.core.sip.handler.invite.InviteServerMessageHandler;
+import sipserver.com.core.sip.handler.options.OptionsServerMessageHandler;
+import sipserver.com.core.sip.handler.register.RegisterServerMessageHandler;
 import sipserver.com.executer.starter.ServerCore;
 import sipserver.com.util.operation.MicroOperation;
 
@@ -88,9 +90,9 @@ public class Handler {
 
 			MessageHandler messageHandler = null;
 			if (request.getMethod().equals(Request.REGISTER)) {
-				// serverTransaction = new RegisterServerTransaction(extension);
+				messageHandler = (session == null) ? new RegisterServerMessageHandler(request, remoteAddress, remotePort) : new RegisterServerMessageHandler(request, session);
 			} else if (request.getMethod().equals(Request.OPTIONS)) {
-				// serverTransaction = new OptionsServerTransaction(extension);
+				messageHandler = (session == null) ? new OptionsServerMessageHandler(request, remoteAddress, remotePort) : new OptionsServerMessageHandler(request, session);
 			} else if (request.getMethod().equals(Request.INVITE)) {
 				messageHandler = (session == null) ? new InviteServerMessageHandler(request, remoteAddress, remotePort) : new InviteServerMessageHandler(request, session);
 			}
@@ -100,8 +102,8 @@ public class Handler {
 				return;
 			}
 
-			ServerCore.getCoreElement().addHandler(((CallIdHeader) request.getHeader(CallIdHeader.NAME)).getCallId(), handler);
-			handler.onTrying();
+			ServerCore.getCoreElement().addHandler(((CallIdHeader) request.getHeader(CallIdHeader.NAME)).getCallId(), messageHandler);
+			messageHandler.onTrying();
 
 		} catch (Exception e) {
 			logger.error("Error Request Message !! Message: " + request.toString());
@@ -112,13 +114,13 @@ public class Handler {
 	private static void processResponse(Response response, MessageHandler handler, Session session) {
 		try {
 			if (Objects.isNull(handler)) {
-				logger.warn("ClientTransaction has not Found");
+				logger.warn("ClientTransaction has not Found " + response.toString());
 				return;
 			}
 			handler.setResponse(response);
 
 			int statusCode = response.getStatusCode();
-			if (MicroOperation.isAnyNull(handler.getCallParam(), response.getRawContent())) {
+			if (MicroOperation.isAnyNotNull(handler.getCallParam(), response.getRawContent())) {
 				handler.getCallParam().setSdpRemoteContent(new String(response.getRawContent()));
 			}
 
@@ -166,24 +168,18 @@ public class Handler {
 			}
 
 			if (response.getStatusCode() == Response.OK) {
-				if (Objects.isNull(response.getRawContent())) {
-					handler.onOk(null);
-					return;
-				}
-				handler.onOk(new String(response.getRawContent()));
+				handler.onOk();
 				return;
 			}
 
 			if (response.getStatusCode() < 300 && response.getStatusCode() > 200) {
-				if (Objects.isNull(response.getRawContent())) {
-					handler.onOk(null);
-					return;
-				}
-				handler.onOk(new String(response.getRawContent()));
+				logger.warn("Specific Response Code: " + response.getStatusCode());
+				handler.onOk();
 				return;
 			}
 
 			if (response.getStatusCode() > 300) {
+				logger.warn("Specific Response Code2: " + response.getStatusCode());
 				handler.onReject(response.getStatusCode());
 				return;
 			}

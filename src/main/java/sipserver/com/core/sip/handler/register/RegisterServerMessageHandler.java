@@ -2,7 +2,6 @@ package sipserver.com.core.sip.handler.register;
 
 import java.util.Objects;
 
-import javax.sip.header.CallIdHeader;
 import javax.sip.header.ProxyAuthenticateHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
@@ -31,6 +30,8 @@ public class RegisterServerMessageHandler extends MessageHandler {
 	public boolean onTrying() {
 		try {
 			if (!super.onTrying()) {
+				logger.error("Control Your Sip Message!!");
+				onFinishImmediately();
 				return false;
 			}
 			sendResponseMessage(Response.TRYING);
@@ -38,8 +39,8 @@ public class RegisterServerMessageHandler extends MessageHandler {
 			if (getExtension().isRegister()) {
 				getExtension().keepRegistered();
 				logger.info("Exten:" + getExtension().getExten() + " Keep Register.");
-				sendResponseMessage(Response.OK);
 				messageState = MessageState.OK;
+				sendResponseMessage(Response.OK);
 				onFinish();
 				return true;
 			}
@@ -47,7 +48,7 @@ public class RegisterServerMessageHandler extends MessageHandler {
 			if (Objects.isNull(getExtension().getPass())) {
 				sendResponseMessage(Response.FORBIDDEN);
 				logger.info("Forbidden Peer Password has not setted Exten:" + getExtension().getExten());
-				onFinish();
+				onFinishImmediately();
 				return true;
 			}
 
@@ -58,14 +59,14 @@ public class RegisterServerMessageHandler extends MessageHandler {
 				Objects.requireNonNull(proxyAuthenticateHeader);
 				proxyAuthenticateHeader.setParameter("username", getExtension().getExten());
 				sendMessage(challengeResponse);
-				onFinish();
+				onFinishImmediately();
 				return true;
 			}
 
 			if (!ServerCore.getCoreElement().getDigestServerAuthentication().doAuthenticatePlainTextPassword(getRequest(), getExtension().getPass())) {
 				sendResponseMessage(Response.FORBIDDEN);
 				logger.info("Forbidden Peer Wrong Password Exten:" + getExtension().getExten());
-				onFinish();
+				onFinishImmediately();
 				return true;
 			}
 			getExtension().keepRegistered();
@@ -74,7 +75,7 @@ public class RegisterServerMessageHandler extends MessageHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			sendResponseMessage(Response.BAD_EVENT);
-			onFinish();
+			onFinishImmediately();
 		}
 
 		return true;
@@ -107,9 +108,8 @@ public class RegisterServerMessageHandler extends MessageHandler {
 	@Override
 	public boolean onACK() {
 		logger.trace("OnACK Recieved ");
-		ServerCore.getCoreElement().removeHandler(((CallIdHeader) getRequest().getHeader(CallIdHeader.NAME)).getCallId());
-		onFinish();
-		return false;
+		onFinishImmediately();
+		return true;
 	}
 
 }

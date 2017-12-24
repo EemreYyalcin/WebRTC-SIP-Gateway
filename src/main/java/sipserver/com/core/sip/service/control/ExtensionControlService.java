@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import sipserver.com.core.sip.builder.MessageBuilder;
 import sipserver.com.core.sip.handler.options.OptionsClientMessageHandler;
 import sipserver.com.core.sip.handler.register.RegisterClientMessageHandler;
-import sipserver.com.core.sip.parameter.constant.Constant.TransportType;
 import sipserver.com.domain.Extension;
 import sipserver.com.executer.starter.ServerCore;
 import sipserver.com.executer.starter.SipServerSharedProperties;
@@ -88,7 +87,7 @@ public class ExtensionControlService {
 
 			localExtenStream.forEach(e -> {
 				Extension localExtension = ServerCore.getCoreElement().getLocalExtension(e.toString());
-				if (localExtension.getTransportType() == TransportType.WS) {
+				if (Objects.nonNull(localExtension.getSession())) {
 					return;
 				}
 				if (Objects.isNull(localExtension) || !localExtension.isRegister()) {
