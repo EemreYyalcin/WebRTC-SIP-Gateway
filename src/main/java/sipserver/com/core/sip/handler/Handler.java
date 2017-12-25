@@ -11,8 +11,6 @@ import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
 
-import com.noyan.util.NullUtil;
-
 import gov.nist.javax.sip.message.SIPMessage;
 import sipserver.com.core.sip.builder.HeaderBuilder;
 import sipserver.com.core.sip.handler.invite.InviteServerMessageHandler;
@@ -97,7 +95,7 @@ public class Handler {
 				messageHandler = (session == null) ? new InviteServerMessageHandler(request, remoteAddress, remotePort) : new InviteServerMessageHandler(request, session);
 			}
 
-			if (NullUtil.isNull(messageHandler)) {
+			if (Objects.isNull(messageHandler)) {
 				logger.trace("Ignored Message " + request.getMethod());
 				return;
 			}

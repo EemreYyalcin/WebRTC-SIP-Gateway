@@ -56,17 +56,17 @@
 			<optional>true</optional>
 		</dependency>
 
-		<dependency>
-			<groupId>com.noyan</groupId>
-			<artifactId>utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.noyan</groupId> -->
+<!-- 			<artifactId>utils</artifactId> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 
-		<dependency>
-			<groupId>com.mgcpclient</groupId>
-			<artifactId>mgcpclient</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.mgcpclient</groupId> -->
+<!-- 			<artifactId>mgcpclient</artifactId> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
 		<dependency>

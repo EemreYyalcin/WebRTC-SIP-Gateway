@@ -6,8 +6,6 @@ import java.net.UnknownHostException;
 import javax.sip.message.Message;
 import javax.websocket.Session;
 
-import com.noyan.network.socket.udp.UdpServerSocket;
-
 import sipserver.com.core.sip.handler.Handler;
 import sipserver.com.core.sip.server.SipServerTransport;
 import sipserver.com.executer.starter.ServerCore;

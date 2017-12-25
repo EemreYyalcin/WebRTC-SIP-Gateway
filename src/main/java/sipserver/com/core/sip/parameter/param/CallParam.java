@@ -1,7 +1,5 @@
 package sipserver.com.core.sip.parameter.param;
 
-import com.mgcp.transport.MgcpSession;
-
 import sipserver.com.core.sip.handler.MessageHandler;
 import sipserver.com.domain.Extension;
 
@@ -12,7 +10,6 @@ public class CallParam {
 	private MessageHandler messageHandler;
 	private Extension extension;
 
-	private MgcpSession mgcpSession;
 	private boolean isError = false;
 
 	public CallParam(Extension extension) {
@@ -35,14 +32,6 @@ public class CallParam {
 		this.sdpRemoteContent = sdpRemoteContent;
 	}
 
-	public MgcpSession getMgcpSession() {
-		return mgcpSession;
-	}
-
-	public void setMgcpSession(MgcpSession mgcpSession) {
-		this.mgcpSession = mgcpSession;
-	}
-
 	public boolean isError() {
 		return isError;
 	}
@@ -58,7 +47,7 @@ public class CallParam {
 	public Extension getExtension() {
 		return extension;
 	}
-	
+
 	public void setMessageHandler(MessageHandler messageHandler) {
 		this.messageHandler = messageHandler;
 	}

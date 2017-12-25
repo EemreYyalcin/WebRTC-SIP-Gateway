@@ -1,14 +1,9 @@
 package sipserver.com.executer.starter;
 
-import java.net.InetAddress;
-
 import javax.sip.SipFactory;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-import com.configuration.GeneralConfiguration;
-import com.mgcp.transport.MGCPTransportLayer;
 
 import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
 import sipserver.com.core.sip.server.SipServerTransport;
@@ -45,15 +40,15 @@ public class ServerCore {
 		 * 
 		 */
 
-		if (SipServerSharedProperties.mediaServerActive) {
-			ServerCore.coreElement.setMediaServerAddress(InetAddress.getByName("192.168.1.104"));
-			MGCPTransportLayer.createAndStartMgcpTransportLayer(2727);
-			MGCPTransportLayer.getMgcpTransportLayer().setMediaServerAddress(coreElement.getMediaServerAddress());
-			MGCPTransportLayer.getMgcpTransportLayer().setMediaServerPort(2427);
-			MGCPTransportLayer.getMgcpTransportLayer().setIvrEndpointID(GeneralConfiguration.ivrEndpointID);
-			MGCPTransportLayer.getMgcpTransportLayer().setConferenceEndpointID(GeneralConfiguration.conferenceEndpointID);
-			MGCPTransportLayer.getMgcpTransportLayer().setBridgeEndpointID(GeneralConfiguration.bridgeEndpointID);
-		}
+		// if (SipServerSharedProperties.mediaServerActive) {
+		// ServerCore.coreElement.setMediaServerAddress(InetAddress.getByName("192.168.1.104"));
+		// MGCPTransportLayer.createAndStartMgcpTransportLayer(2727);
+		// MGCPTransportLayer.getMgcpTransportLayer().setMediaServerAddress(coreElement.getMediaServerAddress());
+		// MGCPTransportLayer.getMgcpTransportLayer().setMediaServerPort(2427);
+		// MGCPTransportLayer.getMgcpTransportLayer().setIvrEndpointID(GeneralConfiguration.ivrEndpointID);
+		// MGCPTransportLayer.getMgcpTransportLayer().setConferenceEndpointID(GeneralConfiguration.conferenceEndpointID);
+		// MGCPTransportLayer.getMgcpTransportLayer().setBridgeEndpointID(GeneralConfiguration.bridgeEndpointID);
+		// }
 
 		////////////
 
